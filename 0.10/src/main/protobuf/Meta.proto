@@ -1,0 +1,168 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This file contains protocol buffers that are used for Admin service.
+
+option java_package = "org.apache.wasp.protobuf.generated";
+option java_outer_classname = "MetaProtos";
+option java_generic_services = true;
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+import "Wasp.proto";
+
+/**
+ * Table Schema
+ * Inspired by the rest TableSchema
+ */
+message TableSchema {
+  required string tableName = 1;
+  required string owner = 2;
+  required uint64 createTime = 3;
+  required uint64 lastAccessTime = 4;
+  repeated ColumnSchema columns = 5;
+  repeated ColumnSchema primaryKeys = 6;
+  required TableTypeProtos tableType = 7;
+  optional ColumnSchema foreignKey = 8;
+  optional string parentName = 9;
+  repeated StringStringPair parameters = 10;
+  
+  enum TableTypeProtos {
+  	ROOT = 0;
+	CHILD = 1;
+  }
+}
+
+/**
+ * Column Schema
+ * Inspired by the rest ColumSchemaMessage
+ */
+message ColumnSchema {
+  required string family = 1;
+  required string name = 2;
+  required DataTypeProtos type = 3;
+  optional string comment = 4;
+  required FieldKeyWord keyWord = 5;
+  
+  enum FieldKeyWord {
+  	key_required = 0;
+  	key_optional = 1;
+  	key_repeated = 2;
+  }
+}
+
+enum DataTypeProtos {
+  TYPE_INT32 = 0;
+  TYPE_INT64 = 1;
+  TYPE_STRING = 2;
+  TYPE_FLOAT = 3;
+  TYPE_PROTOBUF = 4;
+  TYPE_DOUBLE = 5;
+  TYPE_DATETIME = 6;
+}
+
+
+/**
+ * Index Schema
+ * Inspired by the rest IndexSchema
+ */
+message IndexSchema {
+  required string indexName = 1;
+  repeated ColumnSchema indexKeys = 2;
+  repeated StringStringPair parameters = 3;
+  required string tableName = 4;
+  repeated ColumnSchema storingKeys = 5;
+  repeated string desc = 6;
+}
+
+
+message TransactionProto{
+	required uint64 tid = 1;
+	repeated Mutate mutates = 2;
+}
+
+enum ReadModelProto{
+  CURRENT = 0;
+  SNAPSHOT = 1;
+  INCONSISTENT = 2; 
+}
+
+message GetActionProto { 
+  //read mode,current? snapshot? inconsistent?
+  optional ReadModelProto readMode = 1;
+  
+  required string entityTableName = 2;
+  
+  //row key
+  required bytes row = 3;
+  
+  //which cols will be fetched.
+  repeated ColumnStructProto cols = 4; 
+}
+
+message ScanActionProto {
+  optional ReadModelProto readMode = 1;
+  optional string indexTableName = 2;
+  required string entityTableName = 3;
+  optional bytes startKey = 4;
+  optional bytes endKey = 5;
+  optional uint32 limit = 6;
+  repeated ColumnStructProto entityCols = 7;
+  repeated ColumnStructProto indexCols = 8;
+  optional uint32 batch = 9;
+}
+
+message DeleteActionProto {
+  required string tableName = 1;
+  required bytes primayKey = 2;
+}
+
+message InsertActionProto {
+  required string tableName = 1;
+  required bytes primayKey = 2;
+  repeated ColumnStructProto cols = 3;
+}
+
+message UpdateActionProto {
+  required bytes primayKey = 1;
+  required string tableName = 2;
+  repeated ColumnStructProto cols = 3;
+}
+	
+message ColumnStructProto { 
+  required string tableName = 1;
+  required string familyName = 2;
+  required string columnName = 3;
+  optional DataTypeProtos dataType = 4;
+  optional bytes value = 5;
+}
+
+message MessageProto{
+  //delete? update? insert? 
+  required ActionType type = 1;
+  optional DeleteActionProto delete = 2;
+  optional UpdateActionProto update = 3;
+  optional InsertActionProto insert = 4;
+  
+  //put type
+  enum ActionType{
+	UPDATE = 0;
+    DELETE = 1;
+    INSERT = 2;
+  }
+}

@@ -1,0 +1,162 @@
+<%doc>
+
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+</%doc>
+<%args>
+FServer fserver;
+String filter = "general";
+String format = "html";
+</%args>
+<%import>
+java.util.*;
+org.apache.wasp.fserver.FServer;
+org.apache.hadoop.hbase.util.Bytes;
+org.apache.wasp.EntityGroupInfo;
+org.apache.wasp.ServerName;
+org.apache.wasp.conf.WaspConfiguration;
+org.apache.wasp.protobuf.ProtobufUtil;
+org.apache.wasp.protobuf.generated.FServerAdminProtos.ServerInfo;
+org.apache.wasp.EntityGroupLoad;
+</%import>
+<%if format.equals("json") %>
+  <& ../common/TaskMonitorTmpl; filter = filter; format = "json" &>
+  <%java return; %>
+</%if>
+<%java>
+  ServerInfo serverInfo = ProtobufUtil.getServerInfo(fserver);
+  ServerName serverName = ProtobufUtil.toServerName(serverInfo.getServerName());
+  List<EntityGroupInfo> onlineEntityGroups = ProtobufUtil.getOnlineEntityGroups(fserver);
+  int masterInfoPort = fserver.getConfiguration().getInt("wasp.master.info.port", 60080);
+  String masterHost = fserver.getMaster().getHostname();
+</%java>
+<?xml version="1.0" encoding="UTF-8" ?>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Wasp FServer: <% serverName.getHostname() %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/wasp.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+      <script src="/static/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/fs-status"><img src="/static/wasp_logo_small.jpg" alt="HBase Logo"/></a>
+          <div class="nav-collapse">
+            <ul class="nav">
+                <li class="active"><a href="/">Home</a></li>
+                <li><a href="/logs/">Local logs</a></li>
+                <li><a href="/logLevel">Log Level</a></li>
+                <li><a href="/dump">Debug dump</a></li>
+                <li><a href="/jmx">Metrics Dump</a></li>
+                <%if WaspConfiguration.isShowConfInServlet()%>
+                <li><a href="/conf">Wasp Configuration</a></li>
+                </%if>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+<div class="container">
+    <div class="row inner_header">
+        <div class="page-header">
+            <h1>fserver <small><% serverName.getHostname() %></small></h1>
+        </div>
+    </div>
+    <div class="row">
+
+    <section>
+    <h2>Server Metrics</h2>
+    <& ServerMetricsTmpl; mWrap = fserver.getMetrics().getFServerWrapper(); &>
+    </section>
+
+   <!-- <section>
+    <& ../common/TaskMonitorTmpl; filter = filter &>
+    </section> -->
+
+    <section>
+    <h2>EntityGroups</h2>
+    <& EntityGroupListTmpl; fserver = fserver; onlineEntityGroups = onlineEntityGroups; &>
+    </section>
+
+    <section>
+    <h2>Software Attributes</h2>
+    <table id="attributes_table" class="table table-striped">
+        <tr>
+            <th>Attribute Name</th>
+            <th>Value</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>Wasp Version</td>
+            <td><% org.apache.wasp.util.VersionInfo.getVersion() %>, r<% org.apache.wasp.util.VersionInfo.getRevision() %></td>
+            <td>Wasp version and revision</td>
+        </tr>
+        <tr>
+            <td>Wasp Compiled</td>
+            <td><% org.apache.wasp.util.VersionInfo.getDate() %>, <% org.apache.wasp.util.VersionInfo.getUser() %></td>
+            <td>When Wasp version was compiled and by whom</td>
+        </tr>
+        <tr>
+            <td>Zookeeper Quorum</td>
+            <td><% fserver.getZooKeeper().getQuorum() %></td>
+            <td>Addresses of all registered ZK servers</td>
+        </tr>
+        <tr>
+            <td>FS Start Time</td>
+            <td><% new Date(fserver.getStartcode()) %></td>
+            <td>Date stamp of when this fserver was started</td>
+        </tr>
+        <tr>
+            <td>Wasp Master</td>
+            <td>
+                <%if (masterInfoPort < 0) %>
+                No wasp.master.info.port found
+                <%else>
+                <%java>
+                String host = masterHost + ":" + masterInfoPort;
+                String url = "http://" + host + "/master-status";
+                </%java>
+                <a href="<% url %>"><% host %></a>
+                </%if>
+            </td>
+            <td>Address of Wasp Master</td>
+        </tr>
+    </table>
+    </section>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js" type="text/javascript"></script>
+<script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/static/js/tab.js" type="text/javascript"></script>
+</body>
+</html>

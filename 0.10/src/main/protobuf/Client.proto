@@ -1,0 +1,148 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This file contains protocol buffers that are used for Client service.
+
+option java_package = "org.apache.wasp.protobuf.generated";
+option java_outer_classname = "ClientProtos";
+option java_generic_services = true;
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+import "Wasp.proto";
+import "Comparator.proto";
+import "Meta.proto";
+
+message ExecuteResultProto{
+  required ResultType type = 1;
+  optional QueryResultProto queryResult = 2;
+  optional WriteResultProto writeResult = 3;
+  enum ResultType{
+    QUERY = 0;
+    WRITE = 1;	 
+  }
+}
+
+message StringDataTypePair{
+  required string name = 1;
+  required DataTypeProtos dataType = 2; 
+}
+
+message QueryResultProto {
+  repeated StringBytesPair result = 1;
+}
+
+message WriteResultProto {
+  required StatusCode code = 1; 
+  optional string exceptionMsg = 2;
+  optional string exceptionClassName = 3;
+  enum StatusCode{
+  	SUCCESS = 0;
+  	FAILURE = 1;
+  	NOT_RUN = 2;
+  }
+}
+
+message ExecuteRequest {
+  optional string sql = 1;
+  optional ReadModelProto readModel = 2; 
+  optional string sessionId = 3;
+  optional bool closeSession = 4;
+  optional uint32 fetchSize = 5;
+}
+
+message ExecuteResponse {
+  optional string tableName = 1;
+  repeated StringDataTypePair meta = 2;
+  repeated ExecuteResultProto result = 3;
+  optional string sessionId = 4;
+  optional bool lastScan = 5;
+}
+
+message GetRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+  required GetActionProto get = 2;
+}
+
+message GetResponse {
+  optional QueryResultProto result = 1;
+  repeated StringDataTypePair meta = 2;
+
+  // used for Get to check existence only
+  optional bool exists = 3;
+}
+
+message ScanRequest {
+  required ScanActionProto scanAction = 1;
+  optional uint64 scannerId = 2;
+  optional bool closeScanner = 3 [default = false];
+  required EntityGroupSpecifier entityGroup = 4;
+}
+ 
+message ScanResponse {
+  repeated QueryResultProto result = 1;
+  repeated StringDataTypePair meta = 2;
+  required uint64 scannerId = 3;
+}
+
+message InsertRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+  required InsertActionProto insertAction = 2;
+}
+
+message InsertResponse {
+  required WriteResultProto result = 1;
+}
+
+message UpdateRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+  required UpdateActionProto updateAction = 2;
+}
+
+message UpdateResponse {
+  required WriteResultProto result = 1;
+}
+
+message DeleteRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+  required DeleteActionProto deleteAction = 2;
+}
+
+message DeleteResponse {
+  required WriteResultProto result = 1;
+}
+
+service ClientService {
+  rpc execute(ExecuteRequest)
+  	returns(ExecuteResponse);
+  	
+  rpc get(GetRequest)
+  	returns(GetResponse);
+  
+  rpc scan(ScanRequest)
+  	returns(ScanResponse);
+  	
+  rpc insert(InsertRequest)
+  	returns(InsertResponse);
+  	
+  rpc update(UpdateRequest)
+    returns(UpdateResponse);
+    
+  rpc delete(DeleteRequest)
+    returns(DeleteResponse);
+}
