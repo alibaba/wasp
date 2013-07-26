@@ -18,7 +18,7 @@
 
 // This file contains protocol buffers to represent the state of the load balancer.
 
-option java_package = "org.apache.wasp.protobuf.generated";
+option java_package = "com.alibaba.wasp.protobuf.generated";
 option java_outer_classname = "LoadBalancerProtos";
 option java_generate_equals_and_hash = true;
 option optimize_for = SPEED;

@@ -26,20 +26,20 @@ module Wasp
     include WaspConstants
 
     def initialize(configuration, formatter)
-      @admin = org.apache.wasp.client.WaspAdmin.new(configuration)
+      @admin = com.alibaba.wasp.client.WaspAdmin.new(configuration)
       connection = @admin.getConnection()
       @conf = configuration
       @zk_wrapper = connection.getZooKeeperWatcher()
       zk = @zk_wrapper.getRecoverableZooKeeper().getZooKeeper()
       @zk_main = org.apache.zookeeper.ZooKeeperMain.new(zk)
       @formatter = formatter
-      org.apache.wasp.jdbc.Driver.load();
+      com.alibaba.wasp.jdbc.Driver.load();
       @info = java.util.Properties.new();
       @info.put("wasp.zookeeper.quorum", configuration.get("wasp.zookeeper.quorum"));
       @info.put("wasp.zookeeper.property.clientPort", configuration.getInt("wasp.zookeeper.property.clientPort", 2181));
       @conn = java.sql.DriverManager.getConnection("jdbc:wasp:", @info);
       @stat = @conn.createStatement();
-      @formatter = org.apache.wasp.jdbc.JdbcResultFormatter.new(@conn);
+      @formatter = com.alibaba.wasp.jdbc.JdbcResultFormatter.new(@conn);
     end
     
     #----------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ module Wasp
     #----------------------------------------------------------------------------------------------
     # Returns ZooKeeper status dump
     def zk_dump
-      org.apache.wasp.zookeeper.ZKUtil::dump(@zk_wrapper)
+      com.alibaba.wasp.zookeeper.ZKUtil::dump(@zk_wrapper)
     end
 
     #----------------------------------------------------------------------------------------------

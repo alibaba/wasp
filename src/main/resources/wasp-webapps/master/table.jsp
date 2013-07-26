@@ -22,14 +22,14 @@
         %>
 <%@ page import="org.apache.hadoop.conf.Configuration" %>
 <%@ page import="org.apache.hadoop.hbase.util.Bytes" %>
-<%@ page import="org.apache.wasp.EntityGroupInfo" %>
-<%@ page import="org.apache.wasp.EntityGroupLoad" %>
-<%@ page import="org.apache.wasp.ServerLoad" %>
-<%@ page import="org.apache.wasp.ServerName" %>
-<%@ page import="org.apache.wasp.client.FConnectionManager" %>
-<%@ page import="org.apache.wasp.client.WaspAdmin" %>
-<%@ page import="org.apache.wasp.master.FMaster" %>
-<%@ page import="org.apache.wasp.meta.FTable" %>
+<%@ page import="com.alibaba.wasp.EntityGroupInfo" %>
+<%@ page import="com.alibaba.wasp.EntityGroupLoad" %>
+<%@ page import="com.alibaba.wasp.ServerLoad" %>
+<%@ page import="com.alibaba.wasp.ServerName" %>
+<%@ page import="com.alibaba.wasp.client.FConnectionManager" %>
+<%@ page import="com.alibaba.wasp.client.WaspAdmin" %>
+<%@ page import="com.alibaba.wasp.master.FMaster" %>
+<%@ page import="com.alibaba.wasp.meta.FTable" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Map" %>
 <%

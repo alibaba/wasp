@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.apache</groupId>
+    <groupId>com.alibaba</groupId>
     <artifactId>wasp</artifactId>
     <version>0.10</version>
     <packaging>jar</packaging>
@@ -94,7 +94,7 @@
                         <skip>${skipJavadoc}</skip>
                         <docfilessubdirs>true</docfilessubdirs>
                         <excludePackageNames>
-                            org.apache.wasp.protobuf.generated.*:org.apache.wasp.thrift.generated:org.apache.wasp.rest.generated
+                            com.alibaba.wasp.protobuf.generated.*:com.alibaba.wasp.thrift.generated:com.alibaba.wasp.rest.generated
                         </excludePackageNames>
                         <debug>true</debug>
                         <maxmemory>2g</maxmemory>
@@ -273,11 +273,11 @@
 
                                 <mkdir dir="${build.webapps}/master/WEB-INF"/>
                                 <jspcompiler uriroot="${src.webapps}/master" outputdir="${generated.sources}/java"
-                                             package="org.apache.wasp.generated.master"
+                                             package="com.alibaba.wasp.generated.master"
                                              webxml="${build.webapps}/master/WEB-INF/web.xml"/>
                                 <mkdir dir="${build.webapps}/fserver/WEB-INF"/>
                                 <jspcompiler uriroot="${src.webapps}/fserver" outputdir="${generated.sources}/java"
-                                             package="org.apache.wasp.generated.fserver"
+                                             package="com.alibaba.wasp.generated.fserver"
                                              webxml="${build.webapps}/fserver/WEB-INF/web.xml"/>
                                 <exec executable="sh">
                                     <arg line="${basedir}/src/saveVersion.sh ${project.version} ${generated.sources}/java"/>

@@ -64,9 +64,9 @@ module Shell
 
       def translate_wasp_exceptions(*args)
         yield
-      rescue org.apache.wasp.TableNotFoundException
+      rescue com.alibaba.wasp.TableNotFoundException
         raise "Unknown table #{args.first}!"
-      rescue org.apache.wasp.TableExistsException
+      rescue com.alibaba.wasp.TableExistsException
         raise "Table already exists: #{args.first}!"
       end
     end

@@ -205,9 +205,9 @@ case $startStop in
         fi
 
         #if the cluster is being stopped then do not restart it again.
-        zparent=`$bin/wasp org.apache.wasp.util.WaspConfTool zookeeper.znode.parent`
+        zparent=`$bin/wasp com.alibaba.wasp.util.WaspConfTool zookeeper.znode.parent`
         if [ "$zparent" == "null" ]; then zparent="/wasp"; fi
-        zshutdown=`$bin/wasp org.apache.wasp.util.WaspConfTool zookeeper.znode.state`
+        zshutdown=`$bin/wasp com.alibaba.wasp.util.WaspConfTool zookeeper.znode.state`
         if [ "$zshutdown" == "null" ]; then zshutdown="shutdown"; fi
         zFullShutdown=$zparent/$zshutdown
         $bin/wasp zkcli stat $zFullShutdown 2>&1 | grep "Node does not exist"  1>/dev/null 2>&1

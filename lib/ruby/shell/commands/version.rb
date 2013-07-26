@@ -29,9 +29,9 @@ EOF
 
       def command
         # Output version.
-        puts "#{org.apache.wasp.util.VersionInfo.getVersion()}, " +
-             "r#{org.apache.wasp.util.VersionInfo.getRevision()}, " +
-             "#{org.apache.wasp.util.VersionInfo.getDate()}"
+        puts "#{com.alibaba.wasp.util.VersionInfo.getVersion()}, " +
+             "r#{com.alibaba.wasp.util.VersionInfo.getRevision()}, " +
+             "#{com.alibaba.wasp.util.VersionInfo.getDate()}"
       end
     end
   end

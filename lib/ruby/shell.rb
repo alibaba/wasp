@@ -158,9 +158,9 @@ module Shell
     end
 
     def help_header
-      return "Wasp Shell, version #{org.apache.wasp.util.VersionInfo.getVersion()}, " +
-             "r#{org.apache.wasp.util.VersionInfo.getRevision()}, " +
-             "#{org.apache.wasp.util.VersionInfo.getDate()}" + "\n" +
+      return "Wasp Shell, version #{com.alibaba.wasp.util.VersionInfo.getVersion()}, " +
+             "r#{com.alibaba.wasp.util.VersionInfo.getRevision()}, " +
+             "#{com.alibaba.wasp.util.VersionInfo.getDate()}" + "\n" +
         "Type 'help \"COMMAND\"', (e.g. 'help \"get\"' -- the quotes are necessary) for help on a specific command.\n" +
         "Commands are grouped. Type 'help \"COMMAND_GROUP\"', (e.g. 'help \"general\"') for help on a command group."
     end

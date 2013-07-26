@@ -48,7 +48,7 @@ if [ "$WASP_MANAGES_ZK" = "" ]; then
 fi
 
 if [ "$WASP_MANAGES_ZK" = "true" ]; then
-  hosts=`"$bin"/wasp org.apache.wasp.zookeeper.ZKServerTool | grep '^ZK host:' | sed 's,^ZK host:,,'`
+  hosts=`"$bin"/wasp com.alibaba.wasp.zookeeper.ZKServerTool | grep '^ZK host:' | sed 's,^ZK host:,,'`
   cmd=$"${@// /\\ }"
   for zookeeper in $hosts; do
    ssh $WASP_SSH_OPTS $zookeeper $cmd 2>&1 | sed "s/^/$zookeeper: /" &

@@ -19,7 +19,7 @@
 // ZNode data in hbase are serialized protobufs with a four byte
 // 'magic' 'PBUF' prefix.
 
-option java_package = "org.apache.wasp.protobuf.generated";
+option java_package = "com.alibaba.wasp.protobuf.generated";
 option java_outer_classname = "ZooKeeperProtos";
 option java_generic_services = true;
 option java_generate_equals_and_hash = true;

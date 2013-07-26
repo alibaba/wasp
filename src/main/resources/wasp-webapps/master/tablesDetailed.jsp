@@ -20,10 +20,10 @@
 <%@ page contentType="text/html;charset=UTF-8"
   import="org.apache.commons.lang.StringEscapeUtils"
   import="org.apache.hadoop.conf.Configuration"
-  import="org.apache.wasp.client.WaspAdmin"
+  import="com.alibaba.wasp.client.WaspAdmin"
         %>
-<%@ page import="org.apache.wasp.master.FMaster" %>
-<%@ page import="org.apache.wasp.meta.FTable" %>
+<%@ page import="com.alibaba.wasp.master.FMaster" %>
+<%@ page import="com.alibaba.wasp.meta.FTable" %>
 <%
   FMaster master = (FMaster)getServletContext().getAttribute(FMaster.MASTER);
   Configuration conf = master.getConfiguration();

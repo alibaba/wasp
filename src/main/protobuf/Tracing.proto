@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-option java_package = "org.apache.wasp.protobuf.generated";
+option java_package = "com.alibaba.wasp.protobuf.generated";
 option java_outer_classname = "Tracing";
 option java_generate_equals_and_hash = true;
 option optimize_for = SPEED;

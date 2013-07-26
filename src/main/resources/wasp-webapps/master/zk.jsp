@@ -18,10 +18,10 @@
  */
 --%>
 <%@ page contentType="text/html;charset=UTF-8"
-  import="org.apache.wasp.master.FMaster"
-  import="org.apache.wasp.zookeeper.ZKUtil"
+  import="com.alibaba.wasp.master.FMaster"
+  import="com.alibaba.wasp.zookeeper.ZKUtil"
         %>
-<%@ page import="org.apache.wasp.zookeeper.ZooKeeperWatcher" %>
+<%@ page import="com.alibaba.wasp.zookeeper.ZooKeeperWatcher" %>
 <%
   FMaster master = (FMaster)getServletContext().getAttribute(FMaster.MASTER);
   ZooKeeperWatcher watcher = master.getZooKeeperWatcher();

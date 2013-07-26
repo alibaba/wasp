@@ -47,7 +47,7 @@ else
 fi
 
 # only take the first line of the output in case verbose gc is on
-distMode=`$bin/wasp --config "$WASP_CONF_DIR" org.apache.wasp.util.WaspConfTool wasp.cluster.distributed | head -n 1`
+distMode=`$bin/wasp --config "$WASP_CONF_DIR" com.alibaba.wasp.util.WaspConfTool wasp.cluster.distributed | head -n 1`
 
 
 if [ "$distMode" == 'false' ] 

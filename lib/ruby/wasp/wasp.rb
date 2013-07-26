@@ -31,7 +31,7 @@ module Wasp
       if config
         self.configuration = config
       else
-        self.configuration = org.apache.wasp.conf.WaspConfiguration.create
+        self.configuration = com.alibaba.wasp.conf.WaspConfiguration.create
         # Turn off retries in wasp and ipc.  Human doesn't want to wait on N retries.
         configuration.setInt("wasp.client.retries.number", 7)
         configuration.setInt("ipc.client.connect.max.retries", 3)

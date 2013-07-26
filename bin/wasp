@@ -275,39 +275,39 @@ if [ "$COMMAND" = "shell" ] ; then
   fi
   CLASS="org.jruby.Main -X+O ${JRUBY_OPTS} ${WASP_HOME}/bin/wirb.rb"
 elif [ "$COMMAND" = "wbck" ] ; then
-  CLASS='org.apache.wasp.util.WaspFsck'
+  CLASS='com.alibaba.wasp.util.WaspFsck'
 elif [ "$COMMAND" = "zkcli" ] ; then
   # ZooKeeperMainServerArg returns '-server HOST:PORT' or empty string.
-  SERVER_ARG=`"$bin"/wasp org.apache.wasp.zookeeper.ZooKeeperMainServerArg`
+  SERVER_ARG=`"$bin"/wasp com.alibaba.wasp.zookeeper.ZooKeeperMainServerArg`
   CLASS="org.apache.zookeeper.ZooKeeperMain ${SERVER_ARG}"
 
 elif [ "$COMMAND" = "master" ] ; then
-  CLASS='org.apache.wasp.master.FMaster'
+  CLASS='com.alibaba.wasp.master.FMaster'
   if [ "$1" != "stop" ] ; then
     WASP_OPTS="$WASP_OPTS $WASP_MASTER_OPTS"
   fi
 elif [ "$COMMAND" = "fserver" ] ; then
-  CLASS='org.apache.wasp.fserver.FServer'
+  CLASS='com.alibaba.wasp.fserver.FServer'
   if [ "$1" != "stop" ] ; then
     WASP_OPTS="$WASP_OPTS $WASP_FSERVER_OPTS"
   fi
 elif [ "$COMMAND" = "thrift" ] ; then
-  CLASS='org.apache.wasp.thrift.ThriftServer'
+  CLASS='com.alibaba.wasp.thrift.ThriftServer'
   if [ "$1" != "stop" ] ; then
     WASP_OPTS="$WASP_OPTS $WASP_THRIFT_OPTS"
   fi
 elif [ "$COMMAND" = "thrift2" ] ; then
-  CLASS='org.apache.wasp.thrift2.ThriftServer'
+  CLASS='com.alibaba.wasp.thrift2.ThriftServer'
   if [ "$1" != "stop" ] ; then
     WASP_OPTS="$WASP_OPTS $WASP_THRIFT_OPTS"
   fi
 elif [ "$COMMAND" = "rest" ] ; then
-  CLASS='org.apache.wasp.rest.Main'
+  CLASS='com.alibaba.wasp.rest.Main'
   if [ "$1" != "stop" ] ; then
     WASP_OPTS="$WASP_OPTS $WASP_REST_OPTS"
   fi
 elif [ "$COMMAND" = "zookeeper" ] ; then
-  CLASS='org.apache.wasp.zookeeper.FQuorumPeer'
+  CLASS='com.alibaba.wasp.zookeeper.FQuorumPeer'
   if [ "$1" != "stop" ] ; then
     WASP_OPTS="$WASP_OPTS $WASP_ZOOKEEPER_OPTS"
   fi
@@ -316,7 +316,7 @@ elif [ "$COMMAND" = "classpath" ] ; then
   echo $CLASSPATH
   exit 0
 elif [ "$COMMAND" = "version" ] ; then
-  CLASS='org.apache.wasp.util.VersionInfo'
+  CLASS='com.alibaba.wasp.util.VersionInfo'
 else
   CLASS=$COMMAND
 fi

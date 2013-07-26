@@ -34,13 +34,13 @@ org.apache.hadoop.util.StringUtils;
 org.apache.hadoop.hbase.util.Bytes;
 org.apache.hadoop.hbase.util.JvmVersion;
 org.apache.hadoop.hbase.util.FSUtils;
-org.apache.wasp.master.FMaster;
-org.apache.wasp.client.WaspAdmin;
+com.alibaba.wasp.master.FMaster;
+com.alibaba.wasp.client.WaspAdmin;
 org.apache.hadoop.hbase.HConstants;
-org.apache.wasp.ServerName;
+com.alibaba.wasp.ServerName;
 org.apache.hadoop.hbase.client.HBaseAdmin;
-org.apache.wasp.client.FConnectionManager;
-org.apache.wasp.meta.FTable;
+com.alibaba.wasp.client.FConnectionManager;
+com.alibaba.wasp.meta.FTable;
 org.apache.hadoop.hbase.HBaseConfiguration;
 </%import>
 <%if format.equals("json") %>
@@ -168,11 +168,11 @@ org.apache.hadoop.hbase.HBaseConfiguration;
                 </tr>
                 <tr>
                     <td>Wasp Version</td>
-                    <td><% org.apache.wasp.util.VersionInfo.getVersion() %>, r<% org.apache.wasp.util.VersionInfo.getRevision() %></td><td>Wasp version and revision</td>
+                    <td><% com.alibaba.wasp.util.VersionInfo.getVersion() %>, r<% com.alibaba.wasp.util.VersionInfo.getRevision() %></td><td>Wasp version and revision</td>
                 </tr>
                 <tr>
                     <td>Wasp Compiled</td>
-                    <td><% org.apache.wasp.util.VersionInfo.getDate() %>, <% org.apache.wasp.util.VersionInfo.getUser() %></td>
+                    <td><% com.alibaba.wasp.util.VersionInfo.getDate() %>, <% com.alibaba.wasp.util.VersionInfo.getUser() %></td>
                     <td>When Wasp version was compiled and by whom</td>
                 </tr>
                 <tr>

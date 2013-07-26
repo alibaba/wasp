@@ -17,11 +17,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 </%doc>
 <%import>
-org.apache.wasp.master.AssignmentManager;
-org.apache.wasp.master.EntityGroupState;
+com.alibaba.wasp.master.AssignmentManager;
+com.alibaba.wasp.master.EntityGroupState;
 org.apache.hadoop.conf.Configuration;
-org.apache.wasp.conf.WaspConfiguration;
-org.apache.wasp.FConstants;
+com.alibaba.wasp.conf.WaspConfiguration;
+com.alibaba.wasp.FConstants;
 java.util.Iterator;
 java.util.Map;
 </%import>

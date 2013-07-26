@@ -26,10 +26,10 @@ FMaster master;
         java.util.*;
         org.apache.hadoop.util.StringUtils;
         org.apache.hadoop.hbase.util.Bytes;
-        org.apache.wasp.master.FMaster;
+        com.alibaba.wasp.master.FMaster;
         org.apache.hadoop.hbase.HConstants;
-        org.apache.wasp.ServerName;
-        org.apache.wasp.ClusterStatus;
+        com.alibaba.wasp.ServerName;
+        com.alibaba.wasp.ClusterStatus;
 </%import>
 
 <%java>

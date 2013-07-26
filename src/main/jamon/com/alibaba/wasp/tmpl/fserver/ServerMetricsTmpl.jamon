@@ -22,7 +22,7 @@ MetricsFServerWrapper mWrap;
 <%import>
 java.util.*;
 org.apache.hadoop.hbase.regionserver.HRegionServer;
-org.apache.wasp.fserver.metrics.MetricsFServerWrapper;
+com.alibaba.wasp.fserver.metrics.MetricsFServerWrapper;
 org.apache.hadoop.hbase.util.Bytes;
 org.apache.hadoop.hbase.HRegionInfo;
 org.apache.hadoop.hbase.ServerName;

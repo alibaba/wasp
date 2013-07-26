@@ -22,12 +22,12 @@
 </%args>
 <%import>
         java.util.*;
-        org.apache.wasp.fserver.FServer;
+        com.alibaba.wasp.fserver.FServer;
         org.apache.hadoop.hbase.util.Bytes;
-        org.apache.wasp.EntityGroupInfo;
+        com.alibaba.wasp.EntityGroupInfo;
         org.apache.hadoop.hbase.ServerName;
         org.apache.hadoop.hbase.HBaseConfiguration;
-        org.apache.wasp.EntityGroupLoad;
+        com.alibaba.wasp.EntityGroupLoad;
 </%import>
 <%if (onlineEntityGroups != null && onlineEntityGroups.size() > 0) %>
 

@@ -47,7 +47,7 @@
  *   to integer -1.
  */
 
-option java_package = "org.apache.wasp.protobuf.generated";
+option java_package = "com.alibaba.wasp.protobuf.generated";
 option java_outer_classname = "RPCProtos";
 option java_generate_equals_and_hash = true;
 option optimize_for = SPEED;
@@ -58,7 +58,7 @@ message ConnectionHeader {
   /** Protocol name for next rpc layer
    * the client created a proxy with this protocol name
    */
-  optional string protocol = 1 [default = "org.apache.wasp.client.ClientProtocol"];
+  optional string protocol = 1 [default = "com.alibaba.wasp.client.ClientProtocol"];
 }
 
 

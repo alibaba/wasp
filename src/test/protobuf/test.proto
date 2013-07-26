@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-option java_package = "org.apache.wasp.ipc.protobuf.generated";
+option java_package = "com.alibaba.wasp.ipc.protobuf.generated";
 option java_outer_classname = "TestProtos";
 option java_generate_equals_and_hash = true;
 

@@ -19,8 +19,8 @@
 #
 
 # Wasp ruby classes.
-# Has wrapper classes for org.apache.wasp.client.WaspAdmin
-# and for org.apache.wasp.client.FClien.  Classes take
+# Has wrapper classes for com.alibaba.wasp.client.WaspAdmin
+# and for com.alibaba.wasp.client.FClien.  Classes take
 # Formatters on construction and outputs any results using
 # Formatter methods.  These classes are only really for use by
 # the hirb.rb Wasp Shell script; they don't make much sense elsewhere.

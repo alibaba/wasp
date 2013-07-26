@@ -96,7 +96,7 @@ found.each { |arg| ARGV.delete(arg) }
 
 # Set logging level to avoid verboseness
 org.apache.log4j.Logger.getLogger("org.apache.zookeeper").setLevel(log_level)
-org.apache.log4j.Logger.getLogger("org.apache.wasp").setLevel(log_level)
+org.apache.log4j.Logger.getLogger("com.alibaba.wasp").setLevel(log_level)
 
 # Require Wasp now after setting log levels
 require 'wasp'
@@ -142,7 +142,7 @@ def debug
     log_level = org.apache.log4j.Level::DEBUG
   end
   org.apache.log4j.Logger.getLogger("org.apache.zookeeper").setLevel(log_level)
-  org.apache.log4j.Logger.getLogger("org.apache.wasp").setLevel(log_level)
+  org.apache.log4j.Logger.getLogger("com.alibaba.wasp").setLevel(log_level)
   debug?
 end
 

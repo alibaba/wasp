@@ -23,14 +23,14 @@ String format = "html";
 </%args>
 <%import>
 java.util.*;
-org.apache.wasp.fserver.FServer;
+com.alibaba.wasp.fserver.FServer;
 org.apache.hadoop.hbase.util.Bytes;
-org.apache.wasp.EntityGroupInfo;
-org.apache.wasp.ServerName;
-org.apache.wasp.conf.WaspConfiguration;
-org.apache.wasp.protobuf.ProtobufUtil;
-org.apache.wasp.protobuf.generated.FServerAdminProtos.ServerInfo;
-org.apache.wasp.EntityGroupLoad;
+com.alibaba.wasp.EntityGroupInfo;
+com.alibaba.wasp.ServerName;
+com.alibaba.wasp.conf.WaspConfiguration;
+com.alibaba.wasp.protobuf.ProtobufUtil;
+com.alibaba.wasp.protobuf.generated.FServerAdminProtos.ServerInfo;
+com.alibaba.wasp.EntityGroupLoad;
 </%import>
 <%if format.equals("json") %>
   <& ../common/TaskMonitorTmpl; filter = filter; format = "json" &>
@@ -118,12 +118,12 @@ org.apache.wasp.EntityGroupLoad;
         </tr>
         <tr>
             <td>Wasp Version</td>
-            <td><% org.apache.wasp.util.VersionInfo.getVersion() %>, r<% org.apache.wasp.util.VersionInfo.getRevision() %></td>
+            <td><% com.alibaba.wasp.util.VersionInfo.getVersion() %>, r<% com.alibaba.wasp.util.VersionInfo.getRevision() %></td>
             <td>Wasp version and revision</td>
         </tr>
         <tr>
             <td>Wasp Compiled</td>
-            <td><% org.apache.wasp.util.VersionInfo.getDate() %>, <% org.apache.wasp.util.VersionInfo.getUser() %></td>
+            <td><% com.alibaba.wasp.util.VersionInfo.getDate() %>, <% com.alibaba.wasp.util.VersionInfo.getUser() %></td>
             <td>When Wasp version was compiled and by whom</td>
         </tr>
         <tr>
