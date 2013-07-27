@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.DataType;
@@ -3459,5 +3460,15 @@ public class JdbcResultSet implements ResultSet {
   private void checkUpdatable() {
     checkClosed();
     throw JdbcException.get(SQLErrorCode.RESULT_SET_READONLY);
+  }
+
+  @Override
+  public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+	  throw new NotImplementedException();
+  }
+
+  @Override
+  public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+	  throw new NotImplementedException();
   }
 }

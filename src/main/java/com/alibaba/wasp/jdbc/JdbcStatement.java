@@ -18,7 +18,9 @@
  */
 package com.alibaba.wasp.jdbc;
 
-import com.alibaba.wasp.FConstants;import com.alibaba.wasp.SQLErrorCode;import com.alibaba.wasp.jdbc.command.CommandInterface;import com.alibaba.wasp.jdbc.result.JdbcResultSet;import com.alibaba.wasp.jdbc.result.ResultInterface;import com.alibaba.wasp.session.SessionFactory;import com.alibaba.wasp.session.SessionInterface;import com.alibaba.wasp.util.New;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.FConstants;import com.alibaba.wasp.SQLErrorCode;import com.alibaba.wasp.jdbc.command.CommandInterface;import com.alibaba.wasp.jdbc.result.JdbcResultSet;import com.alibaba.wasp.jdbc.result.ResultInterface;import com.alibaba.wasp.session.SessionFactory;import com.alibaba.wasp.session.SessionInterface;import com.alibaba.wasp.util.New;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.FConstants;
@@ -994,6 +996,16 @@ public class JdbcStatement implements Statement {
   @Override
   public String toString() {
     return "";
+  }
+
+  @Override
+  public void closeOnCompletion() throws SQLException {
+	  throw new NotImplementedException();
+  }
+
+  @Override
+  public boolean isCloseOnCompletion() throws SQLException {
+	  throw new NotImplementedException();
   }
 
 }
