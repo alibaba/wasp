@@ -18,6 +18,7 @@
  */
 package com.alibaba.wasp.jdbc;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.FConstants;
@@ -26,7 +27,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * JDBC<com.alibaba.wasp.jdbc.Driver>.Please use
@@ -193,5 +196,10 @@ public class Driver implements java.sql.Driver {
     } catch (Throwable t) {
       // ignore
     }
+  }
+
+  @Override
+  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	  throw new NotImplementedException();
   }
 }

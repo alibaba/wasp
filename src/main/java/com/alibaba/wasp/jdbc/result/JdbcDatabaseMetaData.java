@@ -19,6 +19,7 @@
  */
 package com.alibaba.wasp.jdbc.result;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.FConstants;
@@ -1858,6 +1859,17 @@ public class JdbcDatabaseMetaData implements DatabaseMetaData {
    */
   public String toString() {
     return "conn : " + conn;
+  }
+
+  @Override
+  public ResultSet getPseudoColumns(String catalog, String schemaPattern,
+	  	String tableNamePattern, String columnNamePattern) throws SQLException {
+	  throw new NotImplementedException();
+  }
+
+  @Override
+  public boolean generatedKeyAlwaysReturned() throws SQLException {
+	  throw new NotImplementedException();
   }
 
 }
