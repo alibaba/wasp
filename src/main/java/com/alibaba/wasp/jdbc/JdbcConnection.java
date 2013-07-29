@@ -18,7 +18,9 @@
  */
 package com.alibaba.wasp.jdbc;
 
-import com.alibaba.wasp.jdbc.result.JdbcDatabaseMetaData;import com.alibaba.wasp.jdbc.value.Value;import com.alibaba.wasp.session.SessionFactory;import com.alibaba.wasp.session.SessionInterface;import com.alibaba.wasp.util.Utils;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.jdbc.result.JdbcDatabaseMetaData;import com.alibaba.wasp.jdbc.value.Value;import com.alibaba.wasp.session.SessionFactory;import com.alibaba.wasp.session.SessionInterface;import com.alibaba.wasp.util.Utils;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.FConstants;
@@ -50,6 +52,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * <p>
@@ -976,6 +979,32 @@ public class JdbcConnection implements Connection {
     if (session != null) {
       session.afterWriting();
     }
+  }
+
+  @Override
+  public void setSchema(String schema) throws SQLException {
+	  // TODO Auto-generated method stub
+  }
+
+  @Override
+  public String getSchema() throws SQLException {
+	  throw new NotImplementedException();
+  }
+
+  @Override
+  public void abort(Executor executor) throws SQLException {
+	  throw new NotImplementedException();
+  }
+
+  @Override
+  public void setNetworkTimeout(Executor executor, int milliseconds)
+		  throws SQLException {
+	  throw new NotImplementedException();
+  }
+
+  @Override
+  public int getNetworkTimeout() throws SQLException {
+	  throw new NotImplementedException();
   }
 
 }
