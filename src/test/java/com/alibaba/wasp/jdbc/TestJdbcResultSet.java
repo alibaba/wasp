@@ -632,7 +632,49 @@ public class TestJdbcResultSet extends TestJdbcBase {
     assertEquals("23:59:59", rs.getTime("Column6").toString());
     assertEquals("9999-12-31 23:59:59.0", rs.getTimestamp("Column6").toString());
     // assertTrue(!rs.next());
+  }
 
+  @Test
+  public void testGreatEqAndLessEq() throws SQLException, IOException {
+    trace("testGreatEqAndLessEq");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 1001, 'testGreatEqAndLessEq')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 1002, 'testGreatEqAndLessEq')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 1003, 'testGreatEqAndLessEq')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 1004, 'testGreatEqAndLessEq')");
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column2 > 1001");
+    while (rs.next()) {
+      assertTrue(rs.getLong("column2") > 1001 );
+    }
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column2 >= 1001");
+    boolean hasEq = false;
+    while (rs.next()) {
+      hasEq =  rs.getLong("column2") == 1001;
+      if(hasEq)
+        break;
+    }
+    assertTrue(hasEq);
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column2 < 1004");
+    while (rs.next()) {
+      assertTrue(rs.getLong("column2") < 1004 );
+    }
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column2 <= 1004");
+    hasEq = false;
+    while (rs.next()) {
+      hasEq =  rs.getLong("column2") == 1004;
+      if(hasEq)
+        break;
+    }
+    assertTrue(hasEq);
   }
 
   // @Test do not needed now

@@ -18,6 +18,7 @@
 package com.alibaba.wasp.meta;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
@@ -101,14 +102,13 @@ public class RowBuilder {
     try {
       if (left != null) {
         pair.setFirst(Bytes.add(prefixKeyWithRowSep,
-            parseByte(index, isDesc, left, rangeCondition.getFieldName())));
+            parseByte(index, isDesc, left, rangeCondition.getFieldName(), rangeCondition.getLeftOperator())));
       } else {
         pair.setFirst(Bytes.add(prefixKey, FConstants.DATA_ROW_SEP_STORE));
       }
       if (right != null) {
-        parseByte(index, isDesc, right, rangeCondition.getFieldName());
         pair.setSecond(Bytes.add(prefixKeyWithRowSep,
-            parseByte(index, isDesc, right, rangeCondition.getFieldName())));
+            parseByte(index, isDesc, right, rangeCondition.getFieldName(), rangeCondition.getRightOperator())));
       } else {
         pair.setSecond(Bytes.add(prefixKey, FConstants.DATA_ROW_SEP_QUERY));
       }
@@ -123,7 +123,7 @@ public class RowBuilder {
   }
 
   private byte[] parseByte(Index index, boolean isDesc, SQLExpr range,
-      String fieldName) throws UnsupportedException, ParseException {
+      String fieldName, SQLBinaryOperator operator) throws UnsupportedException, ParseException {
     LinkedHashMap<String, Field> indexs = index.getIndexKeys();
     Field field = indexs.get(fieldName);
     byte[] value = null;
@@ -137,7 +137,11 @@ public class RowBuilder {
     } else {
       value = DruidParser.convert(field, range);
     }
-    return value;
+    if(operator == SQLBinaryOperator.LessThanOrEqual || operator == SQLBinaryOperator.GreaterThan) {
+      return Bytes.add(value, FConstants.DATA_ROW_SEP_QUERY);
+    } else {
+      return value;
+    }
   }
 
   private Pair<byte[], byte[]> buildStartEndKeyWithoutRange(byte[] prefixKey) {
