@@ -9,3 +9,8 @@
 
 # Maven files
 target/
+
+# Intellij IDEA files
+.iml
+.ipr
+.iws
