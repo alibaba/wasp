@@ -128,7 +128,7 @@ public class RowBuilder {
     Field field = indexs.get(fieldName);
     byte[] value = null;
     if (field.getType() == DataType.DATETIME) {
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.fff");
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       long time = formatter.parse(DruidParser.parseString(range)).getTime();
       if (isDesc) {
         time = descLong(time);
