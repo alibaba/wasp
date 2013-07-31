@@ -137,11 +137,34 @@ public class RowBuilder {
     } else {
       value = DruidParser.convert(field, range);
     }
+    value = parseValueIfNegative(value, field);
     if(operator == SQLBinaryOperator.LessThanOrEqual || operator == SQLBinaryOperator.GreaterThan) {
       return Bytes.add(value, FConstants.DATA_ROW_SEP_QUERY);
     } else {
       return value;
     }
+  }
+
+  private byte[] parseValueIfNegative(byte[] value, Field field) {
+    DataType type = field.getType();
+    if (type == DataType.INT32) {
+      int val = Bytes.toInt(value);
+      return addBytesPrefix(value, val < 0);
+    } else if (type == DataType.INT64) {
+      long val = Bytes.toLong(value);
+      return addBytesPrefix(value, val < 0);
+    } else if (type == DataType.DOUBLE ) {
+      double val = Bytes.toDouble(value);
+      return addBytesPrefix(value, val < 0);
+    } else if (type == DataType.FLOAT) {
+      float val = Bytes.toFloat(value);
+      return addBytesPrefix(value, val < 0);
+    }
+    return value;
+  }
+
+  private byte[] addBytesPrefix(byte[] value, boolean isNegative) {
+    return Bytes.add(isNegative ? FConstants.NUM_VALUE_NEGATIVE : FConstants.NUM_VALUE_POSITIVE, value);
   }
 
   private Pair<byte[], byte[]> buildStartEndKeyWithoutRange(byte[] prefixKey) {
@@ -187,19 +210,20 @@ public class RowBuilder {
       List<IndexField> indexFields) {
     byte[] rowKey = new byte[0];
     boolean first = true;
-    for (IndexField field : indexFields) {
-      if (field.getValue() == null) {
+    for (IndexField indexField : indexFields) {
+      if (indexField.getValue() == null) {
         return null;
       }
-      if (index.isDesc(field.getName())) {// is desc?
-        field.setValue(descLong(field.getValue()));
+      if (index.isDesc(indexField.getName())) {// is desc?
+        indexField.setValue(descLong(indexField.getValue()));
       }
+      Field field  = index.getIndexKeys().get(indexField.getName());
       if (first) {
-        rowKey = Bytes.add(rowKey, field.getValue());
+        rowKey = Bytes.add(rowKey, parseValueIfNegative(indexField.getValue(), field));
         first = false;
       } else {
         rowKey = Bytes.add(rowKey, FConstants.DATA_ROW_SEP_STORE,
-            field.getValue());
+            parseValueIfNegative(indexField.getValue(), field));
       }
     }
     return new Pair<byte[], String>(rowKey,

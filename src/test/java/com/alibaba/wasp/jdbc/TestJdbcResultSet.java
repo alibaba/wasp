@@ -677,6 +677,34 @@ public class TestJdbcResultSet extends TestJdbcBase {
     assertTrue(hasEq);
   }
 
+  @Test
+   public void testLessNegativeValue() throws SQLException, IOException {
+      trace("testLessNegativeValue");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, -2001, 'testLessNegativeValue')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 2001, 'testLessNegativeValue')");
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column2 < 3001");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == -2001 );
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 2001 );
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column2 = -2001");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == -2001 );
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column2 = 2001");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 2001 );
+
+   }
+
+
   // @Test do not needed now
   public void testDatetimeWithCalendar() throws SQLException {
     trace("test DATETIME with Calendar");

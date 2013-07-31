@@ -105,8 +105,10 @@ public final class FConstants {
       .toBytes("rowkey");
 
   public static final byte[] DATA_ROW_SEP_STORE = { 0 };
-
   public static final byte[] DATA_ROW_SEP_QUERY = { 1 };
+
+  public static final byte[] NUM_VALUE_NEGATIVE = { 0 };
+  public static final byte[] NUM_VALUE_POSITIVE = { 1 };
 
   /** Separate row key to table names, combine table name to one row key. **/
   public static final String TABLE_ROW_SEP = "_";
