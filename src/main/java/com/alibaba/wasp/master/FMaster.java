@@ -743,7 +743,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
 
     // Put up info server.
-    int port = this.conf.getInt(FConstants.MASTER_INFO_PORT, 60080);
+    int port = this.conf.getInt(FConstants.MASTER_INFO_PORT, FConstants.DEFAULT_MASTER_INFOPORT);
     if (port >= 0) {
       String a = this.conf.get("wasp.master.info.bindAddress", "0.0.0.0");
       this.infoServer = new InfoServer(MASTER, a, port, false, this.conf);

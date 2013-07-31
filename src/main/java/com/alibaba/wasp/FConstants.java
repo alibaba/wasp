@@ -173,10 +173,10 @@ public final class FConstants {
   public static final String MASTER_PORT = "wasp.master.port";
 
   /** default port that the master listens on */
-  public static final int DEFAULT_MASTER_PORT = 50000;
+  public static final int DEFAULT_MASTER_PORT = 60000;
 
   /** default port for master web api */
-  public static final int DEFAULT_MASTER_INFOPORT = 50010;
+  public static final int DEFAULT_MASTER_INFOPORT = 60080;
 
   /** Configuration key for master web API port */
   public static final String MASTER_INFO_PORT = "wasp.master.info.port";
@@ -262,10 +262,10 @@ public final class FConstants {
   public static final String FSERVER_PORT = "wasp.fserver.port";
 
   /** Default port fserver listens on. */
-  public static final int DEFAULT_FSERVER_PORT = 50020;
+  public static final int DEFAULT_FSERVER_PORT = 60020;
 
   /** default port for fserver web api */
-  public static final int DEFAULT_FSERVER_INFOPORT = 50030;
+  public static final int DEFAULT_FSERVER_INFOPORT = 60030;
 
   /** A configuration key for fserver info port */
   public static final String FSERVER_INFO_PORT = "wasp.fserver.info.port";
