@@ -981,28 +981,23 @@ public class JdbcConnection implements Connection {
     }
   }
 
-  @Override
   public void setSchema(String schema) throws SQLException {
-	  // TODO Auto-generated method stub
+    throw new NotImplementedException();
   }
 
-  @Override
   public String getSchema() throws SQLException {
 	  throw new NotImplementedException();
   }
 
-  @Override
   public void abort(Executor executor) throws SQLException {
 	  throw new NotImplementedException();
   }
 
-  @Override
   public void setNetworkTimeout(Executor executor, int milliseconds)
 		  throws SQLException {
 	  throw new NotImplementedException();
   }
 
-  @Override
   public int getNetworkTimeout() throws SQLException {
 	  throw new NotImplementedException();
   }

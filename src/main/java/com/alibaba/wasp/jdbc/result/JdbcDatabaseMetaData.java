@@ -1861,13 +1861,11 @@ public class JdbcDatabaseMetaData implements DatabaseMetaData {
     return "conn : " + conn;
   }
 
-  @Override
   public ResultSet getPseudoColumns(String catalog, String schemaPattern,
 	  	String tableNamePattern, String columnNamePattern) throws SQLException {
 	  throw new NotImplementedException();
   }
 
-  @Override
   public boolean generatedKeyAlwaysReturned() throws SQLException {
 	  throw new NotImplementedException();
   }

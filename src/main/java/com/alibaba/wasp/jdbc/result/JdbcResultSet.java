@@ -3462,12 +3462,10 @@ public class JdbcResultSet implements ResultSet {
     throw JdbcException.get(SQLErrorCode.RESULT_SET_READONLY);
   }
 
-  @Override
   public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
 	  throw new NotImplementedException();
   }
 
-  @Override
   public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
 	  throw new NotImplementedException();
   }

@@ -998,12 +998,10 @@ public class JdbcStatement implements Statement {
     return "";
   }
 
-  @Override
   public void closeOnCompletion() throws SQLException {
 	  throw new NotImplementedException();
   }
 
-  @Override
   public boolean isCloseOnCompletion() throws SQLException {
 	  throw new NotImplementedException();
   }
