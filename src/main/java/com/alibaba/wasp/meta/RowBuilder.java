@@ -20,6 +20,7 @@ package com.alibaba.wasp.meta;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -110,7 +111,7 @@ public class RowBuilder {
         pair.setSecond(Bytes.add(prefixKeyWithRowSep,
             parseByte(index, isDesc, right, rangeCondition.getFieldName(), rangeCondition.getRightOperator())));
       } else {
-        pair.setSecond(Bytes.add(prefixKey, FConstants.DATA_ROW_SEP_QUERY));
+        pair.setSecond(prefixKey.length == 0 ? HConstants.EMPTY_END_ROW : Bytes.add(prefixKey, FConstants.DATA_ROW_SEP_QUERY));
       }
     } catch (ParseException e) {
       throw new UnsupportedException(e.getMessage(), e);
