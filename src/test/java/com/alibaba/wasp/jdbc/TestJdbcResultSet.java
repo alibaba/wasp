@@ -70,6 +70,10 @@ public class TestJdbcResultSet extends TestJdbcBase {
     client.execute("create index test_index3 on " + TABLE_NAME
         + "(column1,column3);");
     TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
+    client.execute("create index test_index4 on " + TABLE_NAME + "(column1,column3,column4,column5);");
+    TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
+    client.execute("create index test_index5 on " + TABLE_NAME + "(column4) storing (column4);");
+    TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
     TEST_UTIL.getWaspAdmin().enableTable(TABLE);
 
     Class.forName("com.alibaba.wasp.jdbc.Driver");
@@ -703,6 +707,18 @@ public class TestJdbcResultSet extends TestJdbcBase {
     assertTrue(rs.getLong("column2") == 2001 );
 
    }
+
+  @Test
+  public void testStoringQuery() throws SQLException, IOException {
+    trace("testStoringQuery");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3,column4) VALUES (1, 72001, 'testStoringQuery', 1)");
+    rs = stat
+        .executeQuery("SELECT column4 FROM test where column4=1");
+    assertTrue(rs.next());
+    assertTrue(rs.getFloat("column4") == 1);
+  }
 
 
   // @Test do not needed now
