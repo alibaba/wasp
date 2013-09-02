@@ -84,9 +84,9 @@ public class TestJdbcResultSet extends TestJdbcBase {
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
-    TEST_UTIL.shutdownMiniCluster();
     stat.close();
     conn.close();
+    TEST_UTIL.shutdownMiniCluster();
   }
 
   @Test
