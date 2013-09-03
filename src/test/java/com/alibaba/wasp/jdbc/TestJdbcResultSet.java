@@ -720,6 +720,21 @@ public class TestJdbcResultSet extends TestJdbcBase {
     assertTrue(rs.getFloat("column4") == 1);
   }
 
+  @Test
+  public void testQueryLimit() throws SQLException {
+    trace("testQueryLimit");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 73001, 'testQueryLimit')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 73002, 'testQueryLimit')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 73003, 'testQueryLimit')");
+    rs = stat
+        .executeQuery("SELECT column2 FROM test where column1=1 and column3 = 'testQueryLimit' limit 1");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 73001);
+    assertTrue(!rs.next());
+  }
+
 
   // @Test do not needed now
   public void testDatetimeWithCalendar() throws SQLException {

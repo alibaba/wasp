@@ -552,6 +552,8 @@ public class ExecutionEngine implements Execution, Closeable {
             nameDataTypePairs.addAll(response.getMetaList());
           }
           if (limit != -1) {
+            queryResultProtos.addAll(resultList);
+            resultList.clear();
             server.scan(null, action, true, scannerId, true, true, tableDesc);
             lastScan = true;
             scannerId = -1;
@@ -694,6 +696,8 @@ public class ExecutionEngine implements Execution, Closeable {
           resultList.addAll(response.getResultList());
 
           if (limit != -1) {
+            queryResultProtos.addAll(resultList);
+            resultList.clear();
             if (localScan) {
               server.scan(null, action, true, scannerId, true);
             } else {
