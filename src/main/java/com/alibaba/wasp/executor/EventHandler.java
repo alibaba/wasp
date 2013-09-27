@@ -18,16 +18,16 @@
  */
 package com.alibaba.wasp.executor;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.executor.ExecutorService.ExecutorType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.cloudera.htrace.Sampler;
 import org.cloudera.htrace.Span;
 import org.cloudera.htrace.Trace;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Abstract base class for all wasp event handlers. Subclasses should implement
@@ -50,7 +50,7 @@ import org.cloudera.htrace.Trace;
  * this EventHandler is run in a Thread (its a Runnable so if its {@link #run()}
  * method gets called). Implement {@link EventHandlerListener}s, and registering
  * using {@link #setListener(EventHandlerListener)}.
- * 
+ *
  * @see ExecutorService
  */
 public abstract class EventHandler implements Runnable, Comparable<Runnable> {
@@ -81,7 +81,7 @@ public abstract class EventHandler implements Runnable, Comparable<Runnable> {
   public interface EventHandlerListener {
     /**
      * Called before any event is processed
-     * 
+     *
      * @param event
      *          The event handler whose process method is about to be called.
      */
@@ -89,7 +89,7 @@ public abstract class EventHandler implements Runnable, Comparable<Runnable> {
 
     /**
      * Called after any event is processed
-     * 
+     *
      * @param event
      *          The event handler whose process method is about to be called.
      */
@@ -102,7 +102,7 @@ public abstract class EventHandler implements Runnable, Comparable<Runnable> {
    * originated and then where its destined -- e.g. FSERVER2ZK_ prefix means the
    * event came from a fServer destined for zookeeper -- and then what the even
    * is; e.g. ENTITYGROUP_OPENING.
-   * 
+   *
    * <p>
    * We give the enums indices so we can add types later and keep them grouped
    * together rather than have to add them always to the end as we would have to
@@ -117,11 +117,11 @@ public abstract class EventHandler implements Runnable, Comparable<Runnable> {
     FSERVER_ZK_ENTITYGROUP_FAILED_OPEN  (4, ExecutorType.MASTER_CLOSE_ENTITYGROUP),   // FServer failed to open a entityGroup
     FSERVER_ZK_ENTITYGROUP_SPLITTING    (5, null), // RS has started a entityGroup split
     FSERVER_ZK_ENTITYGROUP_SPLIT        (6, ExecutorType.MASTER_SERVER_OPERATIONS),   // RS split has completed.
-   
+
     // Messages originating from Master to FServer
     M_FSERVER_OPEN_ENTITYGROUP          (20, ExecutorType.FSERVER_OPEN_ENTITYGROUP),  // Master asking FServer to open a entityGroup
     M_FSERVER_CLOSE_ENTITYGROUP         (21, ExecutorType.FSERVER_CLOSE_ENTITYGROUP),  // Master asking FServer to close a entityGroup
- 
+
     // Messages originating from Client to Master
     C_M_DELETE_TABLE                    (40, ExecutorType.MASTER_TABLE_OPERATIONS),   // Client asking Master to delete a table
     C_M_DISABLE_TABLE                   (41, ExecutorType.MASTER_TABLE_OPERATIONS),   // Client asking Master to disable a table
@@ -208,8 +208,8 @@ public abstract class EventHandler implements Runnable, Comparable<Runnable> {
   /**
    * This method is the main processing loop to be implemented by the various
    * subclasses.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public abstract void process() throws IOException;
 

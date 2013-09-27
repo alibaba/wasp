@@ -17,13 +17,13 @@
  */
 package com.alibaba.wasp.messagequeue;
 
-import java.io.IOException;
-
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.storage.StorageActionManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.storage.StorageActionManager;
+
+import java.io.IOException;
 
 public class PublisherBuilder {
 

@@ -18,8 +18,8 @@
  */
 package com.alibaba.wasp.util;
 
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.conf.WaspConfiguration;
+import org.apache.hadoop.conf.Configuration;
 
 public class WaspConfTool {
   public static void main(String args[]) {

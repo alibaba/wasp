@@ -18,6 +18,18 @@
 
 package com.alibaba.wasp.ipc;
 
+import com.alibaba.wasp.UnknownProtocolException;
+import com.alibaba.wasp.protobuf.ProtobufUtil;
+import com.alibaba.wasp.protobuf.generated.RPCProtos;
+import com.google.protobuf.Message;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.ipc.RemoteException;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import javax.net.SocketFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -27,20 +39,6 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.net.SocketFactory;
-
-import com.alibaba.wasp.UnknownProtocolException;import com.alibaba.wasp.protobuf.generated.RPCProtos;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.ipc.RemoteException;
-import com.alibaba.wasp.UnknownProtocolException;
-import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcRequestBody;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import com.google.protobuf.Message;
-import com.google.protobuf.ServiceException;
 
 /**
  * The {@link RpcEngine} implementation for ProtoBuf-based RPCs.
@@ -134,7 +132,7 @@ class ProtobufRpcEngine implements RpcEngine {
      * This is the client side invoker of RPC method. It only throws
      * ServiceException, since the invocation proxy expects only
      * ServiceException to be thrown by the method in case protobuf service.
-     * 
+     *
      * ServiceException has the following causes:
      * <ol>
      * <li>Exceptions encountered on the client side in this method are set as
@@ -142,7 +140,7 @@ class ProtobufRpcEngine implements RpcEngine {
      * <li>Exceptions from the server are wrapped in RemoteException and are set
      * as cause in ServiceException</li>
      * </ol>
-     * 
+     *
      * Note that the client calling protobuf RPC methods, must handle
      * ServiceException by getting the cause from the ServiceException. If the
      * cause is RemoteException, then unwrap it to get the exception thrown by

@@ -110,6 +110,8 @@ public final class FConstants {
   public static final byte[] NUM_VALUE_NEGATIVE = { 0 };
   public static final byte[] NUM_VALUE_POSITIVE = { 1 };
 
+  public static final String SEPARATOR = "_";
+
   /** Separate row key to table names, combine table name to one row key. **/
   public static final String TABLE_ROW_SEP = "_";
 
@@ -132,7 +134,7 @@ public final class FConstants {
       + TRANSACTION_TABLE_TYPE + TABLE_ROW_SEP;
 
   /** Default Column's Column family **/
-  public static final String COLUMNFAMILYNAME_STR = "df"; // default
+  public static final String COLUMNFAMILYNAME_STR = "d"; // default, save storage
 
   public static final byte[] COLUMNFAMILYNAME = Bytes
       .toBytes(COLUMNFAMILYNAME_STR);
@@ -175,10 +177,10 @@ public final class FConstants {
   public static final String MASTER_PORT = "wasp.master.port";
 
   /** default port that the master listens on */
-  public static final int DEFAULT_MASTER_PORT = 60000;
+  public static final int DEFAULT_MASTER_PORT = 40010;
 
   /** default port for master web api */
-  public static final int DEFAULT_MASTER_INFOPORT = 60080;
+  public static final int DEFAULT_MASTER_INFOPORT = 40080;
 
   /** Configuration key for master web API port */
   public static final String MASTER_INFO_PORT = "wasp.master.info.port";
@@ -264,10 +266,10 @@ public final class FConstants {
   public static final String FSERVER_PORT = "wasp.fserver.port";
 
   /** Default port fserver listens on. */
-  public static final int DEFAULT_FSERVER_PORT = 60020;
+  public static final int DEFAULT_FSERVER_PORT = 40020;
 
   /** default port for fserver web api */
-  public static final int DEFAULT_FSERVER_INFOPORT = 60030;
+  public static final int DEFAULT_FSERVER_INFOPORT = 40030;
 
   /** A configuration key for fserver info port */
   public static final String FSERVER_INFO_PORT = "wasp.fserver.info.port";
@@ -290,6 +292,12 @@ public final class FConstants {
 
   /** Default value for thread wake frequency */
   public static final int DEFAULT_THREAD_WAKE_FREQUENCY = 10 * 1000;
+
+  /** Parameter name for how often select for update lock timeout  */
+  public static final String SELECT_FOR_UPDATE_LOCK_TIMEOUT = "wasp.selectforupdate.timeout";
+
+  /** Default value for select for update lock timeout */
+  public static final int DEFAULT_SELECT_FOR_UPDATE_LOCK_TIMEOUT = 5 * 1000;
 
   /**
    * Parameter name for how often we should try to write a version file, before
@@ -364,6 +372,14 @@ public final class FConstants {
   public static final String WASP_CLIENT_SCANNER_TIMEOUT_PERIOD = "wasp.client.scanner.timeout.period";
 
   public static final int DEFAULT_WASP_CLIENT_SCANNER_TIMEOUT_PERIOD = 60 * 1000;
+
+  public static final int DEFAULT_JDBC_CONNECTION_TIMEOUT = 30;
+
+  public static final String JDBC_CONNECTION_TIMEOUT = "wasp.jdbc.connection.pool.timeout";
+
+  public static final int DEFAULT_JDBC_POOL_MAX_CONNECTIONS = 20;
+
+  public static final String JDBC_POOL_MAX_CONNECTIONS = "wasp.jdbc.pool.connection.max";
 
   public static final String WASP_CLIENT_SESSION_TIMEOUT_PERIOD = "wasp.client.session.timeout.period";
 

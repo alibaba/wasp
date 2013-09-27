@@ -17,6 +17,10 @@
  */
 package com.alibaba.wasp.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Pair;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,10 +29,6 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Pair;
 
 /**
  * A utility class to manage a set of locks. Each lock is identified by a String

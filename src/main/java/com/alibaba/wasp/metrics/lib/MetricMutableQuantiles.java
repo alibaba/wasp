@@ -18,13 +18,13 @@
  */
 package com.alibaba.wasp.metrics.lib;
 
+import com.alibaba.wasp.metrics.MetricsExecutor;
+import org.apache.hadoop.metrics2.MetricsRecordBuilder;
+import org.apache.hadoop.metrics2.lib.MetricMutable;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.hadoop.metrics2.MetricsRecordBuilder;
-import org.apache.hadoop.metrics2.lib.MetricMutable;
-import com.alibaba.wasp.metrics.MetricsExecutor;
 
 /**
  * A histogram implementation that runs in constant space, and exports to

@@ -18,51 +18,10 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.SocketTimeoutException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
-
-import com.alibaba.wasp.NoServerForEntityGroupException;import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.protobuf.generated.MasterAdminProtos;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.Abortable;
-import org.apache.hadoop.hbase.util.Addressing;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.ipc.RemoteException;
-import com.alibaba.wasp.ClusterStatus;
-import com.alibaba.wasp.EntityGroupException;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupOfflineException;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.IncorrectParameterException;
-import com.alibaba.wasp.MasterNotRunningException;
-import com.alibaba.wasp.NoServerForEntityGroupException;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.TableExistsException;
-import com.alibaba.wasp.TableNotDisabledException;
-import com.alibaba.wasp.TableNotEnabledException;
-import com.alibaba.wasp.TableNotFoundException;
-import com.alibaba.wasp.UnknownEntityGroupException;
-import com.alibaba.wasp.ZooKeeperConnectionException;
+import com.alibaba.wasp.*;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.fserver.AdminProtocol;
 import com.alibaba.wasp.master.FMasterAdminProtocol;
-import com.alibaba.wasp.meta.FMetaReader;
 import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.meta.Field;
 import com.alibaba.wasp.meta.Index;
@@ -71,40 +30,30 @@ import com.alibaba.wasp.protobuf.RequestConverter;
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEncodedEntityGroupRequest;
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEncodedEntityGroupResponse;
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.StopServerRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.AssignEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateIndexRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateTableRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateTableResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.DeleteTableRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.DisableTableRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.DropIndexRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.EnableTableRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.FetchEntityGroupSizeRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.FetchEntityGroupSizeResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.GetEntityGroupResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.GetEntityGroupWithScanResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.GetEntityGroupsRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.GetEntityGroupsResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.GetTableEntityGroupsRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.GetTableEntityGroupsResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.ModifyTableRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.MoveEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.SetBalancerRunningRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.SetTableStateRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.ShutdownRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.StopMasterRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.TableExistsResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.TruncateTableRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.TruncateTableResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.UnassignEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.UnlockTableRequest;
+import com.alibaba.wasp.protobuf.generated.MasterAdminProtos;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetClusterStatusRequest;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetSchemaAlterStatusRequest;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetSchemaAlterStatusResponse;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Abortable;
+import org.apache.hadoop.hbase.util.Addressing;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
+import org.apache.hadoop.ipc.RemoteException;
 import org.apache.zookeeper.KeeperException;
 
-import com.google.protobuf.ServiceException;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 
 public class WaspAdmin implements Abortable, Closeable {
   private static final Log LOG = LogFactory.getLog(WaspAdmin.class);
@@ -124,7 +73,7 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Constructor. See {@link #WaspAdmin(FConnection connection)}
-   * 
+   *
    * @param c
    *          Configuration object. Copied internally.
    */
@@ -138,10 +87,10 @@ public class WaspAdmin implements Abortable, Closeable {
   /**
    * Constructor for externally managed FConnections. The connection to master
    * will be created when required by admin functions.
-   * 
+   *
    * @param connection
    *          The FConnection instance to use
-   * @throws MasterNotRunningException
+   * @throws com.alibaba.wasp.MasterNotRunningException
    *           , ZooKeeperConnectionException are not thrown anymore but kept
    *           into the interface for backward api compatibility
    */
@@ -175,8 +124,8 @@ public class WaspAdmin implements Abortable, Closeable {
   /**
    * @return - true if the master server is running. Throws an exception
    *         otherwise.
-   * @throws ZooKeeperConnectionException
-   * @throws MasterNotRunningException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
+   * @throws com.alibaba.wasp.MasterNotRunningException
    */
   public boolean isMasterRunning() throws MasterNotRunningException,
       ZooKeeperConnectionException, MasterNotRunningException {
@@ -187,7 +136,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          Table to check.
    * @return True if table exists already.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public boolean tableExists(final String tableName) throws IOException {
     return tableExists(Bytes.toBytes(tableName));
@@ -197,7 +146,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          Table to check.
    * @return True if table exists already.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public boolean tableExists(final byte[] tableName) throws IOException {
     FTable ftable = getTableDescriptor(tableName);
@@ -206,9 +155,9 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * List all the userspace tables. In other words, scan the FMETA table.
-   * 
+   *
    * @return - returns an array of Table
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public FTable[] listTables() throws IOException {
@@ -217,9 +166,9 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * List all the userspace tables. In other words, scan the FMETA table.
-   * 
+   *
    * @return - returns an array of Table
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public Index[] listIndexes(final String tableName) throws IOException {
@@ -284,7 +233,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   public String describeTable(String tableName) throws IOException {
     FTable table = getTableDescriptor(Bytes.toBytes(tableName));
+    String parentTableName = table.getParentName() == null ? "ROOT" : table.getParentName();
     StringBuilder builder = new StringBuilder();
+    builder.append("+-------------------------------------------------------------+\n");
+    builder.append("|                       Parent Table                          |\n");
+    builder.append("+-------------------------------------------------------------+\n");
+    builder.append("| ").append(parentTableName).append(getGivenBlanks(60 - parentTableName.length())).append("|\n");
     builder.append("+---------------------------+----------+----------+-----+-----+\n");
     builder.append("| Field                     | Type     | REQUIRED | Key | EGK |\n");
     builder.append("+---------------------------+----------+----------+-----+-----+\n");
@@ -323,11 +277,11 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * List all the userspace tables matching the given pattern.
-   * 
+   *
    * @param pattern
    *          The compiled regular expression to match against
    * @return - returns an array of Table
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    * @see #listTables()
    */
@@ -344,11 +298,11 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * List all the userspace tables matching the given regular expression.
-   * 
+   *
    * @param regex
    *          The regular expression to match against
    * @return - returns an array of Table
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    * @see #listTables(java.util.regex.Pattern)
    */
@@ -358,12 +312,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Method for getting the tableDescriptor
-   * 
+   *
    * @param tableName
    *          as a byte []
    * @return the tableDescriptor
-   * @throws TableNotFoundException
-   * @throws IOException
+   * @throws com.alibaba.wasp.TableNotFoundException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public FTable getTableDescriptor(final byte[] tableName) throws IOException {
@@ -380,19 +334,19 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Creates a new table. Synchronous operation.
-   * 
+   *
    * @param desc
    *          table descriptor for table
-   * 
+   *
    * @throws IllegalArgumentException
    *           if the table name is reserved
-   * @throws MasterNotRunningException
+   * @throws com.alibaba.wasp.MasterNotRunningException
    *           if master is not running
-   * @throws TableExistsException
+   * @throws com.alibaba.wasp.TableExistsException
    *           if table already exists (If concurrent threads, the table may
    *           have been created between test-for-existence and
    *           attempt-at-creation).
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void createTable(FTable desc) throws IOException {
@@ -405,12 +359,12 @@ public class WaspAdmin implements Abortable, Closeable {
    * table, and the end key specified will become the start key of the last
    * entityGroup of the table (the first entityGroup has a null start key and
    * the last entityGroup has a null end key).
-   * 
+   *
    * BigInteger math will be used to divide the key range specified into enough
    * segments to make the required number of total entityGroups.
-   * 
+   *
    * Synchronous operation.
-   * 
+   *
    * @param desc
    *          table descriptor for table
    * @param startKey
@@ -419,16 +373,16 @@ public class WaspAdmin implements Abortable, Closeable {
    *          end of key range
    * @param numEntityGroups
    *          the total number of entityGroups to create
-   * 
+   *
    * @throws IllegalArgumentException
    *           if the table name is reserved
-   * @throws MasterNotRunningException
+   * @throws com.alibaba.wasp.MasterNotRunningException
    *           if master is not running
-   * @throws TableExistsException
+   * @throws com.alibaba.wasp.TableExistsException
    *           if table already exists (If concurrent threads, the table may
    *           have been created between test-for-existence and
    *           attempt-at-creation).
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void createTable(FTable desc, byte[] startKey, byte[] endKey,
       int numEntityGroups) throws IOException {
@@ -453,22 +407,22 @@ public class WaspAdmin implements Abortable, Closeable {
    * the specified split keys. The total number of entityGroups created will be
    * the number of split keys plus one. Synchronous operation. Note : Avoid
    * passing empty split key.
-   * 
+   *
    * @param desc
    *          table descriptor for table
    * @param splitKeys
    *          array of split keys for the initial entityGroups of the table
-   * 
+   *
    * @throws IllegalArgumentException
    *           if the table name is reserved, if the split keys are repeated and
    *           if the split key has empty byte array.
-   * @throws MasterNotRunningException
+   * @throws com.alibaba.wasp.MasterNotRunningException
    *           if master is not running
-   * @throws TableExistsException
+   * @throws com.alibaba.wasp.TableExistsException
    *           if table already exists (If concurrent threads, the table may
    *           have been created between test-for-existence and
    *           attempt-at-creation).
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void createTable(final FTable desc, byte[][] splitKeys)
       throws IOException {
@@ -494,7 +448,7 @@ public class WaspAdmin implements Abortable, Closeable {
           }
         });
         int actualEgCount = res.getEgSize();
-        if (actualEgCount != numRegs) {
+        if (actualEgCount != numRegs && desc.isRootTable()) {
           if (tries == this.numRetries * this.retryLongerMultiplier - 1) {
             throw new EntityGroupOfflineException("Only " + actualEgCount
                 + " of " + numRegs
@@ -536,20 +490,20 @@ public class WaspAdmin implements Abortable, Closeable {
    * Asynchronous operation. To check if the table exists, use {@link:
    * #isTableAvailable()} -- it is not safe to create an HTable instance to this
    * table before it is available. Note : Avoid passing empty split key.
-   * 
+   *
    * @param desc
    *          table descriptor for table
-   * 
+   *
    * @throws IllegalArgumentException
    *           Bad table name, if the split keys are repeated and if the split
    *           key has empty byte array.
-   * @throws MasterNotRunningException
+   * @throws com.alibaba.wasp.MasterNotRunningException
    *           if master is not running
-   * @throws TableExistsException
+   * @throws com.alibaba.wasp.TableExistsException
    *           if table already exists (If concurrent threads, the table may
    *           have been created between test-for-existence and
    *           attempt-at-creation).
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void createTableAsync(final FTable desc, final byte[][] splitKeys)
       throws IOException {
@@ -584,10 +538,10 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Create a index for given table.
-   * 
+   *
    * @param index
    *          index descriptor for index
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void createIndex(final Index index) throws IOException {
     execute(new MasterAdminCallable<Void>() {
@@ -603,10 +557,10 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Drop a index for given indexName.
-   * 
+   *
    * @param indexName
    *          index descriptor for index
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void deleteIndex(final String tableName, final String indexName)
       throws IOException {
@@ -623,10 +577,10 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Deletes a table. Synchronous operation.
-   * 
+   *
    * @param tableName
    *          name of table to delete
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void deleteTable(final String tableName) throws IOException {
@@ -635,10 +589,10 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Deletes a table. Synchronous operation.
-   * 
+   *
    * @param tableName
    *          name of table to delete
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void deleteTable(final byte[] tableName) throws IOException {
@@ -690,17 +644,17 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Deletes tables matching the passed in pattern and wait on completion.
-   * 
+   *
    * Warning: Use this method carefully, there is no prompting and the effect is
-   * immediate. Consider using {@link #listTables(java.lang.String)} and
+   * immediate. Consider using {@link #listTables(String)} and
    * {@link #deleteTable(byte[])}
-   * 
+   *
    * @param regex
    *          The regular expression to match table names against
    * @return Table descriptors for tables that couldn't be deleted
-   * @throws IOException
+   * @throws java.io.IOException
    * @see #deleteTables(java.util.regex.Pattern)
-   * @see #deleteTable(java.lang.String)
+   * @see #deleteTable(String)
    */
   public FTable[] deleteTables(String regex) throws IOException {
     return deleteTables(Pattern.compile(regex));
@@ -708,15 +662,15 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Delete tables matching the passed in pattern and wait on completion.
-   * 
+   *
    * Warning: Use this method carefully, there is no prompting and the effect is
    * immediate. Consider using {@link #listTables(java.util.regex.Pattern) } and
    * {@link #deleteTable(byte[])}
-   * 
+   *
    * @param pattern
    *          The pattern to match table names against
    * @return Table descriptors for tables that couldn't be deleted
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public FTable[] deleteTables(Pattern pattern) throws IOException {
     List<FTable> failed = new LinkedList<FTable>();
@@ -739,10 +693,10 @@ public class WaspAdmin implements Abortable, Closeable {
    * Enable a table. May timeout. Use {@link #enableTableAsync(byte[])} and
    * {@link #isTableEnabled(byte[])} instead. The table has to be in disabled
    * state for it to be enabled.
-   * 
+   *
    * @param tableName
    *          name of the table
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs There could be couple
    *           types of IOException TableNotFoundException means the table
    *           doesn't exist. TableNotDisabledException means the table isn't in
@@ -793,9 +747,9 @@ public class WaspAdmin implements Abortable, Closeable {
    * large (All entityGroups are opened as part of enabling process). Check
    * {@link #isTableEnabled(byte[])} to learn when table is fully online. If
    * table is taking too long to online, check server logs.
-   * 
+   *
    * @param tableName
-   * @throws IOException
+   * @throws java.io.IOException
    * @since 0.90.0
    */
   public void enableTableAsync(final byte[] tableName) throws IOException {
@@ -814,16 +768,16 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Enable tables matching the passed in pattern and wait on completion.
-   * 
+   *
    * Warning: Use this method carefully, there is no prompting and the effect is
-   * immediate. Consider using {@link #listTables(java.lang.String)} and
+   * immediate. Consider using {@link #listTables(String)} and
    * {@link #enableTable(byte[])}
-   * 
+   *
    * @param regex
    *          The regular expression to match table names against
-   * @throws IOException
+   * @throws java.io.IOException
    * @see #enableTables(java.util.regex.Pattern)
-   * @see #enableTable(java.lang.String)
+   * @see #enableTable(String)
    */
   public FTable[] enableTables(String regex) throws IOException {
     return enableTables(Pattern.compile(regex));
@@ -831,14 +785,14 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Enable tables matching the passed in pattern and wait on completion.
-   * 
+   *
    * Warning: Use this method carefully, there is no prompting and the effect is
    * immediate. Consider using {@link #listTables(java.util.regex.Pattern) } and
    * {@link #enableTable(byte[])}
-   * 
+   *
    * @param pattern
    *          The pattern to match table names against
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public FTable[] enableTables(Pattern pattern) throws IOException {
     List<FTable> failed = new LinkedList<FTable>();
@@ -866,10 +820,10 @@ public class WaspAdmin implements Abortable, Closeable {
    * entityGroups are closed as part of table disable operation). Call
    * {@link #isTableDisabled(byte[])} to check for when disable completes. If
    * table is taking too long to online, check server logs.
-   * 
+   *
    * @param tableName
    *          name of table
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    * @see #isTableDisabled(byte[])
    * @see #isTableEnabled(byte[])
@@ -897,9 +851,9 @@ public class WaspAdmin implements Abortable, Closeable {
    * Disable table and wait on completion. May timeout eventually. Use
    * {@link #disableTableAsync(byte[])} and {@link #isTableDisabled(String)}
    * instead. The table has to be in enabled state for it to be disabled.
-   * 
+   *
    * @param tableName
-   * @throws IOException
+   * @throws java.io.IOException
    *           There could be couple types of IOException TableNotFoundException
    *           means the table doesn't exist. TableNotEnabledException means the
    *           table isn't in enabled state.
@@ -938,17 +892,17 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Disable tables matching the passed in pattern and wait on completion.
-   * 
+   *
    * Warning: Use this method carefully, there is no prompting and the effect is
-   * immediate. Consider using {@link #listTables(java.lang.String)} and
+   * immediate. Consider using {@link #listTables(String)} and
    * {@link #disableTable(byte[])}
-   * 
+   *
    * @param regex
    *          The regular expression to match table names against
    * @return Table descriptors for tables that couldn't be disabled
-   * @throws IOException
+   * @throws java.io.IOException
    * @see #disableTables(java.util.regex.Pattern)
-   * @see #disableTable(java.lang.String)
+   * @see #disableTable(String)
    */
   public FTable[] disableTables(String regex) throws IOException {
     return disableTables(Pattern.compile(regex));
@@ -956,15 +910,15 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Disable tables matching the passed in pattern and wait on completion.
-   * 
+   *
    * Warning: Use this method carefully, there is no prompting and the effect is
    * immediate. Consider using {@link #listTables(java.util.regex.Pattern) } and
    * {@link #disableTable(byte[])}
-   * 
+   *
    * @param pattern
    *          The pattern to match table names against
    * @return Table descriptors for tables that couldn't be disabled
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public FTable[] disableTables(Pattern pattern) throws IOException {
     List<FTable> failed = new LinkedList<FTable>();
@@ -985,7 +939,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          name of table to check
    * @return true if table is on-line
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public boolean isTableEnabled(String tableName) throws IOException {
@@ -996,7 +950,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          name of table to check
    * @return true if table is on-line
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public boolean isTableEnabled(byte[] tableName) throws IOException {
@@ -1007,7 +961,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          name of table to check
    * @return true if table is off-line
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public boolean isTableDisabled(final String tableName) throws IOException {
@@ -1018,7 +972,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          name of table to check
    * @return true if table is off-line
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public boolean isTableDisabled(byte[] tableName) throws IOException {
@@ -1029,7 +983,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          name of table to check
    * @return true if all entityGroups of the table are available
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public boolean isTableAvailable(byte[] tableName) throws IOException {
@@ -1040,7 +994,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          name of table to check
    * @return true if all entityGroups of the table are available
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public boolean isTableAvailable(String tableName) throws IOException {
@@ -1051,7 +1005,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @param tableName
    *          name of table to check
    * @return true if the table is locked
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public boolean isTableLocked(byte[] tableName) throws IOException {
@@ -1062,10 +1016,14 @@ public class WaspAdmin implements Abortable, Closeable {
     return isTableLocked(Bytes.toBytes(tableName));
   }
 
+  public void unlockTable(final String tableName) throws IOException {
+    unlockTable(Bytes.toBytes(tableName));
+  }
+
   /**
    * Unlock the table, use it carefully. For expert-admins.
    * @param tableName name of table to unlock
-   * @throws IOException if a remote or network exception occurs
+   * @throws java.io.IOException if a remote or network exception occurs
    */
   public void unlockTable(final byte[] tableName) throws IOException {
     FTable.isLegalTableName(Bytes.toString(tableName));
@@ -1080,11 +1038,15 @@ public class WaspAdmin implements Abortable, Closeable {
     });
   }
 
+  public void setTableState(final String tableName, final String state) throws IOException {
+    setTableState(Bytes.toBytes(tableName), Bytes.toBytes(state));
+  }
+
   /**
    * Set table state, use it carefully. For expert-admins.
    * @param tableName name of table to set state
    * @param state state that will set to
-   * @throws IOException if a remote or network exception occurs
+   * @throws java.io.IOException if a remote or network exception occurs
    */
   public void setTableState(final byte[] tableName, final byte[] state) throws IOException {
     FTable.isLegalTableName(Bytes.toString(tableName));
@@ -1099,11 +1061,16 @@ public class WaspAdmin implements Abortable, Closeable {
     });
   }
 
+	public void waitTableAvailable(final String table, long timeoutMillis)
+			throws IOException, InterruptedException {
+		waitTableAvailable(Bytes.toBytes(table), timeoutMillis);
+	}
+
   /**
    * @param table
    * @param timeoutMillis
    * @throws InterruptedException
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void waitTableAvailable(byte[] table, long timeoutMillis)
       throws IOException, InterruptedException {
@@ -1118,6 +1085,11 @@ public class WaspAdmin implements Abortable, Closeable {
     }
   }
 
+	public void waitTableAvailable(final String table) throws IOException,
+			InterruptedException {
+		waitTableAvailable(Bytes.toBytes(table));
+	}
+
   public void waitTableAvailable(byte[] table) throws IOException,
       InterruptedException {
     long startWait = System.currentTimeMillis();
@@ -1127,6 +1099,11 @@ public class WaspAdmin implements Abortable, Closeable {
       Thread.sleep(1000);
     }
   }
+
+	public void waitTableNotAvailable(final String table) throws IOException,
+			InterruptedException {
+		waitTableNotAvailable(Bytes.toBytes(table));
+	}
 
   public void waitTableNotAvailable(byte[] table) throws IOException,
       InterruptedException {
@@ -1138,38 +1115,65 @@ public class WaspAdmin implements Abortable, Closeable {
     }
   }
 
-  public void waitTableEnabled(byte[] table, long timeoutMillis)
-      throws InterruptedException, IOException {
-    long startWait = System.currentTimeMillis();
-    while (!isTableEnabled(table)) {
-      if (System.currentTimeMillis() - startWait >= timeoutMillis) {
-        throw new IOException("Timed out waiting for table "
-            + Bytes.toStringBinary(table));
-      }
-      Thread.sleep(200);
-    }
-  }
+	public void waitTableEnabled(final String table, long timeoutMillis)
+			throws InterruptedException, IOException {
+		waitTableEnabled(Bytes.toBytes(table), timeoutMillis);
+	}
 
-  public void waitTableNotLocked(byte[] table) throws IOException,
-      InterruptedException {
-    long startWait = System.currentTimeMillis();
-    while (isTableLocked(table)) {
-      LOG.info("Wait " + (System.currentTimeMillis() - startWait) / 1000
-          + " s, for " + Bytes.toString(table) + " to be not locked.");
-      Thread.sleep(1000);
-    }
-  }
+	public void waitTableEnabled(byte[] table, long timeoutMillis)
+			throws InterruptedException, IOException {
+		long startWait = System.currentTimeMillis();
+		while (!isTableEnabled(table)) {
+			if (System.currentTimeMillis() - startWait >= timeoutMillis) {
+				throw new IOException("Timed out waiting for table "
+						+ Bytes.toStringBinary(table));
+			}
+			Thread.sleep(200);
+		}
+	}
+
+	public void waitTableDisabled(final String table, long timeoutMillis)
+			throws InterruptedException, IOException {
+		waitTableDisabled(Bytes.toBytes(table), timeoutMillis);
+	}
+
+	public void waitTableDisabled(byte[] table, long timeoutMillis)
+			throws InterruptedException, IOException {
+		long startWait = System.currentTimeMillis();
+		while (!isTableDisabled(table)) {
+			if (System.currentTimeMillis() - startWait >= timeoutMillis) {
+				throw new IOException("Timed out waiting for table "
+						+ Bytes.toStringBinary(table));
+			}
+			Thread.sleep(200);
+		}
+	}
+
+	public void waitTableNotLocked(final String table) throws IOException,
+			InterruptedException {
+		waitTableNotLocked(Bytes.toBytes(table));
+	}
+
+	public void waitTableNotLocked(byte[] table) throws IOException,
+			InterruptedException {
+		long startWait = System.currentTimeMillis();
+		while (isTableLocked(table)) {
+			LOG.info("Wait " + (System.currentTimeMillis() - startWait) / 1000
+					+ " s, for " + Bytes.toString(table) + " to be not locked.");
+			Thread.sleep(1000);
+		}
+	}
 
   /**
    * Get the status of alter command - indicates how many entityGroups have
    * received the updated schema Asynchronous operation.
-   * 
+   *
    * @param tableName
    *          name of the table to get the status of
    * @return Pair indicating the number of entityGroups updated Pair.getFirst()
    *         is the entityGroups that are yet to be updated Pair.getSecond() is
    *         the total number of entityGroups of the table
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public Pair<Integer, Integer> getAlterStatus(final byte[] tableName)
@@ -1193,13 +1197,13 @@ public class WaspAdmin implements Abortable, Closeable {
   /**
    * Close a entityGroup. For expert-admins. Runs close on the
    * entityGroupserver. The master will not be informed of the close.
-   * 
+   *
    * @param entityGroupname
    *          entityGroup name to close
    * @param serverName
    *          If supplied, we'll use this location rather than the one currently
    *          in <code>.META.</code>
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void closeEntityGroup(final String entityGroupname,
@@ -1210,7 +1214,7 @@ public class WaspAdmin implements Abortable, Closeable {
   /**
    * Close a entityGroup. For expert-admins Runs close on the entityGroupserver.
    * The master will not be informed of the close.
-   * 
+   *
    * @param entityGroupname
    *          entityGroup name to close
    * @param serverName
@@ -1218,7 +1222,7 @@ public class WaspAdmin implements Abortable, Closeable {
    *          use servername found in the .META. table. A server name is made of
    *          host, port and startcode. Here is an example:
    *          <code> host187.example.com,60020,1289493121758</code>
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void closeEntityGroup(final byte[] entityGroupname,
@@ -1266,10 +1270,10 @@ public class WaspAdmin implements Abortable, Closeable {
   /**
    * Close a entityGroup. For expert-admins Runs close on the entityGroupserver.
    * The master will not be informed of the close.
-   * 
+   *
    * @param sn
    * @param egi
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void closeEntityGroup(final ServerName sn, final EntityGroupInfo egi)
       throws IOException {
@@ -1285,7 +1289,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * servername is provided then based on the online entityGroups in the specified
    * fserver the specified entityGroup will be closed. The master will not be
    * informed of the close. Note that the entityGroupName is the encoded entityGroupName.
-   * 
+   *
    * @param encodedEntityGroupName
    *          The encoded entityGroup name; i.e. the hash that makes up the
    *          entityGroup name suffix: e.g. if entityGroupName is
@@ -1297,7 +1301,7 @@ public class WaspAdmin implements Abortable, Closeable {
    *          and startcode. This is mandatory. Here is an example:
    *          <code> host187.example.com,60020,1289493121758</code>
    * @return true if the entityGroup was closed, false if not.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public boolean closeEntityGroupWithEncodedEntityGroupName(
@@ -1338,7 +1342,7 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Move the entityGroup <code>r</code> to <code>dest</code>.
-   * 
+   *
    * @param encodedEntityGroupName
    *          The encoded entityGroup name; i.e. the hash that makes up the
    *          entityGroup name suffix: e.g. if entityGroupname is
@@ -1350,11 +1354,11 @@ public class WaspAdmin implements Abortable, Closeable {
    *          empty byte array we'll assign to a random server. A server name is
    *          made of host, port and startcode. Here is an example:
    *          <code> host187.example.com,60020,1289493121758</code>
-   * @throws UnknownEntityGroupException
+   * @throws com.alibaba.wasp.UnknownEntityGroupException
    *           Thrown if we can't find a entityGroup named
    *           <code>encodedEntityGroupName</code>
-   * @throws ZooKeeperConnectionException
-   * @throws MasterNotRunningException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
+   * @throws com.alibaba.wasp.MasterNotRunningException
    */
   public void move(final byte[] encodedEntityGroupName,
       final byte[] destServerName) throws UnknownEntityGroupException,
@@ -1380,9 +1384,9 @@ public class WaspAdmin implements Abortable, Closeable {
   /**
    * @param entityGroupName
    *          EntityGroup name to assign.
-   * @throws MasterNotRunningException
-   * @throws ZooKeeperConnectionException
-   * @throws IOException
+   * @throws com.alibaba.wasp.MasterNotRunningException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
+   * @throws java.io.IOException
    */
   public void assign(final byte[] entityGroupName)
       throws MasterNotRunningException, ZooKeeperConnectionException,
@@ -1404,7 +1408,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * could be reassigned back to the same server. Use
    * {@link #move(byte[], byte[])} if you want to control the entityGroup
    * movement.
-   * 
+   *
    * @param entityGroupName
    *          EntityGroup to unassign. Will clear any existing EntityGroupPlan
    *          if one found.
@@ -1412,9 +1416,9 @@ public class WaspAdmin implements Abortable, Closeable {
    *          If true, force unassign (Will remove entityGroup from
    *          entityGroups-in-transition too if present. If results in double
    *          assignment use hbck -fix to resolve. To be used by experts).
-   * @throws MasterNotRunningException
-   * @throws ZooKeeperConnectionException
-   * @throws IOException
+   * @throws com.alibaba.wasp.MasterNotRunningException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
+   * @throws java.io.IOException
    */
   public void unassign(final byte[] entityGroupName, final boolean force)
       throws MasterNotRunningException, ZooKeeperConnectionException,
@@ -1448,7 +1452,7 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Turn the load balancer on or off.
-   * 
+   *
    * @param on
    *          If true, enable balancer. If false, disable balancer.
    * @param synchronous
@@ -1485,7 +1489,7 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Turn the load balancer on or off.
-   * 
+   *
    * @param on
    *          If true, enable balancer. If false, disable balancer.
    * @return Previous balancer value
@@ -1499,7 +1503,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * Invoke the balancer. Will run the balancer and if entityGroups to move, it
    * will go ahead and do the reassignments. Can NOT run for various reasons.
    * Check logs.
-   * 
+   *
    * @return True if balancer ran, false otherwise.
    */
   public boolean balancer() throws MasterNotRunningException,
@@ -1516,12 +1520,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Split a table or an individual entityGroup. Asynchronous operation.
-   * 
+   *
    * @param tableNameOrEntityGroupName
    *          table to entityGroup to split
    * @param splitPoint
    *          the explicit position to split on
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws InterruptedException
    */
   public void split(final String tableNameOrEntityGroupName,
@@ -1532,12 +1536,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Split a table or an individual entityGroup. Asynchronous operation.
-   * 
+   *
    * @param tableNameOrEntityGroupName
    *          table to entityGroup to split
    * @param splitPoint
    *          the explicit position to split on
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    * @throws InterruptedException
    *           interrupt exception occurred
@@ -1605,12 +1609,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Add a column to an existing table. Asynchronous operation.
-   * 
+   *
    * @param tableName
    *          name of the table to add column to
    * @param column
    *          the field to be added
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void addColumn(final String tableName, Field column)
@@ -1620,12 +1624,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Add a column to an existing table. Asynchronous operation.
-   * 
+   *
    * @param tableName
    *          name of the table to add column to
    * @param column
    *          column descriptor of column to be added
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void addColumn(final byte[] tableName, final Field column)
@@ -1637,12 +1641,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Delete a column from a table. Asynchronous operation.
-   * 
+   *
    * @param tableName
    *          name of table
    * @param columnName
    *          name of column to be deleted
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void deleteColumn(final String tableName, final String columnName)
@@ -1652,12 +1656,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Delete a column from a table. Asynchronous operation.
-   * 
+   *
    * @param tableName
    *          name of table
    * @param columnName
    *          name of column to be deleted
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void deleteColumn(final byte[] tableName, final byte[] columnName)
@@ -1669,12 +1673,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Modify an existing column family on a table. Asynchronous operation.
-   * 
+   *
    * @param tableName
    *          name of table
    * @param field
    *          new field to use
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void modifyColumn(final String tableName, Field field)
@@ -1684,12 +1688,12 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Modify an existing column family on a table. Asynchronous operation.
-   * 
+   *
    * @param tableName
    *          name of table
    * @param field
    *          new field to use
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void modifyColumn(final byte[] tableName, final Field field)
@@ -1704,7 +1708,7 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Get a connection to the currently set master.
-   * 
+   *
    * @return proxy connection to master server for this instance
    * @throws org.apache.hadoop.hbase.MasterNotRunningException
    *           if the master is not running
@@ -1719,12 +1723,12 @@ public class WaspAdmin implements Abortable, Closeable {
    * Modify an existing table, more IRB friendly version. Asynchronous
    * operation. This means that it may be a while before your schema change is
    * updated across all of the table.
-   * 
+   *
    * @param tableName
    *          name of table.
    * @param tableDescriptor
    *          modified description of the table
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public void modifyTable(final byte[] tableName, final FTable tableDescriptor)
@@ -1746,10 +1750,10 @@ public class WaspAdmin implements Abortable, Closeable {
    * @return a pair of EntityGroupInfo and ServerName if
    *         <code>tableNameOrEntityGroupName</code> is a verified entityGroup
    *         name (we call
-   *         {@link FMetaReader#getEntityGroupLocation(org.apache.hadoop.conf.Configuration, com.alibaba.wasp.EntityGroupInfo)}
+   *         {@link com.alibaba.wasp.meta.FMetaReader#getEntityGroupLocation(org.apache.hadoop.conf.Configuration, com.alibaba.wasp.EntityGroupInfo)}
    *         (com.alibaba.wasp.EntityGroupInfo)} else null. Throw an exception if
    *         <code>tableNameOrEntityGroupName</code> is null.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   Pair<EntityGroupInfo, ServerName> getEntityGroup(
       final byte[] tableNameOrEntityGroupName) throws IOException {
@@ -1767,7 +1771,7 @@ public class WaspAdmin implements Abortable, Closeable {
 
     Pair<EntityGroupInfo, ServerName> pair = new Pair<EntityGroupInfo, ServerName>(
         EntityGroupInfo.convert(res.getEgInfo()), ServerName.convert(res
-            .getServerName()));
+        .getServerName()));
     return pair;
   }
 
@@ -1777,7 +1781,7 @@ public class WaspAdmin implements Abortable, Closeable {
    * @return True if <code>tableNameOrEntityGroupName</code> is a verified
    *         entityGroup name else false. Throw an exception if
    *         <code>tableNameOrEntityGroupName</code> is null.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   private boolean isEntityGroupName(final byte[] tableNameOrEntityGroupName)
       throws IOException {
@@ -1800,13 +1804,13 @@ public class WaspAdmin implements Abortable, Closeable {
   /**
    * Convert the table name byte array into a table name string and check if
    * table exists or not.
-   * 
+   *
    * @param tableNameBytes
    *          Name of a table.
    * @return tableName in string form.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs.
-   * @throws TableNotFoundException
+   * @throws com.alibaba.wasp.TableNotFoundException
    *           if table does not exist.
    */
   private String tableNameString(final byte[] tableNameBytes)
@@ -1827,8 +1831,8 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Shuts down the Wasp cluster
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public synchronized void shutdown() throws IOException {
@@ -1843,9 +1847,9 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Shuts down the current Wasp master only. Does not shutdown the cluster.
-   * 
+   *
    * @see #shutdown()
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public synchronized void stopMaster() throws IOException {
@@ -1860,11 +1864,11 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Stop the designated entityGroupserver
-   * 
+   *
    * @param hostnamePort
    *          Hostname and port delimited by a <code>:</code> as in
    *          <code>example.org:1234</code>
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public synchronized void stopEntityGroupServer(final String hostnamePort)
@@ -1884,7 +1888,7 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * @return cluster status
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public ClusterStatus getClusterStatus() throws IOException {
@@ -1909,12 +1913,12 @@ public class WaspAdmin implements Abortable, Closeable {
   /**
    * Check to see if Wasp is running. Throw an exception if not. We consider
    * that Wasp is running if ZooKeeper and Master are running.
-   * 
+   *
    * @param conf
    *          system configuration
-   * @throws MasterNotRunningException
+   * @throws com.alibaba.wasp.MasterNotRunningException
    *           if the master is not running
-   * @throws ZooKeeperConnectionException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
    *           if unable to connect to zookeeper
    */
   public static void checkWaspAvailable(Configuration conf)
@@ -1962,11 +1966,11 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * get the entityGroups of a given table.
-   * 
+   *
    * @param tableName
    *          the name of the table
-   * @return Ordered list of {@link EntityGroupInfo}.
-   * @throws IOException
+   * @return Ordered list of {@link com.alibaba.wasp.EntityGroupInfo}.
+   * @throws java.io.IOException
    */
   public List<EntityGroupInfo> getTableEntityGroups(final byte[] tableName)
       throws IOException {
@@ -1989,9 +1993,9 @@ public class WaspAdmin implements Abortable, Closeable {
    * Gets all the entityGroups and their address for this table.
    * <p>
    * This is mainly useful for the MapReduce integration.
-   * 
+   *
    * @return A map of EntityGroupInfo with it's server address
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public NavigableMap<EntityGroupInfo, ServerName> getEntityGroupLocations(
@@ -2057,11 +2061,11 @@ public class WaspAdmin implements Abortable, Closeable {
 
   /**
    * Get tableDescriptors
-   * 
+   *
    * @param tableNames
    *          List of table names
    * @return FTD[] the tableDescriptor
-   * @throws IOException
+   * @throws java.io.IOException
    *           if a remote or network exception occurs
    */
   public FTable[] getTableDescriptors(List<String> tableNames)

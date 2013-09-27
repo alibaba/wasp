@@ -18,10 +18,10 @@
  */
 package com.alibaba.wasp.jdbc;
 
+import com.alibaba.wasp.FConstants;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.alibaba.wasp.FConstants;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

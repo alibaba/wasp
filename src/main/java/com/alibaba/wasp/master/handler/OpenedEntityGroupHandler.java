@@ -17,8 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.ServerName;
@@ -26,6 +24,8 @@ import com.alibaba.wasp.executor.EventHandler;
 import com.alibaba.wasp.master.AssignmentManager;
 import com.alibaba.wasp.master.EntityGroupState;
 import com.alibaba.wasp.zookeeper.ZKAssign;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.KeeperException;
 
 /**

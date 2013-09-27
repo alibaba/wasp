@@ -17,6 +17,13 @@
  */
 package com.alibaba.wasp.master.balancer;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.master.EntityGroupPlan;
+import com.google.common.collect.MinMaxPriorityQueue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,14 +34,6 @@ import java.util.NavigableMap;
 import java.util.Random;
 import java.util.TreeMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.master.EntityGroupPlan;
-
-import com.google.common.collect.MinMaxPriorityQueue;
-
 /**
  * Makes decisions about the placement and movement of EntityGroups across
  * FServers.
@@ -42,7 +41,7 @@ import com.google.common.collect.MinMaxPriorityQueue;
  * <p>
  * Cluster-wide load balancing will occur only when there are no entityGroups in
  * transition and according to a fixed period of a time using
- * {@link #balanceCluster(Map)}.
+ * {@link #balanceCluster(java.util.Map)}.
  * 
  * <p>
  * Inline entityGroup placement with {@link #immediateAssignment} can be used

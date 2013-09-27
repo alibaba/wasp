@@ -19,15 +19,14 @@
  */
 package com.alibaba.wasp.plan.action;
 
-import java.util.Arrays;
-
 import com.alibaba.wasp.messagequeue.Message;
 import com.alibaba.wasp.messagequeue.MessageID;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto;
-
 import com.google.protobuf.ByteString;
 
-public class DeleteAction extends NoColumnPrimaryAction implements Message {
+import java.util.Arrays;
+
+public class DeleteAction extends NoColumnPrimaryAction implements Message, DMLAction {
 
   // ///////////////// used for message //////////////
   private boolean isCommited = false;
@@ -101,11 +100,16 @@ public class DeleteAction extends NoColumnPrimaryAction implements Message {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {
     return "DeleteAction [tableName=" + fTableName + ", primayKey="
         + Arrays.toString(combinedPrimaryKey) + "]";
+  }
+
+  @Override
+  public String getTableName() {
+    return fTableName;
   }
 }

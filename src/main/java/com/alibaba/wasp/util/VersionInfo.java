@@ -18,9 +18,9 @@
  */
 package com.alibaba.wasp.util;
 
+import com.alibaba.wasp.VersionAnnotation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.alibaba.wasp.VersionAnnotation;
 
 import java.io.PrintWriter;
 

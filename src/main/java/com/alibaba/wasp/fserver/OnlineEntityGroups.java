@@ -19,7 +19,7 @@
  */
 package com.alibaba.wasp.fserver;
 
-import com.alibaba.wasp.Server;import com.alibaba.wasp.Server;
+import com.alibaba.wasp.Server;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -33,7 +33,7 @@ import java.util.List;
 public interface OnlineEntityGroups extends Server {
   /**
    * Add to online entityGroups.
-   * 
+   *
    * @param e
    */
   public void addToOnlineEntityGroups(final EntityGroup e);
@@ -41,7 +41,7 @@ public interface OnlineEntityGroups extends Server {
   /**
    * This method removes EntityGroup corresponding to egi from the Map of
    * onlineEntityGroups.
-   * 
+   *
    * @param encodedEntityGroupName
    * @return True if we removed a entityGroup from online list.
    */
@@ -50,7 +50,7 @@ public interface OnlineEntityGroups extends Server {
   /**
    * Return {@link EntityGroup} instance. Only works if caller is in same
    * context. EntityGroup is not serializable.
-   * 
+   *
    * @param encodedEntityGroupName
    * @return entityGroup for the passed encoded
    *         <code>encodedEntityGroupName</code> or null if named entityGroup is
@@ -60,7 +60,7 @@ public interface OnlineEntityGroups extends Server {
 
   /**
    * Get all online entityGroups of a table in this FServer.
-   * 
+   *
    * @param tableName
    * @return List of EntityGroup
    * @throws java.io.IOException
@@ -70,9 +70,9 @@ public interface OnlineEntityGroups extends Server {
 
   /**
    * Get all online entityGroups in this FServer.
-   * 
+   *
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public Collection<EntityGroup> getOnlineEntityGroups() throws IOException;
 }

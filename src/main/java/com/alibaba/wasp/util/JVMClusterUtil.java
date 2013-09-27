@@ -18,17 +18,17 @@
  */
 package com.alibaba.wasp.util;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
+import com.alibaba.wasp.fserver.FServer;
+import com.alibaba.wasp.master.FMaster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.util.Threads;
-import com.alibaba.wasp.fserver.FServer;
-import com.alibaba.wasp.master.FMaster;
+
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * Utility used running a cluster all in the one JVM.
@@ -72,7 +72,7 @@ public class JVMClusterUtil {
    * @param c Configuration to use.
    * @param hrsc Class to create.
    * @param index Used distinguishing the object returned.
-   * @throws IOException
+   * @throws java.io.IOException
    * @return FServer added.
    */
   public static JVMClusterUtil.FServerThread createFServerThread(
@@ -121,7 +121,7 @@ public class JVMClusterUtil {
    * @param c Configuration to use.
    * @param hmc Class to create.
    * @param index Used distinguishing the object returned.
-   * @throws IOException
+   * @throws java.io.IOException
    * @return Master added.
    */
   public static JVMClusterUtil.MasterThread createMasterThread(
@@ -145,7 +145,7 @@ public class JVMClusterUtil {
   }
 
   private static JVMClusterUtil.MasterThread findActiveMaster(
-    List<JVMClusterUtil.MasterThread> masters) {
+    List<MasterThread> masters) {
     for (JVMClusterUtil.MasterThread t : masters) {
       if (t.master.isActiveMaster()) {
         return t;
@@ -162,8 +162,8 @@ public class JVMClusterUtil {
    * @param fservers
    * @return Address to use contacting primary master.
    */
-  public static String startup(final List<JVMClusterUtil.MasterThread> masters,
-      final List<JVMClusterUtil.FServerThread> fservers) throws IOException {
+  public static String startup(final List<MasterThread> masters,
+      final List<FServerThread> fservers) throws IOException {
 
     if (masters == null || masters.isEmpty()) {
       return null;

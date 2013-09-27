@@ -18,7 +18,7 @@
  */
 package com.alibaba.wasp.util;
 
-import com.alibaba.wasp.FConstants;import com.alibaba.wasp.jdbc.JdbcException;import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.jdbc.JdbcException;
 

@@ -18,20 +18,6 @@
  */
 package com.alibaba.wasp.master;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.MiniWaspCluster;
@@ -51,12 +37,26 @@ import com.alibaba.wasp.zookeeper.ZKAssign;
 import com.alibaba.wasp.zookeeper.ZKTable;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
 public class TestOpenedEntityGroupHandler {
 

@@ -19,36 +19,51 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
+import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
+import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
+import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
+import com.alibaba.druid.sql.ast.statement.SQLDropIndexStatement;
+import com.alibaba.druid.sql.ast.statement.SQLDropTableStatement;
+import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLTableSource;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableStatement;
+import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.wasp.DataType;
+import com.alibaba.wasp.meta.Field;
+import com.alibaba.wasp.plan.parser.ParseContext;
+import com.alibaba.wasp.plan.parser.Parser;
+import com.alibaba.wasp.plan.parser.UnsupportedException;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateIndexStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlDescribeStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlParserUtils;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowCreateTableStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowIndexesStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowTablesStatement;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configurable;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.EnvironmentEdgeManager;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configurable;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.DataType;
-import com.alibaba.wasp.meta.Field;
-import com.alibaba.wasp.plan.parser.ParseContext;
-import com.alibaba.wasp.plan.parser.Parser;
-import com.alibaba.wasp.plan.parser.UnsupportedException;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlParserUtils;
-
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
-import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLJoinTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLSubqueryTableSource;
-import com.alibaba.druid.sql.ast.statement.SQLTableSource;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
 
 /**
  * Use Druid (https://github.com/AlibabaTech/druid) to parse the sql and
@@ -84,7 +99,6 @@ public abstract class DruidParser extends Parser implements Configurable {
    * Parse SQL into SQLStatement, assume just one SQLStatement, so return one
    * SQLStatement result.
    * 
-   * @see com.alibaba.wasp.plan.parser.Parser#parse(com.alibaba.wasp.plan.parser.ParseContext)
    */
   @Override
   public void parseSqlToStatement(ParseContext context) throws IOException {
@@ -205,6 +219,8 @@ public abstract class DruidParser extends Parser implements Configurable {
       } else {
         return convert(null, number);
       }
+    } else if (expr instanceof SQLMethodInvokeExpr) { // Function
+      return convert(column.getType(), (SQLMethodInvokeExpr) expr);
     }
     return null;
   }
@@ -234,6 +250,8 @@ public abstract class DruidParser extends Parser implements Configurable {
       }
     } else if (type == DataType.DATETIME) {
       if (value instanceof SQLCharExpr) {
+        return; // OK
+      } else if (value instanceof SQLMethodInvokeExpr) { // Function
         return; // OK
       }
     }
@@ -322,5 +340,80 @@ public abstract class DruidParser extends Parser implements Configurable {
     }
     throw new UnsupportedException("Unknown Number:" + number + " Type:" + type
         + " Unsupported ");
+  }
+
+  /**
+   * Function http://www.w3schools.com/sql/func_now.asp, current NOW() is supported.
+   */
+  public static byte[] convert(DataType type, SQLMethodInvokeExpr expr) throws UnsupportedException {
+    String methodName = expr.getMethodName();
+    if (methodName.equalsIgnoreCase("NOW")) { // Date Function 'NOW()'
+      if (type == DataType.DATETIME) { // Type must be DATETIME
+        return Bytes.toBytes(EnvironmentEdgeManager.currentTimeMillis());
+      } else {
+        throw new UnsupportedException(" DataType " + type + " not support " + " Function "
+            + methodName);
+      }
+    } else {
+      throw new UnsupportedException(" Functions " + methodName + " Unsupported");
+    }
+  }
+
+   @Override
+  public SQLType getSQLType(ParseContext context) throws IOException {
+    parseSqlToStatement(context);
+    SQLStatement stmt = context.getStmt();
+    boolean isDDL = false;
+    boolean isDQL = false;
+    if (stmt instanceof WaspSqlCreateTableStatement) {
+      // This is a Create Table SQL
+      isDDL = true;
+    } else if (stmt instanceof WaspSqlCreateIndexStatement) {
+      // This is a Create Index SQL
+      isDDL = true;
+    } else if (stmt instanceof SQLDropTableStatement) {
+      // This is a Drop Table SQL
+      isDDL = true;
+    } else if (stmt instanceof SQLDropIndexStatement) {
+      // This is a Drop Index SQL
+      isDDL = true;
+    } else if (stmt instanceof MySqlAlterTableStatement) {
+      // This is a Alter Table SQL
+      isDDL = true;
+    } else if (stmt instanceof WaspSqlShowTablesStatement) {
+      // This is a Show Tables SQL
+      isDDL = true;
+    } else if (stmt instanceof WaspSqlShowCreateTableStatement) {
+      // This is a Show Create Table SQL
+      isDDL = true;
+    } else if (stmt instanceof WaspSqlDescribeStatement) {
+      // This is a DESCRIBE SQL
+      isDDL = true;
+    } else if (stmt instanceof WaspSqlShowIndexesStatement) {
+      // This is a SHOW INDEXES SQL
+      isDDL = true;
+    } else if (stmt instanceof SQLSelectStatement) {
+      // This is a Select SQL
+      isDDL = false;
+      isDQL = true;
+    } else if (stmt instanceof SQLUpdateStatement) {
+      // This is a Update SQL
+      isDDL = false;
+    } else if (stmt instanceof SQLInsertStatement) {
+      // This is a Insert SQL
+      isDDL = false;
+    } else if (stmt instanceof SQLDeleteStatement) {
+      // This is a Delete SQL
+      isDDL = false;
+    } else {
+      throw new UnsupportedException("Unsupported SQLStatement " + SQLUtils.toSQLString(stmt));
+    }
+    if(isDDL) {
+      return SQLType.DDL;
+    } else if (isDQL) {
+      return SQLType.DQL;
+    } else {
+      return SQLType.DML;
+    }
   }
 }

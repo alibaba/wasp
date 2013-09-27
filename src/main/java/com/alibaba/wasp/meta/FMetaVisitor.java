@@ -18,9 +18,9 @@
  */
 package com.alibaba.wasp.meta;
 
-import java.io.IOException;
-
 import org.apache.hadoop.hbase.client.Result;
+
+import java.io.IOException;
 
 /**
  * Implementations 'visit' a catalog table row.

@@ -17,10 +17,6 @@
  */
 package com.alibaba.wasp.plan.parser.druid.dialect;
 
-import java.util.List;
-
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlLockTableStatement.LockType;
-
 import com.alibaba.druid.sql.ast.SQLCommentHint;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
@@ -48,6 +44,9 @@ import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.SQLSelectParser;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.Token;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlLockTableStatement.LockType;
+
+import java.util.List;
 
 /**
  * 
@@ -103,7 +102,8 @@ public class WaspSqlStatementParser extends SQLStatementParser {
       return parseCreateDatabase();
     }
     if (lexer.token() == Token.UNIQUE || lexer.token() == Token.INDEX
-        || identifierEquals(FULLTEXT) || identifierEquals(SPATIAL)) {
+       // || identifierEquals(FULLTEXT) || identifierEquals(SPATIAL)
+       ) {
       return parseCreateIndex();
     }
 
@@ -113,7 +113,7 @@ public class WaspSqlStatementParser extends SQLStatementParser {
     throw new ParserException("TODO " + lexer.token() + " " + lexer.stringVal());
   }
 
-  public SQLStatement parseCreateIndex() {
+  public SQLStatement parseCreateIndex()  {
     WaspSqlCreateIndexStatement stmt = new WaspSqlCreateIndexStatement();
     if (lexer.token() == Token.UNIQUE) {
       stmt.setType("UNIQUE");

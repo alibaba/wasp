@@ -18,14 +18,13 @@
  */
 package com.alibaba.wasp.master;
 
+import com.alibaba.wasp.Server;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.hadoop.classification.InterfaceAudience;
+
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.Executors;
-
-import org.apache.hadoop.classification.InterfaceAudience;
-import com.alibaba.wasp.Server;
-
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * Base class used bulk assigning and unassigning entityGroups.
@@ -87,7 +86,7 @@ public abstract class BulkAssigner {
    *          Whether to assign synchronously.
    * @throws InterruptedException
    * @return True if done.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public boolean bulkAssign(boolean sync) throws InterruptedException,
       IOException {

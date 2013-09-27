@@ -17,6 +17,17 @@
  */
 package com.alibaba.wasp.meta;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.EntityGroupLocation;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.ServerName;
+import org.apache.hadoop.conf.Configurable;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.util.Pair;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -24,17 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
-
-import com.alibaba.wasp.EntityGroupLocation;import com.alibaba.wasp.ServerName;import org.apache.hadoop.conf.Configurable;
-import org.apache.hadoop.conf.Configured;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupLocation;
-import com.alibaba.wasp.MetaException;
-import com.alibaba.wasp.ServerName;
 
 /**
  * Meta Store operation services interface, including create\drop\alter\get
@@ -225,7 +225,7 @@ public abstract class FMetaServices extends Configured implements Configurable {
       byte[] tableName) throws MetaException;
 
   /**
-   * A {@link Visitor} that collects content out of passed {@link Result}.
+   * A {@link Visitor} that collects content out of passed {@link org.apache.hadoop.hbase.client.Result}.
    */
   static abstract class CollectingVisitor<T> implements FMetaVisitor {
     final List<T> results = new ArrayList<T>();

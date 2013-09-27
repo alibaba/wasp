@@ -17,9 +17,8 @@
  */
 package com.alibaba.wasp.fserver.redo;
 
-import com.alibaba.wasp.protobuf.generated.MetaProtos;import junit.framework.Assert;
-
-import com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionProto;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
+import junit.framework.Assert;
 import org.junit.Test;
 
 public class TestTransaction {

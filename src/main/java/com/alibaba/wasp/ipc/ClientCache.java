@@ -18,16 +18,15 @@
 
 package com.alibaba.wasp.ipc;
 
+import com.alibaba.wasp.FConstants;
+import org.apache.hadoop.conf.Configuration;
+
+import javax.net.SocketFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.net.SocketFactory;
-
-import com.alibaba.wasp.FConstants;import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.FConstants;
 
 /**
  * Cache a client using its socket factory as the hash key. Enables

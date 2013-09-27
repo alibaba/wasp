@@ -17,26 +17,21 @@
  */
 package com.alibaba.wasp.fserver.redo;
 
-import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.meta.StorageTableNameBuilder;
+import com.alibaba.wasp.plan.action.Primary;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.io.hfile.Compression.Algorithm;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.meta.StorageTableNameBuilder;
-import com.alibaba.wasp.plan.action.Primary;
+
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Wasp uses this class to support transaction feature.
@@ -112,7 +107,7 @@ public class RedoLog extends Redo {
   }
 
   /**
-   * 
+   *
    * @see com.alibaba.wasp.fserver.redo.Redo#append(com.alibaba.wasp.fserver.redo.Transaction)
    */
   @Override
@@ -145,7 +140,7 @@ public class RedoLog extends Redo {
   }
 
   /**
-   * 
+   *
    * @see com.alibaba.wasp.fserver.redo.Redo#commit(com.alibaba.wasp.fserver.redo.Transaction)
    */
   @Override
@@ -175,7 +170,7 @@ public class RedoLog extends Redo {
   }
 
   /**
-   * 
+   *
    * @see com.alibaba.wasp.fserver.redo.Redo#lastCommitedTransaction()
    */
   @Override
@@ -185,7 +180,7 @@ public class RedoLog extends Redo {
   }
 
   /**
-   * 
+   *
    * @see com.alibaba.wasp.fserver.redo.Redo#lastUnCommitedTransaction()
    */
   @Override
@@ -241,7 +236,7 @@ public class RedoLog extends Redo {
   }
 
   /**
-   * 
+   *
    * @throws NotInitlizedRedoException
    */
   private void checkInit() throws NotInitlizedRedoException {
@@ -252,7 +247,7 @@ public class RedoLog extends Redo {
 
   /**
    * Interrupt Transaction.
-   * 
+   *
    * @see java.io.Closeable#close()
    */
   @Override

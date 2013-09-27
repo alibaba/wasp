@@ -17,15 +17,14 @@
  */
 package com.alibaba.wasp;
 
-import com.alibaba.wasp.protobuf.generated.WaspProtos;import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos;import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.executor.EventHandler;
 import com.alibaba.wasp.executor.EventHandler.EventType;
 import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.protobuf.generated.WaspProtos;
-import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos.EntityGroupTransitionProtos;
-
+import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.hadoop.hbase.util.Bytes;
 
 /**
  * Current state of a EntityGroup in transition. Holds state of a EntityGroup as
@@ -33,7 +32,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * fserver, fmaster, and zk packages. Encapsulates protobuf
  * serialization/deserialization so we don't leak generated pb outside this
  * class. Create an instance using
- * {@link #createEntityGroupTransition(EventType, byte[], ServerName)}.
+ * {@link #createEntityGroupTransition(com.alibaba.wasp.executor.EventHandler.EventType, byte[], ServerName)}.
  * <p>
  * Immutable
  */
@@ -95,7 +94,7 @@ public class EntityGroupTransaction {
    * @param payload
    *          May be null
    * @return a serialized pb {@link com.alibaba.wasp.protobuf.generated.ZooKeeperProtos.EntityGroupTransitionProtos}
-   * 
+   *
    */
   public static EntityGroupTransaction createEntityGroupTransition(
       final EventType type, final byte[] entityGroup, final ServerName sn,

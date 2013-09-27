@@ -18,21 +18,21 @@
  */
 package com.alibaba.wasp.master;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.ClusterStatus;
 import com.alibaba.wasp.MiniWaspCluster;
 import com.alibaba.wasp.WaspTestingUtility;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.util.JVMClusterUtil.MasterThread;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestMasterShutdown {
   private static final Log LOG = LogFactory.getLog(TestMasterShutdown.class);

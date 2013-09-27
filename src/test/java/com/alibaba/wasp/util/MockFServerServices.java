@@ -17,16 +17,6 @@
  */
 package com.alibaba.wasp.util;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ExecutorService;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.fserver.EntityGroup;
 import com.alibaba.wasp.fserver.EntityGroupServices;
@@ -35,6 +25,16 @@ import com.alibaba.wasp.fserver.GlobalEntityGroup;
 import com.alibaba.wasp.fserver.Leases;
 import com.alibaba.wasp.storage.StorageActionManager;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Basic mock fserver services.
@@ -55,7 +55,7 @@ public class MockFServerServices implements FServerServices {
   }
 
   /**
-   * @see com.alibaba.wasp.fserver.OnlineEntityGroups#removeFromOnlineEntityGroups(java.lang.String)
+   * @see com.alibaba.wasp.fserver.OnlineEntityGroups#removeFromOnlineEntityGroups(String)
    */
   @Override
   public boolean removeFromOnlineEntityGroups(String encodedEntityGroupName) {
@@ -63,7 +63,7 @@ public class MockFServerServices implements FServerServices {
   }
 
   /**
-   * @see com.alibaba.wasp.fserver.OnlineEntityGroups#getFromOnlineEntityGroups(java.lang.String)
+   * @see com.alibaba.wasp.fserver.OnlineEntityGroups#getFromOnlineEntityGroups(String)
    */
   @Override
   public EntityGroup getFromOnlineEntityGroups(String encodedEntityGroupName) {

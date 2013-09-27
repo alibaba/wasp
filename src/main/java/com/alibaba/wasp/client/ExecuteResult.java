@@ -17,11 +17,11 @@
  */
 package com.alibaba.wasp.client;
 
-import java.util.Map;
-
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.fserver.OperationStatus;
+import org.apache.hadoop.hbase.util.Pair;
+
+import java.util.Map;
 
 /**
  * Supper class of QueryResult and WriteResult.

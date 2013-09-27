@@ -1,7 +1,5 @@
 package com.alibaba.wasp.jdbc;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.jdbc.command.CommandInterface;
@@ -24,8 +22,12 @@ import com.alibaba.wasp.jdbc.value.ValueShort;
 import com.alibaba.wasp.jdbc.value.ValueString;
 import com.alibaba.wasp.jdbc.value.ValueTime;
 import com.alibaba.wasp.jdbc.value.ValueTimestamp;
+import com.alibaba.wasp.session.ExecuteSession;
+import com.alibaba.wasp.session.SessionFactory;
 import com.alibaba.wasp.util.DateTimeUtils;
 import com.alibaba.wasp.util.New;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -58,12 +60,14 @@ public class JdbcPreparedStatement extends JdbcStatement implements
   protected CommandInterface command;
   private final String sqlStatement;
   private ArrayList<Value[]> batchParameters;
+  protected ExecuteSession session;
 
   JdbcPreparedStatement(JdbcConnection conn, String sql, int resultSetType,
       int resultSetConcurrency, boolean closeWithResultSet) {
     super(conn, resultSetType, resultSetConcurrency, closeWithResultSet);
     this.sqlStatement = sql;
-    command = conn.prepareCommand(sql, fetchSize);
+    this.session = SessionFactory.createExecuteSession();
+    command = conn.prepareCommand(sql, fetchSize, session);
   }
 
   /**
@@ -1459,7 +1463,7 @@ public class JdbcPreparedStatement extends JdbcStatement implements
       // if the session was re-connected, re-prepare the statement
       ArrayList<? extends ParameterInterface> oldParams = command
           .getParameters();
-      command = conn.prepareCommand(sqlStatement, fetchSize);
+      command = conn.prepareCommand(sqlStatement, fetchSize, session);
       ArrayList<? extends ParameterInterface> newParams = command
           .getParameters();
       for (int i = 0, size = oldParams.size(); i < size; i++) {

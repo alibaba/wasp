@@ -17,13 +17,12 @@
  */
 package com.alibaba.wasp.messagequeue;
 
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.fserver.EntityGroup;
 import com.alibaba.wasp.storage.StorageActionManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
 
 /**
  * Subscriber builder.

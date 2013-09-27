@@ -17,31 +17,29 @@
  */
 package com.alibaba.wasp.plan.parser;
 
-import java.io.IOException;
-
-import com.alibaba.wasp.ZooKeeperConnectionException;import com.alibaba.wasp.client.FConnection;import com.alibaba.wasp.client.FConnectionManager;import com.alibaba.wasp.plan.parser.druid.DruidDDLParser;import com.alibaba.wasp.plan.parser.druid.DruidDMLParser;import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;import com.alibaba.wasp.plan.parser.druid.DruidParser;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateIndexStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlDescribeStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowCreateTableStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowIndexesStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowTablesStatement;import org.apache.hadoop.conf.Configuration;
+import com.alibaba.wasp.EntityGroupLocation;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.TransactionParseException;
 import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.client.FConnection;
 import com.alibaba.wasp.client.FConnectionManager;
+import com.alibaba.wasp.meta.FTable;
+import com.alibaba.wasp.meta.TableSchemaCacheReader;
+import com.alibaba.wasp.plan.DMLPlan;
+import com.alibaba.wasp.plan.DMLTransactionPlan;
+import com.alibaba.wasp.plan.action.DMLAction;
+import com.alibaba.wasp.plan.action.TransactionAction;
 import com.alibaba.wasp.plan.parser.druid.DruidDDLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDMLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidParser;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateIndexStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlDescribeStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowCreateTableStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowIndexesStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowTablesStatement;
+import org.apache.hadoop.conf.Configuration;
 
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.SQLDropIndexStatement;
-import com.alibaba.druid.sql.ast.statement.SQLDropTableStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableStatement;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Wrap class for DruidDDLParser DruidDMLParser
@@ -58,15 +56,13 @@ public class WaspParser extends DruidParser {
   /**
    * Empty constructor.
    * 
-   * @param conf
    * @throws com.alibaba.wasp.ZooKeeperConnectionException
    */
   public WaspParser() throws ZooKeeperConnectionException {
   }
   
   /**
-   * @param conf
-   * @throws ZooKeeperConnectionException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
    */
   public WaspParser(DruidDDLParser ddlParser, DruidDQLParser dqlParser,
       DruidDMLParser dmlParser) throws ZooKeeperConnectionException {
@@ -90,7 +86,7 @@ public class WaspParser extends DruidParser {
   }
 
   /**
-   * @throws ZooKeeperConnectionException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
    * @see org.apache.hadoop.conf.Configurable#setConf(org.apache.hadoop.conf.Configuration)
    */
   @Override
@@ -115,65 +111,72 @@ public class WaspParser extends DruidParser {
   /**
    * Generate plan(insert plan,update plan,delete plan,query plan) in the parse
    * context
-   * 
+   *
    * @param context
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void generatePlan(ParseContext context) throws IOException {
-    parseSqlToStatement(context);
-    SQLStatement stmt = context.getStmt();
-    boolean isDDL = false;
-    boolean isDQL = false;
-    if (stmt instanceof WaspSqlCreateTableStatement) {
-      // This is a Create Table SQL
-      isDDL = true;
-    } else if (stmt instanceof WaspSqlCreateIndexStatement) {
-      // This is a Create Index SQL
-      isDDL = true;
-    } else if (stmt instanceof SQLDropTableStatement) {
-      // This is a Drop Table SQL
-      isDDL = true;
-    } else if (stmt instanceof SQLDropIndexStatement) {
-      // This is a Drop Index SQL
-      isDDL = true;
-    } else if (stmt instanceof MySqlAlterTableStatement) {
-      // This is a Alter Table SQL
-      isDDL = true;
-    } else if (stmt instanceof WaspSqlShowTablesStatement) {
-      // This is a Show Tables SQL
-      isDDL = true;
-    } else if (stmt instanceof WaspSqlShowCreateTableStatement) {
-      // This is a Show Create Table SQL
-      isDDL = true;
-    } else if (stmt instanceof WaspSqlDescribeStatement) {
-      // This is a DESCRIBE SQL
-      isDDL = true;
-    } else if (stmt instanceof WaspSqlShowIndexesStatement) {
-      // This is a SHOW INDEXES SQL
-      isDDL = true;
-    } else if (stmt instanceof SQLSelectStatement) {
-      // This is a Select SQL
-      isDDL = false;
-      isDQL = true;
-    } else if (stmt instanceof SQLUpdateStatement) {
-      // This is a Update SQL
-      isDDL = false;
-    } else if (stmt instanceof SQLInsertStatement) {
-      // This is a Insert SQL
-      isDDL = false;
-    } else if (stmt instanceof SQLDeleteStatement) {
-      // This is a Delete SQL
-      isDDL = false;
-    } else {
-      throw new UnsupportedException("Unsupported SQLStatement " + stmt);
+    SQLType sqlType = getSQLType(context);
+    switch (sqlType) {
+      case DDL: ddlParser.generatePlan(context);break;
+      case DQL: dqlParser.generatePlan(context);break;
+      case DML: dmlParser.generatePlan(context);break;
     }
-    if (isDDL) {
-      ddlParser.generatePlan(context);
-    } else if (isDQL) {
-      dqlParser.generatePlan(context);
-    } else {
-      dmlParser.generatePlan(context);
+  }
+
+  public static DMLTransactionPlan generateTransactionPlan(ParseContext context, List<DMLPlan> dmlPlans) throws MetaException, TransactionParseException {
+    Set<String> checkTables = new HashSet<String>();
+    List<DMLAction> dmlActions = new ArrayList<DMLAction>();
+    for (DMLPlan dmlPlan : dmlPlans) {
+      for (DMLAction dmlAction : dmlPlan.getActions()) {
+        checkTables.add(dmlAction.getTableName());
+        dmlActions.add(dmlAction);
+      }
     }
+    String parentTable = checkTablesAndGetParent(checkTables, context);
+    List<TransactionAction> transactions = new ArrayList<TransactionAction>();
+    transactions.add(createTransactionAction(parentTable, dmlActions));
+    DMLTransactionPlan transactionPlan = new DMLTransactionPlan(transactions);
+    return transactionPlan;
+  }
+
+  private static TransactionAction createTransactionAction(String parentTable, List<DMLAction> dmlActions) throws TransactionParseException {
+    TransactionAction transactionAction = new TransactionAction(parentTable, dmlActions);
+    EntityGroupLocation entityGroupLocation = null;
+    for (DMLAction dmlAction : dmlActions) {
+      if(entityGroupLocation == null) {
+        entityGroupLocation = dmlAction.getEntityGroupLocation();
+      } else {
+        if(entityGroupLocation.compareTo(dmlAction.getEntityGroupLocation()) != 0) {
+          throw new TransactionParseException("child table row must be the same entityGoup with parent row. it means value of egk row must be same");
+        }
+      }
+    }
+    transactionAction.setEntityGroupLocation(entityGroupLocation);
+    return transactionAction;
+  }
+
+  private static String checkTablesAndGetParent(Set<String> checkTables, ParseContext context) throws MetaException, TransactionParseException {
+    TableSchemaCacheReader reader = context.getTsr();
+    String parentTable = null;
+    for (String checkTable : checkTables) {
+      FTable table = reader.getSchema(checkTable);
+      if(table.getTableType() == FTable.TableType.ROOT) {
+        if(parentTable != null && !parentTable.equals(table.getTableName())) {
+          throw new TransactionParseException("in a transaction can be no more than one parent table");
+        } else {
+          parentTable = table.getTableName();
+        }
+      } else {
+        if(parentTable != null && (!parentTable.equals(table.getParentName()))) {
+          throw new TransactionParseException("in a transaction can be no more than one parent table. and others must be the parent's child");
+        } else {
+          parentTable = table.getParentName();
+        }
+      }
+
+    }
+    return parentTable;
   }
 }

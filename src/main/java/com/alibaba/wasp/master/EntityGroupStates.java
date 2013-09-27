@@ -17,6 +17,18 @@
  */
 package com.alibaba.wasp.master;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.EntityGroupTransaction;
+import com.alibaba.wasp.Server;
+import com.alibaba.wasp.ServerLoad;
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.meta.FMetaReader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.classification.InterfaceAudience;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,19 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.EntityGroupTransaction;import com.alibaba.wasp.Server;import com.alibaba.wasp.ServerName;import com.alibaba.wasp.meta.FMetaReader;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.classification.InterfaceAudience;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupTransaction;
-import com.alibaba.wasp.Server;
-import com.alibaba.wasp.ServerLoad;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.master.EntityGroupState.State;
-import com.alibaba.wasp.meta.FMetaReader;
 
 /**
  * EntityGroup state accountant. It holds the states of all entityGroups in the
@@ -215,7 +214,7 @@ public class EntityGroupStates {
   /**
    * Update a entityGroup state. If it is not splitting, it will be put in
    * transition if not already there.
-   * 
+   *
    * If we can't find the entityGroup info based on the entityGroup name in the
    * transition, log a warning and return null.
    */

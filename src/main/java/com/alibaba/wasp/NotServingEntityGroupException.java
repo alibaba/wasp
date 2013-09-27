@@ -18,9 +18,9 @@
  */
 package com.alibaba.wasp;
 
-import java.io.IOException;
-
 import org.apache.hadoop.hbase.util.Bytes;
+
+import java.io.IOException;
 
 /**
  * Thrown by a entityGroup server if it is sent a request for a entityGroup it is not

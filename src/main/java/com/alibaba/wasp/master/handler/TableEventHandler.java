@@ -18,11 +18,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.Server;import com.alibaba.wasp.ServerName;import com.alibaba.wasp.TableNotDisabledException;import com.alibaba.wasp.executor.EventHandler;import com.alibaba.wasp.master.BulkReOpen;import com.alibaba.wasp.meta.FMetaReader;import com.alibaba.wasp.meta.FMetaScanner;import com.alibaba.wasp.meta.FTable;import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.ServerName;
@@ -33,6 +28,11 @@ import com.alibaba.wasp.master.FMasterServices;
 import com.alibaba.wasp.meta.FMetaReader;
 import com.alibaba.wasp.meta.FMetaScanner;
 import com.alibaba.wasp.meta.FTable;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
@@ -163,7 +163,7 @@ public abstract class TableEventHandler extends EventHandler {
    * Table modifications are processed asynchronously, but provide an API for
    * you to query their status.
    * 
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public synchronized void waitForPersist() throws IOException {
     if (!persistedToZk) {
@@ -185,7 +185,7 @@ public abstract class TableEventHandler extends EventHandler {
 
   /**
    * @return Table Info for this table
-   * @throws IOException
+   * @throws java.io.IOException
    */
   FTable getTable() throws IOException {
     FTable table = FMetaReader

@@ -20,7 +20,7 @@
 package com.alibaba.wasp.plan.operator;
 
 
-public class FetchOperator extends Operator{
+public class FetchOperator extends Operator {
 
   @Override
   public String getName() {

@@ -17,10 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import com.alibaba.wasp.TableExistsException;import com.alibaba.wasp.master.AssignmentManager;import com.alibaba.wasp.master.FServerManager;import com.google.protobuf.ServiceException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.ServerName;
@@ -34,6 +30,10 @@ import com.alibaba.wasp.master.TableLockManager;
 import com.alibaba.wasp.meta.FMetaEditor;
 import com.alibaba.wasp.meta.FMetaReader;
 import com.alibaba.wasp.meta.FTable;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;

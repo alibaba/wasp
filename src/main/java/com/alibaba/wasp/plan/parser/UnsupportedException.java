@@ -19,9 +19,9 @@
  */
 package com.alibaba.wasp.plan.parser;
 
-import com.alibaba.wasp.ClientConcernedException;import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.ClientConcernedException;
 import com.alibaba.wasp.SQLErrorCode;
+import org.apache.hadoop.hbase.util.Bytes;
 
 public class UnsupportedException extends ClientConcernedException {
   private static final long serialVersionUID = 1L << 17 - 1L;

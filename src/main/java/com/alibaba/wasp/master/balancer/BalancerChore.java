@@ -17,12 +17,12 @@
  */
 package com.alibaba.wasp.master.balancer;
 
-import java.io.IOException;
-
+import com.alibaba.wasp.master.FMaster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.Chore;
-import com.alibaba.wasp.master.FMaster;
+
+import java.io.IOException;
 
 /**
  * Chore that will call FMaster.balance{@link org.apache.wap.master.FMaster#balance()} when

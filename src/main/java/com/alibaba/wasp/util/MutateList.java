@@ -17,15 +17,15 @@
  */
 package com.alibaba.wasp.util;
 
+import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate;
+import org.apache.hadoop.hbase.util.Bytes;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
-
-import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate;
 
 public class MutateList {
 

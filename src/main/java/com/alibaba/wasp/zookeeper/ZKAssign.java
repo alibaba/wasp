@@ -18,19 +18,17 @@
  */
 package com.alibaba.wasp.zookeeper;
 
-import com.alibaba.wasp.DeserializationException;import com.alibaba.wasp.ServerName;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.HConstants;
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupTransaction;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.executor.EventHandler.EventType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.Code;
-import org.apache.zookeeper.KeeperException.NoNodeException;
-import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.data.Stat;
 
 import java.util.List;
@@ -110,24 +108,24 @@ public class ZKAssign {
   /**
    * Creates a new unassigned node in the OFFLINE state for the specified
    * entityGroup.
-   * 
+   *
    * <p>
    * Does not transition nodes from other states. If a node already exists for
-   * this entityGroup, a {@link NodeExistsException} will be thrown.
-   * 
+   * this entityGroup, a {@link org.apache.zookeeper.KeeperException.NodeExistsException} will be thrown.
+   *
    * <p>
    * Sets a watcher on the unassigned entityGroup node if the method is
    * successful.
-   * 
+   *
    * <p>
    * This method should only be used during cluster startup and the enabling of
    * a table.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be created as offline
    * @param serverName server transition will happen on
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NodeExistsException if node already exists
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException if node already exists
    */
   public static void createNodeOffline(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup, ServerName serverName) throws KeeperException,
@@ -152,17 +150,17 @@ public class ZKAssign {
    * entityGroup.
    * <p>
    * Runs asynchronously. Depends on no pre-existing znode.
-   * 
+   *
    * <p>
    * Sets a watcher on the unassigned entityGroup node.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be created as offline
    * @param serverName server transition will happen on
    * @param cb
    * @param ctx
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NodeExistsException if node already exists
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException if node already exists
    */
   public static void asyncCreateNodeOffline(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup, ServerName serverName,
@@ -182,21 +180,21 @@ public class ZKAssign {
    * <p>
    * Attempts to create the node but if it exists will force it to transition to
    * and OFFLINE state.
-   * 
+   *
    * <p>
    * Sets a watcher on the unassigned entityGroup node if the method is
    * successful.
-   * 
+   *
    * <p>
    * This method should be used when assigning a entityGroup.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be created as offline
    * @param serverName server transition will happen on
    * @return the version of the znode created in OFFLINE state, -1 if
    *         unsuccessful.
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NodeExistsException if node already exists
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException if node already exists
    */
   public static int createOrForceNodeOffline(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup, ServerName serverName) throws KeeperException {
@@ -243,26 +241,26 @@ public class ZKAssign {
   /**
    * Deletes an existing unassigned node that is in the OPENED state for the
    * specified entityGroup.
-   * 
+   *
    * <p>
    * If a node does not already exist for this entityGroup, a
-   * {@link NoNodeException} will be thrown.
-   * 
+   * {@link org.apache.zookeeper.KeeperException.NoNodeException} will be thrown.
+   *
    * <p>
    * No watcher is set whether this succeeds or not.
-   * 
+   *
    * <p>
    * Returns false if the node was not in the proper state but did exist.
-   * 
+   *
    * <p>
    * This method is used during normal entityGroup transitions when a
    * entityGroup finishes successfully opening. This is the Master acknowledging
    * completion of the specified entityGroups transition.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroupName opened entityGroup to be deleted from zk
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NoNodeException if node does not exist
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NoNodeException if node does not exist
    */
   public static boolean deleteOpenedNode(ZooKeeperWatcher zkw,
       String entityGroupName)
@@ -273,25 +271,25 @@ public class ZKAssign {
   /**
    * Deletes an existing unassigned node that is in the OFFLINE state for the
    * specified entityGroup.
-   * 
+   *
    * <p>
    * If a node does not already exist for this entityGroup, a
-   * {@link NoNodeException} will be thrown.
-   * 
+   * {@link org.apache.zookeeper.KeeperException.NoNodeException} will be thrown.
+   *
    * <p>
    * No watcher is set whether this succeeds or not.
-   * 
+   *
    * <p>
    * Returns false if the node was not in the proper state but did exist.
-   * 
+   *
    * <p>
    * This method is used during master failover when the entityGroups on an RS
    * that has died are all set to OFFLINE before being processed.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroupName closed entityGroup to be deleted from zk
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NoNodeException if node does not exist
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NoNodeException if node does not exist
    */
   public static boolean deleteOfflineNode(ZooKeeperWatcher zkw,
       String entityGroupName) throws KeeperException,
@@ -302,26 +300,26 @@ public class ZKAssign {
   /**
    * Deletes an existing unassigned node that is in the CLOSED state for the
    * specified entityGroup.
-   * 
+   *
    * <p>
    * If a node does not already exist for this entityGroup, a
-   * {@link NoNodeException} will be thrown.
-   * 
+   * {@link org.apache.zookeeper.KeeperException.NoNodeException} will be thrown.
+   *
    * <p>
    * No watcher is set whether this succeeds or not.
-   * 
+   *
    * <p>
    * Returns false if the node was not in the proper state but did exist.
-   * 
+   *
    * <p>
    * This method is used during table disables when a entityGroup finishes
    * successfully closing. This is the Master acknowledging completion of the
    * specified entityGroups transition to being closed.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroupName closed entityGroup to be deleted from zk
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NoNodeException if node does not exist
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NoNodeException if node does not exist
    */
   public static boolean deleteClosedNode(ZooKeeperWatcher zkw,
       String entityGroupName)
@@ -332,26 +330,26 @@ public class ZKAssign {
   /**
    * Deletes an existing unassigned node that is in the CLOSING state for the
    * specified entityGroup.
-   * 
+   *
    * <p>
    * If a node does not already exist for this entityGroup, a
-   * {@link NoNodeException} will be thrown.
-   * 
+   * {@link org.apache.zookeeper.KeeperException.NoNodeException} will be thrown.
+   *
    * <p>
    * No watcher is set whether this succeeds or not.
-   * 
+   *
    * <p>
    * Returns false if the node was not in the proper state but did exist.
-   * 
+   *
    * <p>
    * This method is used during table disables when a entityGroup finishes
    * successfully closing. This is the Master acknowledging completion of the
    * specified entityGroups transition to being closed.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup closing entityGroup to be deleted from zk
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NoNodeException if node does not exist
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NoNodeException if node does not exist
    */
   public static boolean deleteClosingNode(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup) throws KeeperException,
@@ -363,27 +361,27 @@ public class ZKAssign {
   /**
    * Deletes an existing unassigned node that is in the specified state for the
    * specified entityGroup.
-   * 
+   *
    * <p>
    * If a node does not already exist for this entityGroup, a
-   * {@link NoNodeException} will be thrown.
-   * 
+   * {@link org.apache.zookeeper.KeeperException.NoNodeException} will be thrown.
+   *
    * <p>
    * No watcher is set whether this succeeds or not.
-   * 
+   *
    * <p>
    * Returns false if the node was not in the proper state but did exist.
-   * 
+   *
    * <p>
    * This method is used when a entityGroup finishes opening/closing. The Master
    * acknowledges completion of the specified entityGroups transition to being
    * closed/opened.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroupName entityGroup to be deleted from zk
    * @param expectedState state entityGroup must be in for delete to complete
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NoNodeException if node does not exist
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NoNodeException if node does not exist
    */
   public static boolean deleteNode(ZooKeeperWatcher zkw,
       String entityGroupName,
@@ -395,30 +393,30 @@ public class ZKAssign {
   /**
    * Deletes an existing unassigned node that is in the specified state for the
    * specified entityGroup.
-   * 
+   *
    * <p>
    * If a node does not already exist for this entityGroup, a
-   * {@link NoNodeException} will be thrown.
-   * 
+   * {@link org.apache.zookeeper.KeeperException.NoNodeException} will be thrown.
+   *
    * <p>
    * No watcher is set whether this succeeds or not.
-   * 
+   *
    * <p>
    * Returns false if the node was not in the proper state but did exist.
-   * 
+   *
    * <p>
    * This method is used when a entityGroup finishes opening/closing. The Master
    * acknowledges completion of the specified entityGroups transition to being
    * closed/opened.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroupName entityGroup to be deleted from zk
    * @param expectedState state entityGroup must be in for delete to complete
    * @param expectedVersion of the znode that is to be deleted. If
    *          expectedVersion need not be compared while deleting the znode pass
    *          -1
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NoNodeException if node does not exist
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NoNodeException if node does not exist
    */
   public static boolean deleteNode(ZooKeeperWatcher zkw,
       String entityGroupName,
@@ -462,16 +460,16 @@ public class ZKAssign {
 
   /**
    * Deletes all unassigned nodes regardless of their state.
-   * 
+   *
    * <p>
    * No watchers are set.
-   * 
+   *
    * <p>
    * This method is used by the Master during cluster startup to clear out any
    * existing state from other cluster runs.
-   * 
+   *
    * @param zkw zk reference
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static void deleteAllNodes(ZooKeeperWatcher zkw)
       throws KeeperException {
@@ -484,28 +482,28 @@ public class ZKAssign {
   /**
    * Creates a new unassigned node in the CLOSING state for the specified
    * entityGroup.
-   * 
+   *
    * <p>
    * Does not transition nodes from any states. If a node already exists for
-   * this entityGroup, a {@link NodeExistsException} will be thrown.
-   * 
+   * this entityGroup, a {@link org.apache.zookeeper.KeeperException.NodeExistsException} will be thrown.
+   *
    * <p>
    * If creation is successful, returns the version number of the CLOSING node
    * created.
-   * 
+   *
    * <p>
    * Does not set any watches.
-   * 
+   *
    * <p>
    * This method should only be used by a FServer when initiating a close
    * of a entityGroup after receiving a CLOSE RPC from the Master.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be created as closing
    * @param serverName server transition will happen on
    * @return version of node after transition, -1 if unsuccessful transition
-   * @throws KeeperException if unexpected zookeeper exception
-   * @throws KeeperException.NodeExistsException if node already exists
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException if node already exists
    */
   public static int createNodeClosing(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup,
@@ -523,12 +521,12 @@ public class ZKAssign {
   /**
    * Transitions an existing unassigned node for the specified entityGroup which
    * is currently in the CLOSING state to be in the CLOSED state.
-   * 
+   *
    * <p>
    * Does not transition nodes from other states. If for some reason the node
    * could not be transitioned, the method returns -1. If the transition is
    * successful, the version of the node after transition is returned.
-   * 
+   *
    * <p>
    * This method can fail and return false for three different reasons:
    * <ul>
@@ -537,19 +535,19 @@ public class ZKAssign {
    * <li>After verifying CLOSING state, update fails because of wrong version
    * (someone else already transitioned the node)</li>
    * </ul>
-   * 
+   *
    * <p>
    * Does not set any watches.
-   * 
+   *
    * <p>
    * This method should only be used by a FServer when initiating a close
    * of a entityGroup after receiving a CLOSE RPC from the Master.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be transitioned to closed
    * @param serverName server transition happens on
    * @return version of node after transition, -1 if unsuccessful transition
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static int transitionNodeClosed(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup, ServerName serverName, int expectedVersion)
@@ -562,12 +560,12 @@ public class ZKAssign {
   /**
    * Transitions an existing unassigned node for the specified entityGroup which
    * is currently in the OFFLINE state to be in the OPENING state.
-   * 
+   *
    * <p>
    * Does not transition nodes from other states. If for some reason the node
    * could not be transitioned, the method returns -1. If the transition is
    * successful, the version of the node written as OPENING is returned.
-   * 
+   *
    * <p>
    * This method can fail and return -1 for three different reasons:
    * <ul>
@@ -576,19 +574,19 @@ public class ZKAssign {
    * <li>After verifying OFFLINE state, update fails because of wrong version
    * (someone else already transitioned the node)</li>
    * </ul>
-   * 
+   *
    * <p>
    * Does not set any watches.
-   * 
+   *
    * <p>
    * This method should only be used by a FServer when initiating an open
    * of a entityGroup after receiving an OPEN RPC from the Master.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be transitioned to opening
    * @param serverName server transition happens on
    * @return version of node after transition, -1 if unsuccessful transition
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static int transitionNodeOpening(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup, ServerName serverName) throws KeeperException {
@@ -606,12 +604,12 @@ public class ZKAssign {
   /**
    * Retransitions an existing unassigned node for the specified entityGroup
    * which is currently in the OPENING state to be in the OPENING state.
-   * 
+   *
    * <p>
    * Does not transition nodes from other states. If for some reason the node
    * could not be transitioned, the method returns -1. If the transition is
    * successful, the version of the node rewritten as OPENING is returned.
-   * 
+   *
    * <p>
    * This method can fail and return -1 for three different reasons:
    * <ul>
@@ -620,19 +618,19 @@ public class ZKAssign {
    * <li>After verifying OPENING state, update fails because of wrong version
    * (someone else already transitioned the node)</li>
    * </ul>
-   * 
+   *
    * <p>
    * Does not set any watches.
-   * 
+   *
    * <p>
    * This method should only be used by a FServer when initiating an open
    * of a entityGroup after receiving an OPEN RPC from the Master.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be transitioned to opening
    * @param serverName server transition happens on
    * @return version of node after transition, -1 if unsuccessful transition
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static int retransitionNodeOpening(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup, ServerName serverName, int expectedVersion)
@@ -645,12 +643,12 @@ public class ZKAssign {
   /**
    * Transitions an existing unassigned node for the specified entityGroup which
    * is currently in the OPENING state to be in the OPENED state.
-   * 
+   *
    * <p>
    * Does not transition nodes from other states. If for some reason the node
    * could not be transitioned, the method returns -1. If the transition is
    * successful, the version of the node after transition is returned.
-   * 
+   *
    * <p>
    * This method can fail and return false for three different reasons:
    * <ul>
@@ -661,19 +659,19 @@ public class ZKAssign {
    * following a transition to OPENING. if two RS are conflicting, one would
    * fail the original transition to OPENING and not this transition)</li>
    * </ul>
-   * 
+   *
    * <p>
    * Does not set any watches.
-   * 
+   *
    * <p>
    * This method should only be used by a FServer when completing the open
    * of a entityGroup.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be transitioned to opened
    * @param serverName server transition happens on
    * @return version of node after transition, -1 if unsuccessful transition
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static int transitionNodeOpened(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup, ServerName serverName, int expectedVersion)
@@ -685,27 +683,27 @@ public class ZKAssign {
 
   /**
    * Method that actually performs unassigned node transitions.
-   * 
+   *
    * <p>
    * Attempts to transition the unassigned node for the specified entityGroup
    * from the expected state to the state in the specified transition data.
-   * 
+   *
    * <p>
    * Method first reads existing data and verifies it is in the expected state.
    * If the node does not exist or the node is not in the expected state, the
    * method returns -1. If the transition is successful, the version number of
    * the node following the transition is returned.
-   * 
+   *
    * <p>
    * If the read state is what is expected, it attempts to write the new state
    * and data into the node. When doing this, it includes the expected version
    * (determined when the existing state was verified) to ensure that only one
    * transition is successful. If there is a version mismatch, the method
    * returns -1.
-   * 
+   *
    * <p>
    * If the write is successful, no watch is set and the method returns true.
-   * 
+   *
    * @param zkw zk reference
    * @param entityGroup entityGroup to be transitioned to opened
    * @param serverName server transition happens on
@@ -713,7 +711,7 @@ public class ZKAssign {
    * @param beginState state the node must currently be in to do transition
    * @param expectedVersion expected version of data before modification, or -1
    * @return version of node after transition, -1 if unsuccessful transition
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static int transitionNode(ZooKeeperWatcher zkw,
       EntityGroupInfo entityGroup,
@@ -816,17 +814,17 @@ public class ZKAssign {
   /**
    * Gets the current data in the unassigned node for the specified entityGroup
    * name or fully-qualified path.
-   * 
+   *
    * <p>
    * Returns null if the entityGroup does not currently have a node.
-   * 
+   *
    * <p>
    * Sets a watch on the node if the node exists.
-   * 
+   *
    * @param zkw zk reference
    * @param pathOrEntityGroupName fully-specified path or entityGroup name
    * @return znode content
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static byte[] getData(ZooKeeperWatcher zkw, String pathOrEntityGroupName)
       throws KeeperException {
@@ -837,18 +835,18 @@ public class ZKAssign {
   /**
    * Gets the current data in the unassigned node for the specified entityGroup
    * name or fully-qualified path.
-   * 
+   *
    * <p>
    * Returns null if the entityGroup does not currently have a node.
-   * 
+   *
    * <p>
    * Sets a watch on the node if the node exists.
-   * 
+   *
    * @param zkw zk reference
    * @param pathOrEntityGroupName fully-specified path or entityGroup name
    * @param stat object to populate the version.
    * @return znode content
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static byte[] getDataAndWatch(ZooKeeperWatcher zkw,
       String pathOrEntityGroupName, Stat stat) throws KeeperException {
@@ -859,18 +857,18 @@ public class ZKAssign {
   /**
    * Gets the current data in the unassigned node for the specified entityGroup
    * name or fully-qualified path.
-   * 
+   *
    * <p>
    * Returns null if the entityGroup does not currently have a node.
-   * 
+   *
    * <p>
    * Does not set a watch.
-   * 
+   *
    * @param zkw zk reference
    * @param pathOrEntityGroupName fully-specified path or entityGroup name
    * @param stat object to store node info into on getData call
    * @return znode content
-   * @throws KeeperException if unexpected zookeeper exception
+   * @throws org.apache.zookeeper.KeeperException if unexpected zookeeper exception
    */
   public static byte[] getDataNoWatch(ZooKeeperWatcher zkw,
       String pathOrEntityGroupName, Stat stat) throws KeeperException {
@@ -894,7 +892,7 @@ public class ZKAssign {
    * @param zkw zk reference
    * @param entityGroup entityGroup's info
    * @return the version of the znode, -1 if it doesn't exist
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static int getVersion(ZooKeeperWatcher zkw, EntityGroupInfo entityGroup)
       throws KeeperException {
@@ -908,7 +906,7 @@ public class ZKAssign {
    * Fail silent even if the node does not exist at all.
    * @param watcher
    * @param entityGroupInfo
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static void deleteNodeFailSilent(ZooKeeperWatcher watcher,
       EntityGroupInfo entityGroupInfo) throws KeeperException {
@@ -921,7 +919,7 @@ public class ZKAssign {
    * <p>
    * Used in testing only.
    * @param zkw zk reference
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    * @throws InterruptedException
    */
   public static void blockUntilNoRIT(ZooKeeperWatcher zkw)
@@ -943,7 +941,7 @@ public class ZKAssign {
    * <p>
    * Used in testing only.
    * @param zkw zk reference
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    * @throws InterruptedException
    */
   public static void blockUntilRIT(ZooKeeperWatcher zkw)

@@ -17,19 +17,18 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.List;
-import java.util.Random;
-
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.protobuf.RequestConverter;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteRequest;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResponse;
-
 import com.google.protobuf.ServiceException;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
+import java.util.Random;
 
 public class FClientCallable extends ServerCallable<ExecuteResponse> implements
     Closeable {
@@ -48,12 +47,16 @@ public class FClientCallable extends ServerCallable<ExecuteResponse> implements
 
   private String sessionId;
 
+  private boolean isTransaction = false;
+
+  private List<String> sqls;
+
   /**
    * @param connection
    * @param fserverTracker
    * @param sql
    * @param model
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public FClientCallable(FConnection connection,
       FClientFServerTracker fserverTracker, String sql, ReadModel model,
@@ -63,6 +66,35 @@ public class FClientCallable extends ServerCallable<ExecuteResponse> implements
     this.sql = sql;
     this.model = model;
     this.fetchSize = fetchSize;
+  }
+
+   /**
+   * @param connection
+   * @param fserverTracker
+   * @param sql
+   * @param model
+   * @throws java.io.IOException
+   */
+  public FClientCallable(FConnection connection,
+      FClientFServerTracker fserverTracker, String sql, ReadModel model,
+      int fetchSize, String sessionId) throws IOException {
+    super(connection, null, null);
+    this.fserverTracker = fserverTracker;
+    this.sql = sql;
+    this.model = model;
+    this.fetchSize = fetchSize;
+    this.sessionId = sessionId;
+  }
+
+  public FClientCallable(FConnection connection, FClientFServerTracker fserverTracker,
+                         List<String> sqls, boolean isTransaction, String sessionId) {
+    super(connection, null, null);
+    this.sql = null;
+    this.model = null;
+    this.fserverTracker = fserverTracker;
+    this.sessionId = sessionId;
+    this.isTransaction = isTransaction;
+    this.sqls = sqls;
   }
 
   /**
@@ -86,7 +118,12 @@ public class FClientCallable extends ServerCallable<ExecuteResponse> implements
    */
   @Override
   public ExecuteResponse call() throws IOException {
-    ExecuteRequest request = RequestConverter.buildExecuteRequest(sql, model, fetchSize, sessionId);
+    ExecuteRequest request = null;
+    if(isTransaction) {
+      request = RequestConverter.buildExecuteRequest(sqls, sessionId, true);
+    } else {
+      request = RequestConverter.buildExecuteRequest(sql, model, fetchSize, sessionId);
+    }
     try {
       ExecuteResponse response = server.execute(null, request);
       sessionId = response.getSessionId();

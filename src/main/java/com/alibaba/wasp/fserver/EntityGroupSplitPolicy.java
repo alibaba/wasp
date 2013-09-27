@@ -17,15 +17,14 @@
  */
 package com.alibaba.wasp.fserver;
 
-import java.io.IOException;
-
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.meta.FTable;
+import com.google.common.base.Preconditions;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.ReflectionUtils;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.meta.FTable;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
 
 /**
  * A split policy determines when a entityGroup should be split.
@@ -63,7 +62,7 @@ public abstract class EntityGroupSplitPolicy extends Configured {
    * @param htd
    * @param conf
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static EntityGroupSplitPolicy create(EntityGroup entityGroup,
       Configuration conf) throws IOException {

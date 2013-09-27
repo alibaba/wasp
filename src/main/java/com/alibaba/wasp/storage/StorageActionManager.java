@@ -17,9 +17,7 @@
  */
 package com.alibaba.wasp.storage;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.alibaba.wasp.FConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -39,7 +37,9 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Row;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.FConstants;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 
@@ -137,14 +137,14 @@ public class StorageActionManager {
   }
 
   /**
-   * 
+   *
    * process the put operator by the hbase table
-   * 
+   *
    * @param tableName
    *          name of table
    * @param put
    *          Put operator of hbase
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws StorageTableNotFoundException
    */
   public void put(String tableName, Put put) throws IOException,
@@ -160,14 +160,14 @@ public class StorageActionManager {
   }
 
   /**
-   * 
+   *
    * process the delete operator by the hbase table
-   * 
+   *
    * @param tableName
    *          name of table
    * @param delete
    *          Delete operator of hbase
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws StorageTableNotFoundException
    */
   public void delete(String tableName, Delete delete) throws IOException,
@@ -184,11 +184,11 @@ public class StorageActionManager {
 
   /**
    * process the get operator by the hbase table
-   * 
+   *
    * @param tableName
    * @param get
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws StorageTableNotFoundException
    */
   public Result get(String tableName, Get get) throws IOException,
@@ -205,11 +205,11 @@ public class StorageActionManager {
 
   /**
    * process the get operator by the hbase table
-   * 
+   *
    * @param tableName
    * @param get
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws StorageTableNotFoundException
    */
   public boolean exits(String tableName, Get get) throws IOException,
@@ -226,11 +226,11 @@ public class StorageActionManager {
 
   /**
    * batch gets.
-   * 
+   *
    * @param tableName
    * @param gets
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws StorageTableNotFoundException
    */
   public Result[] get(String tableName, List<Get> gets) throws IOException,
@@ -246,14 +246,14 @@ public class StorageActionManager {
   }
 
   /**
-   * 
+   *
    * process the actions by the hbase table
-   * 
+   *
    * @param tableName
    *          name of table
    * @param actions
    *          a action list
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws StorageTableNotFoundException
    * @throws InterruptedException
    */
@@ -271,12 +271,12 @@ public class StorageActionManager {
 
   /**
    * get scanner.
-   * 
+   *
    * @param tableName
    * @param scan
    * @return
    * @throws StorageTableNotFoundException
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public ResultScanner scan(String tableName, Scan scan)
       throws StorageTableNotFoundException, IOException {

@@ -17,9 +17,9 @@
  */
 package com.alibaba.wasp.master.balancer;
 
-import org.apache.hadoop.hbase.Chore;
 import com.alibaba.wasp.master.FMaster;
 import com.alibaba.wasp.master.LoadBalancer;
+import org.apache.hadoop.hbase.Chore;
 
 /**
  * Chore that will feed the balancer the cluster status.

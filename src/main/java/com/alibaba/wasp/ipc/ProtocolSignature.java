@@ -18,6 +18,10 @@
 
 package com.alibaba.wasp.ipc;
 
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableFactories;
+import org.apache.hadoop.io.WritableFactory;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -25,17 +29,15 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.io.WritableFactories;
-import org.apache.hadoop.io.WritableFactory;
-
 public class ProtocolSignature implements Writable {
   static {               // register a ctor
     WritableFactories.setFactory
       (ProtocolSignature.class,
-       new WritableFactory() {
-         public Writable newInstance() { return new ProtocolSignature(); }
-       });
+          new WritableFactory() {
+            public Writable newInstance() {
+              return new ProtocolSignature();
+            }
+          });
   }
 
   private long version;
@@ -222,7 +224,7 @@ public class ProtocolSignature implements Writable {
    * @param clientVersion client's version
    * @param clientMethodsHash client's protocol's hash code
    * @return the server protocol's signature
-   * @throws IOException if any error occurs
+   * @throws java.io.IOException if any error occurs
    */
   @SuppressWarnings("unchecked")
   public static ProtocolSignature getProtocolSignature(VersionedProtocol server,

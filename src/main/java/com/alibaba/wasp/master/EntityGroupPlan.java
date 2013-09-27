@@ -17,12 +17,12 @@
  */
 package com.alibaba.wasp.master;
 
-import java.io.Serializable;
-import java.util.Comparator;
-
-import org.apache.hadoop.classification.InterfaceAudience;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.ServerName;
+import org.apache.hadoop.classification.InterfaceAudience;
+
+import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * Stores the plan for the move of an individual EntityGroup.
@@ -59,7 +59,7 @@ public class EntityGroupPlan implements Comparable<EntityGroupPlan> {
    * the specified source server to the specified destination server.
    *
    * Destination server can be instantiated as null and later set
-   * with {@link #setDestination(ServerName)}.
+   * with {@link #setDestination(com.alibaba.wasp.ServerName)}.
    *
    * @param egi entityGroup to be moved
    * @param source fserver entityGroup should be moved from

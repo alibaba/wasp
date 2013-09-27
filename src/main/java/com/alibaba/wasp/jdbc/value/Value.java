@@ -19,13 +19,13 @@
  */
 package com.alibaba.wasp.jdbc.value;
 
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.util.Utils;import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.jdbc.JdbcException;
 import com.alibaba.wasp.util.DateTimeUtils;
 import com.alibaba.wasp.util.StringUtils;
 import com.alibaba.wasp.util.Utils;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -686,21 +686,21 @@ public abstract class Value {
         case UUID:
           return ValueBytes.getNoCopy(getBytes());
         case BYTE:
-          return ValueBytes.getNoCopy(new byte[] { getByte() });
+          return ValueBytes.getNoCopy(new byte[]{getByte()});
         case SHORT: {
           int x = getShort();
-          return ValueBytes.getNoCopy(new byte[] { (byte) (x >> 8), (byte) x });
+          return ValueBytes.getNoCopy(new byte[]{(byte) (x >> 8), (byte) x});
         }
         case INT: {
           int x = getInt();
-          return ValueBytes.getNoCopy(new byte[] { (byte) (x >> 24),
-              (byte) (x >> 16), (byte) (x >> 8), (byte) x });
+          return ValueBytes.getNoCopy(new byte[]{(byte) (x >> 24),
+              (byte) (x >> 16), (byte) (x >> 8), (byte) x});
         }
         case LONG: {
           long x = getLong();
-          return ValueBytes.getNoCopy(new byte[] { (byte) (x >> 56),
+          return ValueBytes.getNoCopy(new byte[]{(byte) (x >> 56),
               (byte) (x >> 48), (byte) (x >> 40), (byte) (x >> 32),
-              (byte) (x >> 24), (byte) (x >> 16), (byte) (x >> 8), (byte) x });
+              (byte) (x >> 24), (byte) (x >> 16), (byte) (x >> 8), (byte) x});
         }
         }
         break;
@@ -758,7 +758,7 @@ public abstract class Value {
       case CLOB:
       case BLOB:
       case ARRAY:
-        return ValueArray.get(new Value[] { ValueString.get(s) });
+        return ValueArray.get(new Value[]{ValueString.get(s)});
       case RESULT_SET:
       case UUID:
       default:
@@ -957,7 +957,7 @@ public abstract class Value {
    * @param op
    *          the operation
    * @return never returns normally
-   * @throws JdbcException
+   * @throws com.alibaba.wasp.jdbc.JdbcException
    *           the exception
    */
   protected JdbcException throwUnsupportedExceptionForType(String op) {

@@ -18,15 +18,14 @@
  */
 package com.alibaba.wasp.zookeeper;
 
-import com.alibaba.wasp.DeserializationException;import com.alibaba.wasp.protobuf.generated.LoadBalancerProtos;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.DeserializationException;
+import com.alibaba.wasp.protobuf.generated.LoadBalancerProtos;
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.Abortable;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.DeserializationException;
-import com.alibaba.wasp.protobuf.generated.LoadBalancerProtos;
 import org.apache.zookeeper.KeeperException;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 public class LoadBalancerTracker extends ZooKeeperNodeTracker {
   private static final Log LOG = LogFactory.getLog(LoadBalancerTracker.class);
@@ -55,7 +54,7 @@ public class LoadBalancerTracker extends ZooKeeperNodeTracker {
    * Set the balancer on/off
    * 
    * @param balancerOn
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public void setBalancerOn(boolean balancerOn) throws KeeperException {
     byte[] upData = toByteArray(balancerOn);

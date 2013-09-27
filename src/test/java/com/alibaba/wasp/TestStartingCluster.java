@@ -18,14 +18,14 @@
  */
 package com.alibaba.wasp;
 
-import static org.junit.Assert.fail;
-
+import com.alibaba.wasp.fserver.redo.MemRedoLog;
+import com.alibaba.wasp.fserver.redo.Redo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.fserver.redo.MemRedoLog;
-import com.alibaba.wasp.fserver.redo.Redo;
 import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 public class TestStartingCluster {
   private static final Log LOG = LogFactory.getLog(TestStartingCluster.class);

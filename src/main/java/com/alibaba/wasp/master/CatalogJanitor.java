@@ -18,8 +18,8 @@
  */
 package com.alibaba.wasp.master;
 
-import org.apache.hadoop.hbase.Chore;
 import com.alibaba.wasp.Server;
+import org.apache.hadoop.hbase.Chore;
 
 /**
  * A janitor for the catalog tables. Scans the <code>.FMETA.</code> catalog

@@ -33,49 +33,49 @@ public final class TestProtos {
         getDescriptor() {
       return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EmptyRequestProto_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EmptyRequestProto_fieldAccessorTable;
     }
-    
+
     private void initFields() {
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
-      
+
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
+    @Override
+    protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+
+    @Override
+    public boolean equals(final Object obj) {
       if (obj == this) {
        return true;
       }
@@ -83,21 +83,21 @@ public final class TestProtos {
         return super.equals(obj);
       }
       com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto other = (com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto) obj;
-      
+
       boolean result = true;
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
     }
-    
-    @java.lang.Override
+
+    @Override
     public int hashCode() {
       int hash = 41;
       hash = (19 * hash) + getDescriptorForType().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
     }
-    
+
     public static com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -164,15 +164,15 @@ public final class TestProtos {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
+
+    @Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -185,17 +185,17 @@ public final class TestProtos {
           getDescriptor() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EmptyRequestProto_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EmptyRequestProto_fieldAccessorTable;
       }
-      
+
       // Construct using com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
+
       private Builder(BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
@@ -207,25 +207,25 @@ public final class TestProtos {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto.getDescriptor();
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto getDefaultInstanceForType() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto.getDefaultInstance();
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto build() {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto result = buildPartial();
         if (!result.isInitialized()) {
@@ -233,7 +233,7 @@ public final class TestProtos {
         }
         return result;
       }
-      
+
       private com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto result = buildPartial();
@@ -243,13 +243,13 @@ public final class TestProtos {
         }
         return result;
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto buildPartial() {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto result = new com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto(this);
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto) {
           return mergeFrom((com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto)other);
@@ -258,17 +258,17 @@ public final class TestProtos {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto other) {
         if (other == com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto.getDefaultInstance()) return this;
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -295,19 +295,19 @@ public final class TestProtos {
           }
         }
       }
-      
-      
+
+
       // @@protoc_insertion_point(builder_scope:EmptyRequestProto)
     }
-    
+
     static {
       defaultInstance = new EmptyRequestProto(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:EmptyRequestProto)
   }
-  
+
   public interface EmptyResponseProtoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
   }
@@ -319,63 +319,63 @@ public final class TestProtos {
       super(builder);
     }
     private EmptyResponseProto(boolean noInit) {}
-    
+
     private static final EmptyResponseProto defaultInstance;
     public static EmptyResponseProto getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public EmptyResponseProto getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EmptyResponseProto_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EmptyResponseProto_fieldAccessorTable;
     }
-    
+
     private void initFields() {
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
-      
+
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
+    @Override
+    protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+
+    @Override
+    public boolean equals(final Object obj) {
       if (obj == this) {
        return true;
       }
@@ -383,21 +383,21 @@ public final class TestProtos {
         return super.equals(obj);
       }
       com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto other = (com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto) obj;
-      
+
       boolean result = true;
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
     }
-    
-    @java.lang.Override
+
+    @Override
     public int hashCode() {
       int hash = 41;
       hash = (19 * hash) + getDescriptorForType().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
     }
-    
+
     public static com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -464,15 +464,15 @@ public final class TestProtos {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
+
+    @Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -485,17 +485,17 @@ public final class TestProtos {
           getDescriptor() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EmptyResponseProto_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EmptyResponseProto_fieldAccessorTable;
       }
-      
+
       // Construct using com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
+
       private Builder(BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
@@ -507,25 +507,25 @@ public final class TestProtos {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDescriptor();
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto getDefaultInstanceForType() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDefaultInstance();
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto build() {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto result = buildPartial();
         if (!result.isInitialized()) {
@@ -533,7 +533,7 @@ public final class TestProtos {
         }
         return result;
       }
-      
+
       private com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto result = buildPartial();
@@ -543,13 +543,13 @@ public final class TestProtos {
         }
         return result;
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto buildPartial() {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto result = new com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto(this);
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto) {
           return mergeFrom((com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto)other);
@@ -558,17 +558,17 @@ public final class TestProtos {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto other) {
         if (other == com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDefaultInstance()) return this;
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -595,22 +595,22 @@ public final class TestProtos {
           }
         }
       }
-      
-      
+
+
       // @@protoc_insertion_point(builder_scope:EmptyResponseProto)
     }
-    
+
     static {
       defaultInstance = new EmptyResponseProto(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:EmptyResponseProto)
   }
-  
+
   public interface EchoRequestProtoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-    
+
     // required string message = 1;
     boolean hasMessage();
     String getMessage();
@@ -623,39 +623,39 @@ public final class TestProtos {
       super(builder);
     }
     private EchoRequestProto(boolean noInit) {}
-    
+
     private static final EchoRequestProto defaultInstance;
     public static EchoRequestProto getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public EchoRequestProto getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EchoRequestProto_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EchoRequestProto_fieldAccessorTable;
     }
-    
+
     private int bitField0_;
     // required string message = 1;
     public static final int MESSAGE_FIELD_NUMBER = 1;
-    private java.lang.Object message_;
+    private Object message_;
     public boolean hasMessage() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getMessage() {
-      java.lang.Object ref = message_;
+      Object ref = message_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
@@ -665,9 +665,9 @@ public final class TestProtos {
       }
     }
     private com.google.protobuf.ByteString getMessageBytes() {
-      java.lang.Object ref = message_;
+      Object ref = message_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
         message_ = b;
         return b;
@@ -675,7 +675,7 @@ public final class TestProtos {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
+
     private void initFields() {
       message_ = "";
     }
@@ -683,7 +683,7 @@ public final class TestProtos {
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
-      
+
       if (!hasMessage()) {
         memoizedIsInitialized = 0;
         return false;
@@ -691,7 +691,7 @@ public final class TestProtos {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -700,12 +700,12 @@ public final class TestProtos {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -715,16 +715,16 @@ public final class TestProtos {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
+    @Override
+    protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+
+    @Override
+    public boolean equals(final Object obj) {
       if (obj == this) {
        return true;
       }
@@ -732,7 +732,7 @@ public final class TestProtos {
         return super.equals(obj);
       }
       com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto other = (com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto) obj;
-      
+
       boolean result = true;
       result = result && (hasMessage() == other.hasMessage());
       if (hasMessage()) {
@@ -743,8 +743,8 @@ public final class TestProtos {
           getUnknownFields().equals(other.getUnknownFields());
       return result;
     }
-    
-    @java.lang.Override
+
+    @Override
     public int hashCode() {
       int hash = 41;
       hash = (19 * hash) + getDescriptorForType().hashCode();
@@ -755,7 +755,7 @@ public final class TestProtos {
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
     }
-    
+
     public static com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -822,15 +822,15 @@ public final class TestProtos {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
+
+    @Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -843,17 +843,17 @@ public final class TestProtos {
           getDescriptor() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EchoRequestProto_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EchoRequestProto_fieldAccessorTable;
       }
-      
+
       // Construct using com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
+
       private Builder(BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
@@ -865,27 +865,27 @@ public final class TestProtos {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         message_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto.getDescriptor();
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto getDefaultInstanceForType() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto.getDefaultInstance();
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto build() {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto result = buildPartial();
         if (!result.isInitialized()) {
@@ -893,7 +893,7 @@ public final class TestProtos {
         }
         return result;
       }
-      
+
       private com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto result = buildPartial();
@@ -903,7 +903,7 @@ public final class TestProtos {
         }
         return result;
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto buildPartial() {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto result = new com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto(this);
         int from_bitField0_ = bitField0_;
@@ -916,7 +916,7 @@ public final class TestProtos {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto) {
           return mergeFrom((com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto)other);
@@ -925,7 +925,7 @@ public final class TestProtos {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto other) {
         if (other == com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto.getDefaultInstance()) return this;
         if (other.hasMessage()) {
@@ -934,15 +934,15 @@ public final class TestProtos {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasMessage()) {
-          
+
           return false;
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -974,16 +974,16 @@ public final class TestProtos {
           }
         }
       }
-      
+
       private int bitField0_;
-      
+
       // required string message = 1;
-      private java.lang.Object message_ = "";
+      private Object message_ = "";
       public boolean hasMessage() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public String getMessage() {
-        java.lang.Object ref = message_;
+        Object ref = message_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           message_ = s;
@@ -1012,21 +1012,21 @@ public final class TestProtos {
         message_ = value;
         onChanged();
       }
-      
+
       // @@protoc_insertion_point(builder_scope:EchoRequestProto)
     }
-    
+
     static {
       defaultInstance = new EchoRequestProto(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:EchoRequestProto)
   }
-  
+
   public interface EchoResponseProtoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-    
+
     // required string message = 1;
     boolean hasMessage();
     String getMessage();
@@ -1039,39 +1039,39 @@ public final class TestProtos {
       super(builder);
     }
     private EchoResponseProto(boolean noInit) {}
-    
+
     private static final EchoResponseProto defaultInstance;
     public static EchoResponseProto getDefaultInstance() {
       return defaultInstance;
     }
-    
+
     public EchoResponseProto getDefaultInstanceForType() {
       return defaultInstance;
     }
-    
+
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EchoResponseProto_descriptor;
     }
-    
+
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EchoResponseProto_fieldAccessorTable;
     }
-    
+
     private int bitField0_;
     // required string message = 1;
     public static final int MESSAGE_FIELD_NUMBER = 1;
-    private java.lang.Object message_;
+    private Object message_;
     public boolean hasMessage() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getMessage() {
-      java.lang.Object ref = message_;
+      Object ref = message_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
+        com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (com.google.protobuf.Internal.isValidUtf8(bs)) {
@@ -1081,9 +1081,9 @@ public final class TestProtos {
       }
     }
     private com.google.protobuf.ByteString getMessageBytes() {
-      java.lang.Object ref = message_;
+      Object ref = message_;
       if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
+        com.google.protobuf.ByteString b =
             com.google.protobuf.ByteString.copyFromUtf8((String) ref);
         message_ = b;
         return b;
@@ -1091,7 +1091,7 @@ public final class TestProtos {
         return (com.google.protobuf.ByteString) ref;
       }
     }
-    
+
     private void initFields() {
       message_ = "";
     }
@@ -1099,7 +1099,7 @@ public final class TestProtos {
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
-      
+
       if (!hasMessage()) {
         memoizedIsInitialized = 0;
         return false;
@@ -1107,7 +1107,7 @@ public final class TestProtos {
       memoizedIsInitialized = 1;
       return true;
     }
-    
+
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -1116,12 +1116,12 @@ public final class TestProtos {
       }
       getUnknownFields().writeTo(output);
     }
-    
+
     private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
-    
+
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
@@ -1131,16 +1131,16 @@ public final class TestProtos {
       memoizedSerializedSize = size;
       return size;
     }
-    
+
     private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
+    @Override
+    protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-    
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+
+    @Override
+    public boolean equals(final Object obj) {
       if (obj == this) {
        return true;
       }
@@ -1148,7 +1148,7 @@ public final class TestProtos {
         return super.equals(obj);
       }
       com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto other = (com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto) obj;
-      
+
       boolean result = true;
       result = result && (hasMessage() == other.hasMessage());
       if (hasMessage()) {
@@ -1159,8 +1159,8 @@ public final class TestProtos {
           getUnknownFields().equals(other.getUnknownFields());
       return result;
     }
-    
-    @java.lang.Override
+
+    @Override
     public int hashCode() {
       int hash = 41;
       hash = (19 * hash) + getDescriptorForType().hashCode();
@@ -1171,7 +1171,7 @@ public final class TestProtos {
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
     }
-    
+
     public static com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1238,15 +1238,15 @@ public final class TestProtos {
       return newBuilder().mergeFrom(input, extensionRegistry)
                .buildParsed();
     }
-    
+
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
-    
-    @java.lang.Override
+
+    @Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -1259,17 +1259,17 @@ public final class TestProtos {
           getDescriptor() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EchoResponseProto_descriptor;
       }
-      
+
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.internal_static_EchoResponseProto_fieldAccessorTable;
       }
-      
+
       // Construct using com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
-      
+
       private Builder(BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
@@ -1281,27 +1281,27 @@ public final class TestProtos {
       private static Builder create() {
         return new Builder();
       }
-      
+
       public Builder clear() {
         super.clear();
         message_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
-      
+
       public Builder clone() {
         return create().mergeFrom(buildPartial());
       }
-      
+
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.getDescriptor();
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto getDefaultInstanceForType() {
         return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.getDefaultInstance();
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto build() {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto result = buildPartial();
         if (!result.isInitialized()) {
@@ -1309,7 +1309,7 @@ public final class TestProtos {
         }
         return result;
       }
-      
+
       private com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto result = buildPartial();
@@ -1319,7 +1319,7 @@ public final class TestProtos {
         }
         return result;
       }
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto buildPartial() {
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto result = new com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto(this);
         int from_bitField0_ = bitField0_;
@@ -1332,7 +1332,7 @@ public final class TestProtos {
         onBuilt();
         return result;
       }
-      
+
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto) {
           return mergeFrom((com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto)other);
@@ -1341,7 +1341,7 @@ public final class TestProtos {
           return this;
         }
       }
-      
+
       public Builder mergeFrom(com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto other) {
         if (other == com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.getDefaultInstance()) return this;
         if (other.hasMessage()) {
@@ -1350,15 +1350,15 @@ public final class TestProtos {
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
-      
+
       public final boolean isInitialized() {
         if (!hasMessage()) {
-          
+
           return false;
         }
         return true;
       }
-      
+
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1390,16 +1390,16 @@ public final class TestProtos {
           }
         }
       }
-      
+
       private int bitField0_;
-      
+
       // required string message = 1;
-      private java.lang.Object message_ = "";
+      private Object message_ = "";
       public boolean hasMessage() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       public String getMessage() {
-        java.lang.Object ref = message_;
+        Object ref = message_;
         if (!(ref instanceof String)) {
           String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
           message_ = s;
@@ -1428,18 +1428,18 @@ public final class TestProtos {
         message_ = value;
         onChanged();
       }
-      
+
       // @@protoc_insertion_point(builder_scope:EchoResponseProto)
     }
-    
+
     static {
       defaultInstance = new EchoResponseProto(true);
       defaultInstance.initFields();
     }
-    
+
     // @@protoc_insertion_point(class_scope:EchoResponseProto)
   }
-  
+
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_EmptyRequestProto_descriptor;
   private static
@@ -1460,7 +1460,7 @@ public final class TestProtos {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_EchoResponseProto_fieldAccessorTable;
-  
+
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
@@ -1468,7 +1468,7 @@ public final class TestProtos {
   private static com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    java.lang.String[] descriptorData = {
+    String[] descriptorData = {
       "\n\ntest.proto\"\023\n\021EmptyRequestProto\"\024\n\022Emp" +
       "tyResponseProto\"#\n\020EchoRequestProto\022\017\n\007m" +
       "essage\030\001 \002(\t\"$\n\021EchoResponseProto\022\017\n\007mes" +
@@ -1485,7 +1485,7 @@ public final class TestProtos {
           internal_static_EmptyRequestProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EmptyRequestProto_descriptor,
-              new java.lang.String[] { },
+              new String[] { },
               com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto.class,
               com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto.Builder.class);
           internal_static_EmptyResponseProto_descriptor =
@@ -1493,7 +1493,7 @@ public final class TestProtos {
           internal_static_EmptyResponseProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EmptyResponseProto_descriptor,
-              new java.lang.String[] { },
+              new String[] { },
               com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.class,
               com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.Builder.class);
           internal_static_EchoRequestProto_descriptor =
@@ -1501,7 +1501,7 @@ public final class TestProtos {
           internal_static_EchoRequestProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EchoRequestProto_descriptor,
-              new java.lang.String[] { "Message", },
+              new String[] { "Message", },
               com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto.class,
               com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto.Builder.class);
           internal_static_EchoResponseProto_descriptor =
@@ -1509,7 +1509,7 @@ public final class TestProtos {
           internal_static_EchoResponseProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EchoResponseProto_descriptor,
-              new java.lang.String[] { "Message", },
+              new String[] { "Message", },
               com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.class,
               com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.Builder.class);
           return null;

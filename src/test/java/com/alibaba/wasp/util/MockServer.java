@@ -18,16 +18,16 @@
  */
 package com.alibaba.wasp.util;
 
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.WaspTestingUtility;
 import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+
+import java.io.IOException;
 
 public class MockServer implements Server {
   static final Log LOG = LogFactory.getLog(MockServer.class);
@@ -51,8 +51,8 @@ public class MockServer implements Server {
   /**
    * @param htu Testing utility to use
    * @param zkw If true, create a zkw.
-   * @throws ZooKeeperConnectionException
-   * @throws IOException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
+   * @throws java.io.IOException
    */
   public MockServer(final WaspTestingUtility htu, final boolean zkw)
       throws ZooKeeperConnectionException, IOException {

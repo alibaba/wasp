@@ -20,7 +20,10 @@
 
 package com.alibaba.wasp.master.balancer;
 
-import static org.junit.Assert.assertTrue;
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.master.EntityGroupPlan;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,10 +36,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.alibaba.wasp.master.EntityGroupPlan;import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.master.EntityGroupPlan;
+import static org.junit.Assert.assertTrue;
 
 public class TestBalancerBase {
 

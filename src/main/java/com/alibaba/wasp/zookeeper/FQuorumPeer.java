@@ -18,6 +18,16 @@
  */
 package com.alibaba.wasp.zookeeper;
 
+import com.alibaba.wasp.conf.WaspConfiguration;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Strings;
+import org.apache.hadoop.net.DNS;
+import org.apache.hadoop.util.StringUtils;
+import org.apache.zookeeper.server.ServerConfig;
+import org.apache.zookeeper.server.ZooKeeperServerMain;
+import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
+import org.apache.zookeeper.server.quorum.QuorumPeerMain;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -29,16 +39,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import com.alibaba.wasp.conf.WaspConfiguration;import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Strings;
-import org.apache.hadoop.net.DNS;
-import org.apache.hadoop.util.StringUtils;
-import com.alibaba.wasp.conf.WaspConfiguration;
-import org.apache.zookeeper.server.ServerConfig;
-import org.apache.zookeeper.server.ZooKeeperServerMain;
-import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
-import org.apache.zookeeper.server.quorum.QuorumPeerMain;
 
 /**
  * Wasp's version of ZooKeeper's QuorumPeer. When Wasp is set to manage
@@ -87,8 +87,8 @@ public class FQuorumPeer {
       throws IOException {
     long myId = -1;
     String myAddress = Strings.domainNamePointerToHostName(DNS.getDefaultHost(
-        conf.get("wasp.zookeeper.dns.interface","default"),
-        conf.get("wasp.zookeeper.dns.nameserver","default")));
+        conf.get("wasp.zookeeper.dns.interface", "default"),
+        conf.get("wasp.zookeeper.dns.nameserver", "default")));
 
     List<String> ips = new ArrayList<String>();
 

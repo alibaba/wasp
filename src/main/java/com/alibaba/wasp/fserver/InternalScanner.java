@@ -19,12 +19,12 @@
  */
 package com.alibaba.wasp.fserver;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
-
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
 
 public interface InternalScanner extends Closeable {
 
@@ -39,20 +39,20 @@ public interface InternalScanner extends Closeable {
    * @param results
    *          return output array
    * @return true if more rows exist after this one, false if scanner is done
-   * @throws IOException
+   * @throws java.io.IOException
    *           e
    */
   public boolean next(List<QueryResultProto> results) throws IOException;
 
   /**
    * Grab the next row's worth of values.
-   * 
+   *
    * @param results
    *          return output array
    * @param metric
    *          the metric name
    * @return true if more rows exist after this one, false if scanner is done
-   * @throws IOException
+   * @throws java.io.IOException
    *           e
    */
   public boolean next(List<QueryResultProto> results, String metric) throws IOException;
@@ -60,8 +60,8 @@ public interface InternalScanner extends Closeable {
 
   /**
    * Closes the scanner and releases any resources it has allocated
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public void close() throws IOException;
 }

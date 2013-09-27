@@ -18,46 +18,7 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.Chore;
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.Stoppable;
-import org.apache.hadoop.hbase.util.Addressing;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.SoftValueSortedMap;
-import org.apache.hadoop.ipc.RemoteException;
-import com.alibaba.wasp.ClusterId;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupLocation;
-import com.alibaba.wasp.EntityGroupOfflineException;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.MasterNotRunningException;
-import com.alibaba.wasp.NoServerForEntityGroupException;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.TableNotFoundException;
-import com.alibaba.wasp.ZooKeeperConnectionException;
+import com.alibaba.wasp.*;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.fserver.AdminProtocol;
 import com.alibaba.wasp.ipc.VersionedProtocol;
@@ -77,9 +38,27 @@ import com.alibaba.wasp.zookeeper.MasterAddressTracker;
 import com.alibaba.wasp.zookeeper.ZKTableReadOnly;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Chore;
+import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.Stoppable;
+import org.apache.hadoop.hbase.util.Addressing;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.SoftValueSortedMap;
+import org.apache.hadoop.ipc.RemoteException;
 import org.apache.zookeeper.KeeperException;
 
-import com.google.protobuf.ServiceException;
+import java.io.Closeable;
+import java.io.IOException;
+import java.lang.reflect.*;
+import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class FConnectionManager {
 
@@ -107,7 +86,7 @@ public class FConnectionManager {
 
       @Override
       protected boolean removeEldestEntry(
-          Map.Entry<FConnectionKey, FConnectionImplementation> eldest) {
+          Entry<FConnectionKey, FConnectionImplementation> eldest) {
         return size() > MAX_CACHED_WASP_INSTANCES;
       }
     };
@@ -117,7 +96,7 @@ public class FConnectionManager {
    * Get the connection that goes with the passed <code>conf</code>
    * configuration instance. If no current connection exists, method creates a
    * new connection for the passed <code>conf</code> instance.
-   * 
+   *
    * @param conf
    *          configuration
    * @return HConnection object for <code>conf</code>
@@ -200,7 +179,7 @@ public class FConnectionManager {
 
     /**
      * constructor
-     * 
+     *
      * @param conf
      *          Configuration object
      */
@@ -338,7 +317,7 @@ public class FConnectionManager {
 
     /**
      * Return if this client has no reference
-     * 
+     *
      * @return true if this client has no reference; false otherwise
      */
     boolean isZeroReference() {
@@ -630,13 +609,13 @@ public class FConnectionManager {
     /**
      * Either the passed <code>isa</code> is null or <code>hostname</code> can
      * be but not both.
-     * 
+     *
      * @param hostname
      * @param port
      * @param protocolClass
      * @param version
      * @return Proxy.
-     * @throws IOException
+     * @throws java.io.IOException
      */
     VersionedProtocol getProtocol(final String hostname, final int port,
         final Class<? extends VersionedProtocol> protocolClass,
@@ -719,7 +698,7 @@ public class FConnectionManager {
     @Override
     public void prewarmEntityGroupCache(byte[] tableName,
         Map<EntityGroupInfo, ServerName> entityGroups) {
-      for (Map.Entry<EntityGroupInfo, ServerName> e : entityGroups.entrySet()) {
+      for (Entry<EntityGroupInfo, ServerName> e : entityGroups.entrySet()) {
         ServerName sn = e.getValue();
         if (sn == null || sn.getHostAndPort() == null)
           continue;
@@ -730,7 +709,7 @@ public class FConnectionManager {
 
     /*
      * @param tableName
-     * 
+     *
      * @return Map of cached locations for passed <code>tableName</code>
      */
     private SoftValueSortedMap<byte[], EntityGroupLocation> getTableLocations(
@@ -925,7 +904,7 @@ public class FConnectionManager {
     /**
      * Check the entityGroup cache to see whether a entityGroup is cached yet or
      * not. Called by unit tests.
-     * 
+     *
      * @param tableName
      *          tableName
      * @param row
@@ -940,11 +919,11 @@ public class FConnectionManager {
     /*
      * Search the cache for a location that fits our table and row key. Return
      * null if no suitable entityGroup is located.
-     * 
+     *
      * @param tableName
-     * 
+     *
      * @param row
-     * 
+     *
      * @return Null or entityGroup location found in cache.
      */
     EntityGroupLocation getCachedLocation(final byte[] tableName,
@@ -985,7 +964,7 @@ public class FConnectionManager {
 
     /**
      * Delete a cached location
-     * 
+     *
      * @param tableName
      *          tableName
      * @param row
@@ -1012,9 +991,9 @@ public class FConnectionManager {
 
     /*
      * Delete all cached entries of a table that maps to a specific location.
-     * 
+     *
      * @param tablename
-     * 
+     *
      * @param server
      */
     private void clearCachedLocationForServer(final String server) {
@@ -1025,7 +1004,7 @@ public class FConnectionManager {
         }
         for (Map<byte[], EntityGroupLocation> tableLocations : cachedEntityGroupLocations
             .values()) {
-          for (Map.Entry<byte[], EntityGroupLocation> e : tableLocations
+          for (Entry<byte[], EntityGroupLocation> e : tableLocations
               .entrySet()) {
             if (e.getValue().getHostnamePort().equals(server)) {
               tableLocations.remove(e.getKey());
@@ -1137,7 +1116,7 @@ public class FConnectionManager {
     /**
      * Retrieve a shared ZooKeeperWatcher. You must close it it once you've have
      * finished with it.
-     * 
+     *
      * @return The shared instance. Never returns null.
      */
     public ZooKeeperKeepAliveConnection getKeepAliveZooKeeperWatcher()
@@ -1352,9 +1331,9 @@ public class FConnectionManager {
     /**
      * This function allows HBaseAdmin and potentially others to get a shared
      * master connection.
-     * 
+     *
      * @return The shared instance. Never returns null.
-     * @throws MasterNotRunningException
+     * @throws com.alibaba.wasp.MasterNotRunningException
      */
     private Object getKeepAliveMasterProtocol(
         MasterProtocolState protocolState, Class connectionClass)
@@ -1382,8 +1361,8 @@ public class FConnectionManager {
         FMasterMonitorProtocol.class, FMasterMonitorProtocol.VERSION);
 
     /**
-     * 
-     * @throws MasterNotRunningException
+     *
+     * @throws com.alibaba.wasp.MasterNotRunningException
      * @see com.alibaba.wasp.client.FConnection#getKeepAliveMasterAdmin()
      */
     @Override
@@ -1394,8 +1373,8 @@ public class FConnectionManager {
     }
 
     /**
-     * 
-     * @throws MasterNotRunningException
+     *
+     * @throws com.alibaba.wasp.MasterNotRunningException
      * @see com.alibaba.wasp.client.FConnection#getKeepAliveMasterMonitor()
      */
     @Override
@@ -1406,8 +1385,8 @@ public class FConnectionManager {
     }
 
     /**
-     * 
-     * @throws MasterNotRunningException
+     *
+     * @throws com.alibaba.wasp.MasterNotRunningException
      * @see com.alibaba.wasp.client.FConnection#getKeepAliveMasterMetaServer()
      */
     @Override
@@ -1574,13 +1553,13 @@ public class FConnectionManager {
 
   /**
    * Denotes a unique key to a {@link FConnection} instance.
-   * 
+   *
    * In essence, this class captures the properties in
    * {@link org.apache.hadoop.conf.Configuration} that may be used in the
    * process of establishing a connection. In light of that, if any new such
    * properties are introduced into the mix, they must be added to the
    * {@link FConnectionKey#properties} list.
-   * 
+   *
    */
   static class FConnectionKey {
     public static String[] CONNECTION_PROPERTIES = new String[] {
@@ -1704,14 +1683,14 @@ public class FConnectionManager {
    * Delete connection information for the instance specified by configuration.
    * If there are no more references to it, this will then close connection to
    * the zookeeper ensemble and let go of all resources.
-   * 
+   *
    * @param conf
    *          configuration whose identity is used to find {@link FConnection}
    *          instance.
    * @param stopProxy
    *          Shuts down all the proxy's put up to cluster members including to
    *          cluster FMaster. Calls
-   *          {@link WaspRPC#stopProxy(com.alibaba.wasp.ipc.VersionedProtocol)} .
+   *          {@link com.alibaba.wasp.ipc.WaspRPC#stopProxy(com.alibaba.wasp.ipc.VersionedProtocol)} .
    */
   public static void deleteConnection(Configuration conf, boolean stopProxy) {
     deleteConnection(new FConnectionKey(conf), stopProxy, false);
@@ -1719,10 +1698,10 @@ public class FConnectionManager {
 
   /**
    * Delete information for all connections.
-   * 
+   *
    * @param stopProxy
    *          stop the proxy as well
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static void deleteAllConnections(boolean stopProxy) {
     synchronized (WASP_INSTANCES) {

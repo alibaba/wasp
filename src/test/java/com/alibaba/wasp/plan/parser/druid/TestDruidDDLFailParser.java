@@ -20,7 +20,6 @@
 
 package com.alibaba.wasp.plan.parser.druid;
 
-import com.alibaba.wasp.MetaException;import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.meta.FMetaTestUtil;import com.alibaba.wasp.meta.FTable;import com.alibaba.wasp.meta.MemFMetaStore;import com.alibaba.wasp.meta.TableSchemaCacheReader;import com.alibaba.wasp.plan.parser.ParseContext;import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.MetaException;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.meta.FMetaTestUtil;
@@ -28,6 +27,7 @@ import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.meta.MemFMetaStore;
 import com.alibaba.wasp.meta.TableSchemaCacheReader;
 import com.alibaba.wasp.plan.parser.ParseContext;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -87,12 +87,14 @@ public class TestDruidDDLFailParser {
     // column is illegal
     String sql5 = "CREATE index PhotosByTime on Photo(user_id, time2);";
     // Duplicate columns
-//    String sql6 = "CREATE index PhotosByTime on Photo(user_id, time, time);";
+    String sql6 = "CREATE index PhotosByTime on Photo(user_id, time, tag, time);";
     // null columns
     String sql7 = "CREATE index PhotosByTime on Photo();";
 
+    String sql8 = "CREATE index PhotosByTag2 on Photo(user_id, photo_id, tag);";
+
 //    String[] sqlList = { sql1, sql2, sql3, sql4, sql5, sql6, sql7 };
-    String[] sqlList = { sql1, sql2, sql3, sql4, sql5, sql7 };
+    String[] sqlList = { sql1, sql2, sql3, sql4, sql5, sql6, sql7, sql8 };
     for (String sql : sqlList) {
       context.setSql(sql);
       boolean result = DruidParserTestUtil.execute(context, druidParser);
@@ -217,7 +219,12 @@ public class TestDruidDDLFailParser {
 
     String sql8 = "ALTER TABLE Photo ADD COLUMN dummy2 int32 FIRST thumbnail_url";
 
-    String[] sqlList = { sql1, sql2, sql3, sql4, sql5, sql6, sql7, sql8 };
+    String sql9 = "ALTER TABLE Photo CHANGE thumbnail_url thumbnail_url INT64 columnfamily cf;";
+
+    String sql10 =
+        "ALTER TABLE Photo ADD COLUMN DateOfBirth2 string columnfamily cf2 comment 'aaa'";
+
+    String[] sqlList = { sql1, sql2, sql3, sql4, sql5, sql6, sql7, sql8, sql9, sql10 };
 
     DruidDDLParser druidParser = new DruidDDLParser(conf);
     for (String sql : sqlList) {

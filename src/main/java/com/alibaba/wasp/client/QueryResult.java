@@ -17,18 +17,18 @@
  */
 package com.alibaba.wasp.client;
 
-import java.util.Map;
-
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.fserver.OperationStatus;
+import org.apache.hadoop.hbase.util.Pair;
+
+import java.util.Map;
 
 public class QueryResult implements ExecuteResult {
 
   private final Map<String, Pair<DataType, byte[]>> cloumnValues;
 
   /**
-   * @param results
+   * @param cloumnValues
    */
   public QueryResult(Map<String, Pair<DataType, byte[]>> cloumnValues) {
     this.cloumnValues = cloumnValues;
@@ -87,7 +87,7 @@ public class QueryResult implements ExecuteResult {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

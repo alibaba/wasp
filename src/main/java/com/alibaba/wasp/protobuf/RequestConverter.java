@@ -17,10 +17,6 @@
  */
 package com.alibaba.wasp.protobuf;
 
-import java.util.List;
-
-import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.MetaException;
 import com.alibaba.wasp.ReadModel;
@@ -31,12 +27,14 @@ import com.alibaba.wasp.plan.action.DeleteAction;
 import com.alibaba.wasp.plan.action.GetAction;
 import com.alibaba.wasp.plan.action.InsertAction;
 import com.alibaba.wasp.plan.action.ScanAction;
+import com.alibaba.wasp.plan.action.TransactionAction;
 import com.alibaba.wasp.plan.action.UpdateAction;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteRequest;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.GetRequest;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.InsertRequest;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.ScanRequest;
+import com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateRequest;
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEncodedEntityGroupRequest;
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEntityGroupRequest;
@@ -77,9 +75,11 @@ import com.alibaba.wasp.protobuf.generated.MasterProtos.IsMasterRunningRequest;
 import com.alibaba.wasp.protobuf.generated.WaspProtos;
 import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier;
 import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.EntityGroupSpecifierType;
-
 import com.google.protobuf.ByteString;
 import com.google.protobuf.ServiceException;
+import org.apache.hadoop.hbase.util.Bytes;
+
+import java.util.List;
 
 /**
  * Helper utility to build protocol buffer requests, or build components for
@@ -171,6 +171,18 @@ public final class RequestConverter {
     builder.setSql(sql);
     builder.setSessionId(sessionId);
     builder.setCloseSession(closeSession);
+    return builder.build();
+  }
+
+  public static ExecuteRequest buildExecuteRequest(List<String> sqls, String sessionId, boolean isTransaction) {
+    ExecuteRequest.Builder builder = ExecuteRequest.newBuilder();
+    if(sessionId != null) {
+      builder.setSessionId(sessionId);
+    }
+    builder.setIsTransaction(isTransaction);
+    if(sqls != null) {
+      builder.addAllTransactionSql(sqls);
+    }
     return builder.build();
   }
 
@@ -349,7 +361,7 @@ public final class RequestConverter {
    * @param encodedEntityGroupName
    * @param destServerName
    * @return A MoveRegionRequest
-   * @throws DeserializationException
+   * @throws com.alibaba.wasp.DeserializationException
    */
   public static MoveEntityGroupRequest buildMoveEntityGroupRequest(
       final byte[] encodedEntityGroupName, final byte[] destServerName) {
@@ -367,7 +379,7 @@ public final class RequestConverter {
 
   /**
    * Create a protocol buffer AssignRegionRequest
-   * 
+   *
    * @param entityGroupName
    * @return an AssignRegionRequest
    */
@@ -382,7 +394,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer UnassignRegionRequest
-   * 
+   *
    * @param entityGroupName
    * @param force
    * @return an UnassignRegionRequest
@@ -399,7 +411,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer OfflineRegionRequest
-   * 
+   *
    * @param entityGroupName
    * @return an OfflineRegionRequest
    */
@@ -414,7 +426,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer DeleteTableRequest
-   * 
+   *
    * @param tableName
    * @return a DeleteTableRequest
    */
@@ -427,7 +439,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer TruncateTableRequest
-   * 
+   *
    * @param tableName
    * @return a TruncateTableRequest
    */
@@ -440,7 +452,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer EnableTableRequest
-   * 
+   *
    * @param tableName
    * @return an EnableTableRequest
    */
@@ -453,7 +465,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer DisableTableRequest
-   * 
+   *
    * @param tableName
    * @return a DisableTableRequest
    */
@@ -467,7 +479,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer DisableTableRequest
-   * 
+   *
    * @param tableName
    * @return a DisableTableRequest
    */
@@ -481,7 +493,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer EnableTableRequest
-   * 
+   *
    * @param tableName
    * @return a DisableTableRequest
    */
@@ -495,12 +507,12 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer CreateTableRequest
-   * 
+   *
    * @param hTableDesc
    * @param splitKeys
    * @return a CreateTableRequest
-   * @throws ServiceException
-   * @throws MetaException
+   * @throws com.google.protobuf.ServiceException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static CreateTableRequest buildCreateTableRequest(
       final FTable hTableDesc, final byte[][] splitKeys)
@@ -521,11 +533,11 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer CreateTableRequest
-   * 
+   *
    * @param tableName
    * @return a CreateTableRequest
-   * @throws ServiceException
-   * @throws MetaException
+   * @throws com.google.protobuf.ServiceException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static FetchEntityGroupSizeRequest buildFetchEntityGroupSizeRequest(
       final byte[] tableName) throws ServiceException {
@@ -537,10 +549,10 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer CreateIndexRequest
-   * 
+   *
    * @param index
    * @return a CreateIndexRequest
-   * 
+   *
    */
   public static CreateIndexRequest buildCreateIndexRequest(Index index)
       throws ServiceException {
@@ -551,10 +563,10 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer DropIndexRequest
-   * 
+   *
    * @param indexName
    * @return a CreateIndexRequest
-   * 
+   *
    */
   public static DropIndexRequest buildDropIndexRequest(String tableName,
       String indexName) throws ServiceException {
@@ -566,11 +578,11 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer ModifyTableRequest
-   * 
+   *
    * @param table
    * @param hTableDesc
    * @return a ModifyTableRequest
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public static ModifyTableRequest buildModifyTableRequest(final byte[] table,
       final FTable hTableDesc) throws ServiceException {
@@ -586,7 +598,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer GetSchemaAlterStatusRequest
-   * 
+   *
    * @param table
    * @return a GetSchemaAlterStatusRequest
    */
@@ -600,7 +612,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer GetTableDescriptorsRequest
-   * 
+   *
    * @param tableNames
    * @return a GetTableDescriptorsRequest
    */
@@ -618,7 +630,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer IsMasterRunningRequest
-   * 
+   *
    * @return a IsMasterRunningRequest
    */
   public static IsMasterRunningRequest buildIsMasterRunningRequest() {
@@ -627,7 +639,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer BalanceRequest
-   * 
+   *
    * @return a BalanceRequest
    */
   public static BalanceRequest buildBalanceRequest() {
@@ -636,7 +648,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer SetBalancerRunningRequest
-   * 
+   *
    * @param on
    * @param synchronous
    * @return a SetBalancerRunningRequest
@@ -649,7 +661,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer GetClusterStatusRequest
-   * 
+   *
    * @return A GetClusterStatusRequest
    */
   public static GetClusterStatusRequest buildGetClusterStatusRequest() {
@@ -658,7 +670,7 @@ public final class RequestConverter {
 
   /**
    * Creates a protocol buffer UpdateRequest.
-   * 
+   *
    * @param action
    * @return
    */
@@ -672,7 +684,7 @@ public final class RequestConverter {
   }
 
   /**
-   * 
+   *
    * @param encodedEntityGroupName
    * @return
    */
@@ -686,7 +698,7 @@ public final class RequestConverter {
   }
 
   /**
-   * 
+   *
    * @param entityGroupInfo
    * @return
    */
@@ -730,6 +742,21 @@ public final class RequestConverter {
         .getEntityGroupLocation().getEntityGroupInfo()));
     builder.setInsertAction(ProtobufUtil.convertInsertAction(action)
         .getInsert());
+    return builder.build();
+  }
+
+  /**
+   * Creates a protocol buffer InsertRequest.
+   *
+   * @param action
+   * @return
+   */
+  public static TransactionRequest buildTransactionRequest(TransactionAction action) {
+    TransactionRequest.Builder builder = TransactionRequest.newBuilder();
+    builder.setEntityGroup(getEntityGroupSpecifier(action
+        .getEntityGroupLocation().getEntityGroupInfo()));
+    builder.setTransactionAction(ProtobufUtil.convertTransactionAction(action)
+        .getTransaction());
     return builder.build();
   }
 
@@ -839,4 +866,5 @@ public final class RequestConverter {
     builder.setState(ByteString.copyFrom(state));
     return builder.build();
   }
+
 }

@@ -18,8 +18,8 @@
  */
 package com.alibaba.wasp.fserver;
 
-import org.apache.hadoop.classification.InterfaceAudience;
 import com.alibaba.wasp.tmpl.fserver.FSStatusTmpl;
+import org.apache.hadoop.classification.InterfaceAudience;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

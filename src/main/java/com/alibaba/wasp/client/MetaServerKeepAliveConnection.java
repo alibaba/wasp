@@ -17,9 +17,9 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.Closeable;
-
 import com.alibaba.wasp.master.FMetaServerProtocol;
+
+import java.io.Closeable;
 
 public interface MetaServerKeepAliveConnection extends FMetaServerProtocol,Closeable {
 

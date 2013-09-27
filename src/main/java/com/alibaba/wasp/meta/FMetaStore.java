@@ -17,16 +17,12 @@
  */
 package com.alibaba.wasp.meta;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.EntityGroupLocation;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.coprocessor.WaspAggregateImplementation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -44,11 +40,16 @@ import org.apache.hadoop.hbase.io.hfile.Compression.Algorithm;
 import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupLocation;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.MetaException;
-import com.alibaba.wasp.ServerName;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * implement FMetaServices
@@ -121,6 +122,12 @@ class FMetaStore extends FMetaServices {
       // current we thought this is might be a right place to create the hbase
       // table
       HTableDescriptor desc = getStorageTableDesc(tbl);
+//      if(!desc.hasCoprocessor(AggregateImplementation.class.getName())) {
+//        desc.addCoprocessor(AggregateImplementation.class.getName());
+//      }
+      if(!desc.hasCoprocessor(WaspAggregateImplementation.class.getName())) {
+        desc.addCoprocessor(WaspAggregateImplementation.class.getName());
+      }
       createStorageTable(desc);
     } catch (IOException e) {
       LOG.error("Failed to create table.", e);
@@ -539,7 +546,7 @@ class FMetaStore extends FMetaServices {
   /**
    * @param tableName
    * @return Return list of EntityGroupInfos and server addresses.
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws InterruptedException
    */
   @Override
@@ -577,7 +584,7 @@ class FMetaStore extends FMetaServices {
   /**
    * @param entityGroupInfo
    * @param sn
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   @Override
   public void addDaughter(final EntityGroupInfo entityGroupInfo,
@@ -596,10 +603,10 @@ class FMetaStore extends FMetaServices {
 
   /**
    * Deletes daughters references in offlined split parent.
-   * 
+   *
    * @param parent
    *          Parent row we're to remove daughter reference from
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public void deleteDaughtersReferencesInParent(final EntityGroupInfo parent)
       throws MetaException {

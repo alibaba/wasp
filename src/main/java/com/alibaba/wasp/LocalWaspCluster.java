@@ -18,17 +18,6 @@
  */
 package com.alibaba.wasp;
 
-import java.io.IOException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import com.alibaba.wasp.client.WaspAdmin;import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.fserver.FServer;import com.alibaba.wasp.meta.FTable;import com.alibaba.wasp.util.JVMClusterUtil;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Threads;
 import com.alibaba.wasp.client.WaspAdmin;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.fserver.FServer;
@@ -36,6 +25,17 @@ import com.alibaba.wasp.master.FMaster;
 import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.util.JVMClusterUtil;
 import com.alibaba.wasp.util.JVMClusterUtil.FServerThread;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Threads;
+
+import java.io.IOException;
+import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class creates a single process Wasp cluster. One thread is created for a
@@ -54,7 +54,7 @@ import com.alibaba.wasp.util.JVMClusterUtil.FServerThread;
 public class LocalWaspCluster {
   static final Log LOG = LogFactory.getLog(LocalWaspCluster.class);
   private final List<JVMClusterUtil.MasterThread> masterThreads = new CopyOnWriteArrayList<JVMClusterUtil.MasterThread>();
-  private final List<JVMClusterUtil.FServerThread> fserverThreads = new CopyOnWriteArrayList<JVMClusterUtil.FServerThread>();
+  private final List<FServerThread> fserverThreads = new CopyOnWriteArrayList<FServerThread>();
   private final static int DEFAULT_NO = 1;
   /** local mode */
   public static final String LOCAL = "local";
@@ -66,9 +66,9 @@ public class LocalWaspCluster {
 
   /**
    * Constructor.
-   * 
+   *
    * @param conf
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public LocalWaspCluster(final Configuration conf) throws IOException {
     this(conf, DEFAULT_NO);
@@ -76,12 +76,12 @@ public class LocalWaspCluster {
 
   /**
    * Constructor.
-   * 
+   *
    * @param conf
    *          Configuration to use. Post construction has the master's address.
    * @param noFServers
    *          Count of fservers to start.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public LocalWaspCluster(final Configuration conf, final int noFServers)
       throws IOException {
@@ -91,7 +91,7 @@ public class LocalWaspCluster {
 
   /**
    * Constructor.
-   * 
+   *
    * @param conf
    *          Configuration to use. Post construction has the active master
    *          address.
@@ -99,7 +99,7 @@ public class LocalWaspCluster {
    *          Count of masters to start.
    * @param noFServers
    *          Count of fservers to start.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public LocalWaspCluster(final Configuration conf, final int noMasters,
       final int noFServers) throws IOException {
@@ -123,7 +123,7 @@ public class LocalWaspCluster {
 
   /**
    * Constructor.
-   * 
+   *
    * @param conf
    *          Configuration to use. Post construction has the master's address.
    * @param noMasters
@@ -132,7 +132,7 @@ public class LocalWaspCluster {
    *          Count of fservers to start.
    * @param masterClass
    * @param fserverClass
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @SuppressWarnings("unchecked")
   public LocalWaspCluster(final Configuration conf, final int noMasters,
@@ -173,7 +173,7 @@ public class LocalWaspCluster {
   public JVMClusterUtil.FServerThread addFServer(final Configuration config,
       final int index) throws IOException {
     try {
-      return new PrivilegedExceptionAction<JVMClusterUtil.FServerThread>() {
+      return new PrivilegedExceptionAction<FServerThread>() {
         public JVMClusterUtil.FServerThread run() throws Exception {
           JVMClusterUtil.FServerThread rst = JVMClusterUtil
               .createFServerThread(config, fserverClass, index);
@@ -213,7 +213,7 @@ public class LocalWaspCluster {
   /**
    * @return Read-only list of fserver threads.
    */
-  public List<JVMClusterUtil.FServerThread> getFServers() {
+  public List<FServerThread> getFServers() {
     return Collections.unmodifiableList(this.fserverThreads);
   }
 
@@ -222,9 +222,9 @@ public class LocalWaspCluster {
    *         aborted during lifetime of cluster; these servers are not included
    *         in this list).
    */
-  public List<JVMClusterUtil.FServerThread> getLiveFServers() {
-    List<JVMClusterUtil.FServerThread> liveServers = new ArrayList<JVMClusterUtil.FServerThread>();
-    List<JVMClusterUtil.FServerThread> list = getFServers();
+  public List<FServerThread> getLiveFServers() {
+    List<FServerThread> liveServers = new ArrayList<FServerThread>();
+    List<FServerThread> list = getFServers();
     for (JVMClusterUtil.FServerThread rst : list) {
       if (rst.isAlive())
         liveServers.add(rst);
@@ -237,7 +237,7 @@ public class LocalWaspCluster {
   /**
    * Wait for the specified fserver to stop Removes this thread from list of
    * running threads.
-   * 
+   *
    * @param serverNumber
    * @return Name of fserver that just went down.
    */
@@ -258,7 +258,7 @@ public class LocalWaspCluster {
   /**
    * Wait for the specified fserver to stop Removes this thread from list of
    * running threads.
-   * 
+   *
    * @param rst
    * @return Name of fserver that just went down.
    */
@@ -291,7 +291,7 @@ public class LocalWaspCluster {
   /**
    * Gets the current active master, if available. If no active master, returns
    * null.
-   * 
+   *
    * @return the FMaster for the active master
    */
   public FMaster getActiveMaster() {
@@ -333,7 +333,7 @@ public class LocalWaspCluster {
   /**
    * Wait for the specified master to stop Removes this thread from list of
    * running threads.
-   * 
+   *
    * @param serverNumber
    * @return Name of master that just went down.
    */
@@ -355,7 +355,7 @@ public class LocalWaspCluster {
   /**
    * Wait for the specified master to stop Removes this thread from list of
    * running threads.
-   * 
+   *
    * @param masterThread
    * @return Name of master that just went down.
    */
@@ -434,9 +434,9 @@ public class LocalWaspCluster {
 
   /**
    * Test things basically work.
-   * 
+   *
    * @param args
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static void main(String[] args) throws IOException {
     Configuration conf = WaspConfiguration.create();

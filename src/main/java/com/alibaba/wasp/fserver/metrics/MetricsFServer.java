@@ -58,6 +58,14 @@ public class MetricsFServer {
     serverSource.updateInsert(t);
   }
 
+  public void updateTransaction(long t) {
+     if (t > 1000) {
+       serverSource.incrSlowTransaction();
+     }
+     serverSource.updateTransaction(t);
+   }
+
+
   public void updateGenPlan(long t) {
     if (t > 1000) {
       serverSource.incrSlowGenPlan();
@@ -91,5 +99,19 @@ public class MetricsFServer {
       serverSource.incrSlowScan();
     }
     serverSource.updateScan(t);
+  }
+
+  public void updateCount(long t) {
+    if (t > 1000) {
+      serverSource.incrSlowCount();
+    }
+    serverSource.updateCount(t);
+  }
+
+  public void updateSum(long t) {
+    if (t > 1000) {
+      serverSource.incrSlowSum();
+    }
+    serverSource.updateSum(t);
   }
 }

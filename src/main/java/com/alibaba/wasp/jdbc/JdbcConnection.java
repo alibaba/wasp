@@ -18,21 +18,21 @@
  */
 package com.alibaba.wasp.jdbc;
 
-import com.alibaba.wasp.jdbc.result.JdbcDatabaseMetaData;import com.alibaba.wasp.jdbc.value.Value;import com.alibaba.wasp.session.SessionFactory;import com.alibaba.wasp.session.SessionInterface;import com.alibaba.wasp.util.Utils;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.client.FClient;
 import com.alibaba.wasp.jdbc.command.CommandInterface;
 import com.alibaba.wasp.jdbc.result.JdbcDatabaseMetaData;
 import com.alibaba.wasp.jdbc.value.Value;
+import com.alibaba.wasp.session.ExecuteSession;
 import com.alibaba.wasp.session.SessionFactory;
 import com.alibaba.wasp.session.SessionInterface;
 import com.alibaba.wasp.util.StringUtils;
 import com.alibaba.wasp.util.Utils;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -50,6 +50,7 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -82,6 +83,7 @@ public class JdbcConnection implements Connection {
   private final CloseWatcher watcher;
   private int queryTimeoutCache = -1;
   private Properties properties;
+  private boolean autoCommit;
 
   /**
    * Constructor.
@@ -90,7 +92,7 @@ public class JdbcConnection implements Connection {
    * 
    * @param info
    * 
-   * @throws SQLException
+   * @throws java.sql.SQLException
    */
   public JdbcConnection(String url, Properties info) throws SQLException {
     this(new ConnectionInfo(url, info), Utils
@@ -100,15 +102,15 @@ public class JdbcConnection implements Connection {
 
   /**
    * Wasp's JDBC connection.
-   * 
+   *
    * @param ci
-   * @throws SQLException
+   * @throws java.sql.SQLException
    */
   private JdbcConnection(ConnectionInfo ci, Configuration conf)
       throws SQLException {
     try {
       // this will return an embedded or server connection
-      session = SessionFactory.createSession(ci);
+      session = SessionFactory.createConnectionSession(ci);
       this.user = ci.getUserName();
       log.info("Connection conn = DriverManager.getConnection("
           + StringUtils.quoteJavaString(ci.getOriginalURL()) + ", "
@@ -121,6 +123,10 @@ public class JdbcConnection implements Connection {
     } catch (Exception e) {
       throw Logger.logAndConvert(log, e);
     }
+  }
+
+  public JdbcConnection(JdbcConnection conn) throws SQLException {
+    this(conn.getURL(), conn.getClientInfo());
   }
 
   private void closeOld() {
@@ -139,7 +145,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Creates a new statement.
-   * 
+   *
    * @return the new statement
    * @throws java.sql.SQLException
    *           if the connection is closed
@@ -157,7 +163,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Creates a statement with the specified result set type and concurrency.
-   * 
+   *
    * @param resultSetType
    *          the result set type (ResultSet.TYPE_*)
    * @param resultSetConcurrency
@@ -182,7 +188,7 @@ public class JdbcConnection implements Connection {
   /**
    * Creates a statement with the specified result set type, concurrency, and
    * holdability.
-   * 
+   *
    * @param resultSetType
    *          the result set type (ResultSet.TYPE_*)
    * @param resultSetConcurrency
@@ -209,7 +215,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Creates a new prepared statement.
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @return the prepared statement
@@ -230,7 +236,7 @@ public class JdbcConnection implements Connection {
   /**
    * Prepare a statement that will automatically close when the result set is
    * closed. This method is used to retrieve database meta data.
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @return the prepared statement
@@ -247,7 +253,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Gets the database meta data for this database.
-   * 
+   *
    * @return the database meta data
    * @throws java.sql.SQLException
    *           if the connection is closed
@@ -285,7 +291,7 @@ public class JdbcConnection implements Connection {
       session.close();
       if (executingStatement != null) {
         try {
-          executingStatement.cancel();
+          executingStatement.close();
         } catch (NullPointerException e) {
           // ignore
         }
@@ -306,36 +312,34 @@ public class JdbcConnection implements Connection {
 
   @Override
   public void setAutoCommit(boolean autoCommit) throws SQLException {
-    // always true
+    this.autoCommit = autoCommit;
   }
 
   /**
    * Gets the current setting for auto commit.
-   * 
+   *
    * @return true for on, false for off
    * @throws java.sql.SQLException
    *           if the connection is closed
    */
   @Override
   public synchronized boolean getAutoCommit() throws SQLException {
-    // always true
-    return true;
+    return this.autoCommit;
   }
 
   /**
-   * don't need commit. wasp autocommit
-   * 
+   *
    * @throws java.sql.SQLException
    *           if the connection is closed
    */
   @Override
   public synchronized void commit() throws SQLException {
-    // don't need commit. wasp autocommit
+    autoCommit = true;
   }
 
   /**
    * unsupported rollback
-   * 
+   *
    * @throws java.sql.SQLException
    *           if the connection is closed
    */
@@ -346,7 +350,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Returns true if this connection has been closed.
-   * 
+   *
    * @return true if close was called
    */
   @Override
@@ -356,7 +360,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Translates a SQL statement into the database grammar.
-   * 
+   *
    * @param sql
    *          the SQL statement with or without JDBC escape sequences
    * @return the translated statement
@@ -376,7 +380,7 @@ public class JdbcConnection implements Connection {
   /**
    * According to the JDBC specs, this setting is only a hint to the database to
    * enable optimizations - it does not cause writes to be prohibited.
-   * 
+   *
    * @param readOnly
    *          ignored
    * @throws java.sql.SQLException
@@ -389,7 +393,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Returns true if the database is read-only.
-   * 
+   *
    * @return if the database is read-only
    * @throws java.sql.SQLException
    *           if the connection is closed
@@ -402,7 +406,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Set the default catalog name. This call is ignored.
-   * 
+   *
    * @param catalog
    *          ignored
    * @throws java.sql.SQLException
@@ -415,7 +419,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Gets the current catalog name.
-   * 
+   *
    * @return the catalog name
    * @throws java.sql.SQLException
    *           if the connection is closed
@@ -427,7 +431,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Gets the first warning reported by calls on this object.
-   * 
+   *
    * @return null
    */
   @Override
@@ -446,7 +450,7 @@ public class JdbcConnection implements Connection {
   /**
    * Creates a prepared statement with the specified result set type and
    * concurrency.
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @param resultSetType
@@ -486,7 +490,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Returns the current transaction isolation level.
-   * 
+   *
    * @return the isolation level.
    * @throws java.sql.SQLException
    *           if the connection is closed
@@ -499,7 +503,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Changes the current result set holdability.
-   * 
+   *
    * @param holdability
    *          ResultSet.HOLD_CURSORS_OVER_COMMIT or
    *          ResultSet.CLOSE_CURSORS_AT_COMMIT;
@@ -519,7 +523,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Returns the current result set holdability.
-   * 
+   *
    * @return the holdability
    * @throws java.sql.SQLException
    *           if the connection is closed
@@ -536,7 +540,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Gets the type map.
-   * 
+   *
    * @return null
    * @throws java.sql.SQLException
    *           if the connection is closed
@@ -566,7 +570,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * unsupported
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @return the callable statement
@@ -580,7 +584,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * unsupported
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @param resultSetType
@@ -600,7 +604,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * unsupported
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @param resultSetType
@@ -622,7 +626,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Creates a new unnamed savepoint.
-   * 
+   *
    * @return the new savepoint
    */
   @Override
@@ -632,7 +636,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Creates a new named savepoint.
-   * 
+   *
    * @param name
    *          the savepoint name
    * @return the new savepoint
@@ -644,7 +648,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Rolls back to a savepoint.
-   * 
+   *
    * @param savepoint
    *          the savepoint
    */
@@ -655,7 +659,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Releases a savepoint.
-   * 
+   *
    * @param savepoint
    *          the savepoint to release
    */
@@ -667,7 +671,7 @@ public class JdbcConnection implements Connection {
   /**
    * Creates a prepared statement with the specified result set type,
    * concurrency, and holdability.
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @param resultSetType
@@ -699,7 +703,7 @@ public class JdbcConnection implements Connection {
    * Creates a new prepared statement. This method just calls
    * prepareStatement(String sql) internally. The method getGeneratedKeys only
    * supports one column.
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @param autoGeneratedKeys
@@ -718,7 +722,7 @@ public class JdbcConnection implements Connection {
    * Creates a new prepared statement. This method just calls
    * prepareStatement(String sql) internally. The method getGeneratedKeys only
    * supports one column.
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @param columnIndexes
@@ -737,7 +741,7 @@ public class JdbcConnection implements Connection {
    * Creates a new prepared statement. This method just calls
    * prepareStatement(String sql) internally. The method getGeneratedKeys only
    * supports one column.
-   * 
+   *
    * @param sql
    *          the SQL statement
    * @param columnNames
@@ -797,7 +801,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Check if this connection is closed. The next operation is a read request.
-   * 
+   *
    * @throws JdbcException
    *           if the connection or session is closed
    */
@@ -807,7 +811,7 @@ public class JdbcConnection implements Connection {
 
   /**
    * Check if this connection is closed.
-   * 
+   *
    * @param write
    *          if the next operation is possibly writing
    * @throws JdbcException
@@ -957,10 +961,15 @@ public class JdbcConnection implements Connection {
     return "Conn : url=" + url + " user=" + user;
   }
 
-  public CommandInterface prepareCommand(String sql, int fetchSize) {
+  public CommandInterface prepareCommand(String sql, int fetchSize, ExecuteSession statementSession) {
     String readModel = properties.getProperty(FConstants.READ_MODEL);
     return session.prepareCommand(fClient, sql, fetchSize,
-        Utils.getReadModel(readModel));
+        Utils.getReadModel(readModel), autoCommit, statementSession);
+  }
+
+  public CommandInterface prepareCommand(List<String> sqls, ExecuteSession statementSession) {
+    String readModel = properties.getProperty(FConstants.READ_MODEL);
+    return session.prepareCommand(fClient, sqls, autoCommit, statementSession);
   }
 
   public Object convertToDefaultObject(Value v) {
@@ -986,20 +995,20 @@ public class JdbcConnection implements Connection {
   }
 
   public String getSchema() throws SQLException {
-	  throw new NotImplementedException();
+    throw new NotImplementedException();
   }
 
   public void abort(Executor executor) throws SQLException {
-	  throw new NotImplementedException();
+    throw new NotImplementedException();
   }
 
   public void setNetworkTimeout(Executor executor, int milliseconds)
-		  throws SQLException {
-	  throw new NotImplementedException();
+      throws SQLException {
+    throw new NotImplementedException();
   }
 
   public int getNetworkTimeout() throws SQLException {
-	  throw new NotImplementedException();
+    throw new NotImplementedException();
   }
 
 }

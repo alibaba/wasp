@@ -29,16 +29,13 @@ public class ResultTransfer {
 
   private String tablename;
 
-  private int commandType;
-
   private int counts;
 
   public ResultTransfer(List<Field> fields,
-      String tablename, int commandType) {
+      String tablename) {
     this.fields = fields;
     //this.result = result;
     this.tablename = tablename;
-    this.commandType = commandType;
   }
 
   public List<Field> getFields() {
@@ -63,10 +60,6 @@ public class ResultTransfer {
 
   public void setTablename(String tablename) {
     this.tablename = tablename;
-  }
-
-  public int getCommandType() {
-    return commandType;
   }
 
   public int getCounts() {

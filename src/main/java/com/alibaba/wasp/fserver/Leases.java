@@ -70,7 +70,7 @@ public class Leases extends HasThread {
   }
 
   /**
-   * @see java.lang.Thread#run()
+   * @see Thread#run()
    */
   @Override
   public void run() {
@@ -131,7 +131,7 @@ public class Leases extends HasThread {
 
   /**
    * Obtain a lease.
-   * 
+   *
    * @param leaseName
    *          name of the lease
    * @param leaseTimeoutPeriod
@@ -147,7 +147,7 @@ public class Leases extends HasThread {
 
   /**
    * Inserts lease. Resets expiration before insertion.
-   * 
+   *
    * @param lease
    * @throws LeaseStillHeldException
    */
@@ -188,7 +188,7 @@ public class Leases extends HasThread {
 
   /**
    * Renew a lease
-   * 
+   *
    * @param leaseName
    *          name of lease
    * @throws LeaseException
@@ -212,7 +212,7 @@ public class Leases extends HasThread {
 
   /**
    * Client explicitly cancels a lease.
-   * 
+   *
    * @param leaseName
    *          name of lease
    * @throws LeaseException
@@ -225,7 +225,7 @@ public class Leases extends HasThread {
    * Remove named lease. Lease is removed from the list of leases and removed
    * from the delay queue. Lease can be resinserted using
    * {@link #addLease(Lease)}
-   * 
+   *
    * @param leaseName
    *          name of lease
    * @throws LeaseException

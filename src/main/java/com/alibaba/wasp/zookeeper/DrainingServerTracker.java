@@ -17,17 +17,17 @@
  */
 package com.alibaba.wasp.zookeeper;
 
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.master.FServerManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.Abortable;
+import org.apache.zookeeper.KeeperException;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.TreeSet;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.Abortable;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.master.FServerManager;
-import org.apache.zookeeper.KeeperException;
 
 
 /**
@@ -39,12 +39,12 @@ import org.apache.zookeeper.KeeperException;
  * 
  * <p>
  * If an fs gets deleted from draining list, we call
- * {@link FServerManager#removeServerFromDrainList(ServerName)}
- * 
+ * {@link com.alibaba.wasp.master.FServerManager#removeServerFromDrainList(com.alibaba.wasp.ServerName)}
+ *
  * <p>
  * If an fs gets added to the draining list, we add a watcher to it and call
- * {@link FServerManager#addServerToDrainList(ServerName)}
- * 
+ * {@link com.alibaba.wasp.master.FServerManager#addServerToDrainList(com.alibaba.wasp.ServerName)}
+ *
  */
 public class DrainingServerTracker extends ZooKeeperListener {
   private static final Log LOG = LogFactory.getLog(DrainingServerTracker.class);
@@ -65,7 +65,7 @@ public class DrainingServerTracker extends ZooKeeperListener {
    *
    * <p>All Draining RSs will be tracked after this method is called.
    *
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public void start() throws KeeperException, IOException {
     watcher.registerListener(this);

@@ -19,7 +19,7 @@
  */
 package com.alibaba.wasp.jdbc.value;
 
-import com.alibaba.wasp.jdbc.JdbcException;import com.alibaba.wasp.util.SmallLRUCache;import com.alibaba.wasp.jdbc.JdbcException;
+import com.alibaba.wasp.jdbc.JdbcException;
 import com.alibaba.wasp.util.SmallLRUCache;
 
 import java.text.CollationKey;

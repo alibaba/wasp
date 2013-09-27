@@ -17,7 +17,7 @@
  */
 package com.alibaba.wasp.session;
 
-import com.alibaba.wasp.ReadModel;import com.alibaba.wasp.client.FClient;import com.alibaba.wasp.jdbc.ConnectionInfo;import com.alibaba.wasp.jdbc.JdbcException;import com.alibaba.wasp.jdbc.command.CommandInterface;import com.alibaba.wasp.jdbc.command.CommandRemote;import com.alibaba.wasp.ReadModel;
+import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.client.FClient;
 import com.alibaba.wasp.jdbc.ConnectionInfo;
 import com.alibaba.wasp.jdbc.JdbcException;
@@ -26,13 +26,14 @@ import com.alibaba.wasp.jdbc.command.CommandRemote;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The client side part of a session when using the server mode. This object
  * communicates with a Session on the server side.
  */
-public class RemoteSession implements SessionInterface {
+public class ConnectionSession implements SessionInterface {
 
   public static final int SESSION_PREPARE = 0;
   public static final int SESSION_CLOSE = 1;
@@ -62,7 +63,7 @@ public class RemoteSession implements SessionInterface {
   private String sessionId;
   private int lastReconnect;
 
-  public RemoteSession(ConnectionInfo ci) {
+  public ConnectionSession(ConnectionInfo ci) {
     this.connectionInfo = ci;
   }
 
@@ -107,9 +108,15 @@ public class RemoteSession implements SessionInterface {
   }
 
   @Override
-  public CommandInterface prepareCommand(FClient fClient,String sql, int fetchSize, ReadModel readModel) {
+  public CommandInterface prepareCommand(FClient fClient,String sql, int fetchSize, ReadModel readModel, boolean autoCommit, ExecuteSession statementSession) {
     checkClosed();
-    return new CommandRemote(fClient, this, sql, fetchSize, readModel);
+    return new CommandRemote(fClient, this, sql, fetchSize, readModel, autoCommit, statementSession, null);
+  }
+
+  @Override
+  public CommandInterface prepareCommand(FClient fClient, List<String> sqls, boolean autoCommit, ExecuteSession statementSession) {
+    checkClosed();
+    return new CommandRemote(fClient, this, sqls, autoCommit, statementSession);
   }
 
   public void checkPowerOff() {

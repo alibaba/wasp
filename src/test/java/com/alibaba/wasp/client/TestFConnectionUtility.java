@@ -17,14 +17,14 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.IOException;
-
-import com.alibaba.wasp.EntityGroupLocation;import com.alibaba.wasp.ServerName;import com.alibaba.wasp.ZooKeeperConnectionException;import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupLocation;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.ZooKeeperConnectionException;
+import org.apache.hadoop.conf.Configuration;
 import org.mockito.Mockito;
+
+import java.io.IOException;
 
 /**
  * {@link com.alibaba.wasp.client.FConnection} testing utility.
@@ -43,7 +43,7 @@ public class TestFConnectionUtility {
    * Be sure to shutdown the connection when done by calling
    * {@link FConnectionManager#deleteConnection(org.apache.hadoop.conf.Configuration, boolean)} else it
    * will stick around; this is probably not what you want.
-   * 
+   *
    * @param conf
    *          configuration
    * @return FConnection object for <code>conf</code>
@@ -74,7 +74,7 @@ public class TestFConnectionUtility {
    * connection when done by calling
    * {@link FConnectionManager#deleteConnection(org.apache.hadoop.conf.Configuration, boolean)}
    * else it will stick around; this is probably not what you want.
-   * 
+   *
    * @param conf
    *          Configuration to use itself a mock.
    * @param sn

@@ -17,6 +17,14 @@
  */
 package com.alibaba.wasp.ipc;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.client.RetriesExhaustedException;
+import org.apache.hadoop.net.NetUtils;
+import org.apache.hadoop.util.ReflectionUtils;
+
+import javax.net.SocketFactory;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
@@ -25,15 +33,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.net.SocketFactory;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.client.RetriesExhaustedException;
-import org.apache.hadoop.net.NetUtils;
-import org.apache.hadoop.util.ReflectionUtils;
 
 public class WaspRPC {
 
@@ -86,7 +85,7 @@ public class WaspRPC {
   /**
    * Construct a client-side proxy object that implements the named protocol,
    * talking to a server at the named address.
-   * 
+   *
    * @param protocol
    *          interface
    * @param clientVersion
@@ -100,7 +99,7 @@ public class WaspRPC {
    * @param rpcTimeout
    *          timeout for each RPC
    * @return proxy
-   * @throws IOException
+   * @throws java.io.IOException
    *           e
    */
   public static VersionedProtocol getProxy(
@@ -115,7 +114,7 @@ public class WaspRPC {
 
   /**
    * Construct a client-side proxy object with the default SocketFactory
-   * 
+   *
    * @param protocol
    *          interface
    * @param clientVersion
@@ -127,7 +126,7 @@ public class WaspRPC {
    * @param rpcTimeout
    *          timeout for each RPC
    * @return a proxy instance
-   * @throws IOException
+   * @throws java.io.IOException
    *           e
    */
   public static VersionedProtocol getProxy(
@@ -162,7 +161,7 @@ public class WaspRPC {
    * @param timeout
    *          timeout in milliseconds
    * @return proxy
-   * @throws IOException
+   * @throws java.io.IOException
    *           e
    */
   @SuppressWarnings("unchecked")

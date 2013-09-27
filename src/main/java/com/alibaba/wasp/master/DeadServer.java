@@ -18,8 +18,8 @@
  */
 package com.alibaba.wasp.master;
 
-import org.apache.commons.lang.NotImplementedException;
 import com.alibaba.wasp.ServerName;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -81,7 +81,7 @@ public class DeadServer implements Set<ServerName>, Cloneable {
    */
   boolean isDeadServerWithSameHostnamePort(final ServerName serverName) {
     return ServerName.findServerWithSameHostnamePort(this.deadServers,
-      serverName) != null;
+        serverName) != null;
   }
 
   /**

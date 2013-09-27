@@ -20,11 +20,6 @@
 
 package com.alibaba.wasp.plan.action;
 
-import java.io.IOException;
-import java.util.List;
-
-import com.alibaba.wasp.ZooKeeperConnectionException;import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.meta.FTable;import com.alibaba.wasp.meta.MemFMetaStore;import com.alibaba.wasp.plan.CreateTablePlan;import com.alibaba.wasp.plan.InsertPlan;import com.alibaba.wasp.plan.Plan;import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;import com.alibaba.wasp.protobuf.generated.MetaProtos;import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.meta.FTable;
@@ -38,11 +33,16 @@ import com.alibaba.wasp.plan.parser.WaspParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDDLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDMLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.List;
 
 public class TestInsertAction {
 

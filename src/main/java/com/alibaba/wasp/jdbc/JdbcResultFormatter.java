@@ -74,6 +74,8 @@ public class JdbcResultFormatter {
   public void format(Statement stmt, String sql) throws SQLException {
     ResultSet rs = stmt.executeQuery(sql);
     print(rs);
+    rs.close();
+    stmt.close();
     // return sb.toString();
   }
 
@@ -517,7 +519,7 @@ public class JdbcResultFormatter {
 
     public boolean set(String key, String value, boolean quiet) {
       try {
-        Reflector.invoke(this, "set" + key, new Object[] { value });
+        Reflector.invoke(this, "set" + key, new Object[]{value});
         return true;
       } catch (Exception e) {
         if (!quiet) {
@@ -765,12 +767,12 @@ public class JdbcResultFormatter {
 
     /**
      * Pad the specified String with spaces to the indicated length
-     * 
+     *
      * @param str
      *          the String to pad
      * @param len
      *          the length we want the return String to be
-     * 
+     *
      * @return the passed in String with spaces appended until the length
      *         matches the specified length.
      */
@@ -1082,7 +1084,7 @@ public class JdbcResultFormatter {
     /**
      * Return whether the specified column (0-based index) is a primary key.
      * Since this method depends on whether the JDBC driver property implements
-     * {@link ResultSetMetaData#getTableName} (many do not), it is not reliable
+     * {@link java.sql.ResultSetMetaData#getTableName} (many do not), it is not reliable
      * for all databases.
      */
     boolean isPrimaryKey(int col) {

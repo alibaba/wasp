@@ -17,6 +17,30 @@
  */
 package com.alibaba.wasp.master;
 
+import com.alibaba.wasp.ClockOutOfSyncException;
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.PleaseHoldException;
+import com.alibaba.wasp.Server;
+import com.alibaba.wasp.ServerLoad;
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.YouAreDeadException;
+import com.alibaba.wasp.ZooKeeperConnectionException;
+import com.alibaba.wasp.client.FConnection;
+import com.alibaba.wasp.client.FConnectionManager;
+import com.alibaba.wasp.fserver.AdminProtocol;
+import com.alibaba.wasp.fserver.EntityGroupOpeningState;
+import com.alibaba.wasp.master.handler.ServerShutdownHandler;
+import com.alibaba.wasp.monitoring.MonitoredTask;
+import com.alibaba.wasp.protobuf.ProtobufUtil;
+import com.alibaba.wasp.protobuf.RequestConverter;
+import com.alibaba.wasp.protobuf.ResponseConverter;
+import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupRequest;
+import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupResponse;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -28,33 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.alibaba.wasp.PleaseHoldException;import com.alibaba.wasp.protobuf.ResponseConverter;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.master.ServerManager;
-import com.alibaba.wasp.ClockOutOfSyncException;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.PleaseHoldException;
-import com.alibaba.wasp.Server;
-import com.alibaba.wasp.ServerLoad;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.YouAreDeadException;
-import com.alibaba.wasp.ZooKeeperConnectionException;
-import com.alibaba.wasp.client.FConnection;
-import com.alibaba.wasp.client.FConnectionManager;
-import com.alibaba.wasp.client.RetriesExhaustedException;
-import com.alibaba.wasp.fserver.AdminProtocol;
-import com.alibaba.wasp.fserver.EntityGroupOpeningState;
-import com.alibaba.wasp.master.handler.ServerShutdownHandler;
-import com.alibaba.wasp.monitoring.MonitoredTask;
-import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.RequestConverter;
-import com.alibaba.wasp.protobuf.ResponseConverter;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupResponse;
-
-import com.google.protobuf.ServiceException;
 
 /**
  * The FServerManager class manages info about fservers.
@@ -103,7 +100,7 @@ public class FServerManager {
    * Set of fservers which are dead but not processed immediately. If one server
    * died before master enables ServerShutdownHandler, the server will be added
    * to this set and will be processed through calling
-   * {@link ServerManager#processQueuedDeadServers()} by master.
+   * {@link org.apache.hadoop.hbase.master.ServerManager#processQueuedDeadServers()} by master.
    * <p>
    * A dead server is a server instance known to be dead, not listed in the
    * /wasp/rs znode any more. It may have not been submitted to
@@ -123,7 +120,7 @@ public class FServerManager {
    * <p>
    * If one server died before assignment manager finished the failover cleanup,
    * the server will be added to this set and will be processed through calling
-   * {@link ServerManager#processQueuedDeadServers()} by assignment manager.
+   * {@link org.apache.hadoop.hbase.master.ServerManager#processQueuedDeadServers()} by assignment manager.
    * <p>
    * For all the fservers in this set, HLog split is already completed.
    * <p>
@@ -136,10 +133,10 @@ public class FServerManager {
 
   /**
    * Constructor.
-   * 
+   *
    * @param master
    * @param services
-   * @throws ZooKeeperConnectionException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
    */
   public FServerManager(final Server master, final FMasterServices services)
       throws ZooKeeperConnectionException {
@@ -159,7 +156,7 @@ public class FServerManager {
 
   /**
    * Let the server manager know a new fserver has come online
-   * 
+   *
    * @param ia
    *          The remote address
    * @param port
@@ -168,7 +165,7 @@ public class FServerManager {
    * @param serverCurrentTime
    *          The current time of the fserver in ms
    * @return The ServerName we know this server as.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   ServerName fserverStartup(final InetAddress ia, final int port,
       final long serverStartcode, long serverCurrentTime) throws IOException {
@@ -206,9 +203,9 @@ public class FServerManager {
 
   /**
    * Test to see if we have a server of same host and port already.
-   * 
+   *
    * @param serverName
-   * @throws PleaseHoldException
+   * @throws com.alibaba.wasp.PleaseHoldException
    */
   void checkAlreadySameHostPort(final ServerName serverName)
       throws PleaseHoldException {
@@ -233,11 +230,11 @@ public class FServerManager {
    * Checks if the clock skew between the server and the master. If the clock
    * skew exceeds the configured max, it will throw an exception; if it exceeds
    * the configured warning threshold, it will log a warning but start normally.
-   * 
+   *
    * @param serverName
    *          Incoming servers's name
    * @param serverCurrentTime
-   * @throws ClockOutOfSyncException
+   * @throws com.alibaba.wasp.ClockOutOfSyncException
    *           if the skew exceeds the configured max value
    */
   private void checkClockSkew(final ServerName serverName,
@@ -263,11 +260,11 @@ public class FServerManager {
    * If this server is on the dead list, reject it with a YouAreDeadException.
    * If it was dead but came back with a new start code, remove the old entry
    * from the dead list.
-   * 
+   *
    * @param serverName
    * @param what
    *          START or REPORT
-   * @throws YouAreDeadException
+   * @throws com.alibaba.wasp.YouAreDeadException
    */
   private void checkIsDead(final ServerName serverName, final String what)
       throws YouAreDeadException {
@@ -293,7 +290,7 @@ public class FServerManager {
 
   /**
    * Adds the onlineServers list.
-   * 
+   *
    * @param hsl
    * @param serverName
    *          The remote servers name.
@@ -316,7 +313,7 @@ public class FServerManager {
    * Compute the average load across all fservers. Currently, this uses a very
    * naive computation - just uses the number of entityGroups being served,
    * ignoring stats about number of requests.
-   * 
+   *
    * @return the average load
    */
   public double getAverageLoad() {
@@ -353,7 +350,7 @@ public class FServerManager {
 
   /**
    * Checks if any dead servers are currently in progress.
-   * 
+   *
    * @return true if any FS are being processed as dead, false if not
    */
   public boolean areDeadServersInProgress() {
@@ -517,7 +514,7 @@ public class FServerManager {
    * <p>
    * Open should not fail but can if server just crashed.
    * <p>
-   * 
+   *
    * @param server
    *          server to open a entityGroup
    * @param entityGroup
@@ -550,7 +547,7 @@ public class FServerManager {
    * <p>
    * Open should not fail but can if server just crashed.
    * <p>
-   * 
+   *
    * @param server
    *          server to open a entityGroup
    * @param entityGroupOpenInfos
@@ -582,7 +579,7 @@ public class FServerManager {
    * <p>
    * A entityGroup server could reject the close request because it either does
    * not have the specified entityGroup or the entityGroup is being split.
-   * 
+   *
    * @param server
    *          server to open a entityGroup
    * @param entityGroup
@@ -594,7 +591,7 @@ public class FServerManager {
    *          - if the entityGroup is moved to another server, the destination
    *          server. null otherwise.
    * @return true if server acknowledged close, false if not
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public boolean sendEntityGroupClose(ServerName server,
       EntityGroupInfo entityGroup, int versionOfClosingNode, ServerName dest,
@@ -622,11 +619,11 @@ public class FServerManager {
   /**
    * Sends an ENABLE TABLE RPC to the specified server to close the specified
    * entityGroup.
-   * 
+   *
    * @param server
    *          server to disable a table.
    * @return true if server acknowledged close, false if not
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public boolean sendEnableTable(ServerName server, String tableName)
       throws IOException {
@@ -652,11 +649,11 @@ public class FServerManager {
   /**
    * Sends an DISABLE TABLE RPC to the specified server to close the specified
    * entityGroup.
-   * 
+   *
    * @param server
    *          server to disable a table.
    * @return true if server acknowledged close, false if not
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public boolean sendDisableTable(ServerName server, String tableName)
       throws IOException {
@@ -682,7 +679,7 @@ public class FServerManager {
   /**
    * @param sn
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws com.alibaba.wasp.client.RetriesExhaustedException
    *           wrapping a ConnectException if failed putting up proxy.
    */

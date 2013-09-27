@@ -20,7 +20,7 @@
 package com.alibaba.wasp.plan.operator;
 
 
-public class SumOperator extends Operator{
+public class SumOperator extends Operator {
 
   @Override
   public String getName() {

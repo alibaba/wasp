@@ -17,20 +17,18 @@
  */
 package com.alibaba.wasp.plan.execute;
 
-import java.util.List;
-
-import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.fserver.FServer;
-import com.alibaba.wasp.fserver.TwoPhaseCommitProtocol;
+import com.alibaba.wasp.plan.DMLTransactionPlan;
 import com.alibaba.wasp.plan.DQLPlan;
 import com.alibaba.wasp.plan.DeletePlan;
 import com.alibaba.wasp.plan.InsertPlan;
 import com.alibaba.wasp.plan.UpdatePlan;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
+import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto;
-
 import com.google.protobuf.ServiceException;
+import org.apache.hadoop.hbase.util.Pair;
+
+import java.util.List;
 
 public interface Execution {
 
@@ -40,7 +38,7 @@ public interface Execution {
    * @param plan
    * @param sessionId
    * @return
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public Pair<Boolean, Pair<String, Pair<List<QueryResultProto>, List<StringDataTypePair>>>> execQueryPlan(
       DQLPlan plan, String sessionId, boolean closeSession)
@@ -50,10 +48,10 @@ public interface Execution {
    * Execute UpdatePlan with some regular 1. when only have one Action in the
    * UpdatePlan. it will update without 2pc 2. If not 2pc. if the Action execute
    * on local EntityGroup. just call
-   * {@link FServer#update(byte[], com.alibaba.wasp.plan.UpdateAction)} ,
+   * {@link com.alibaba.wasp.fserver.FServer#update(byte[], com.alibaba.wasp.plan.action.UpdateAction)} ,
    * otherwise it needed process the action by RPC. 3. If 2pc. just call
-   * {@link TwoPhaseCommitProtocol#submit(java.util.Map)}
-   * 
+   * {@link com.alibaba.wasp.fserver.TwoPhaseCommitProtocol#submit(java.util.Map)}
+   *
    * @param plan
    */
   public List<WriteResultProto> execUpdatePlan(UpdatePlan plan)
@@ -63,10 +61,10 @@ public interface Execution {
    * Execute InsertPlan with some regular 1. when only have one Action in the
    * InsertPlan. it will insert without 2pc 2. If not 2pc. if the Action execute
    * on local EntityGroup. just call
-   * {@link FServer#insert(byte[], com.alibaba.wasp.plan.InsertAction)} ,
+   * {@link com.alibaba.wasp.fserver.FServer#insert(byte[], com.alibaba.wasp.plan.action.InsertAction)} ,
    * otherwise it needed process the action by RPC. 3. If 2pc. just call
-   * {@link TwoPhaseCommitProtocol#submit(java.util.Map)}
-   * 
+   * {@link com.alibaba.wasp.fserver.TwoPhaseCommitProtocol#submit(java.util.Map)}
+   *
    * @param plan
    * @return
    */
@@ -77,13 +75,28 @@ public interface Execution {
    * Execute DeletePlan with some regular 1. when only have one Action in the
    * DeletePlan. it will delete without 2pc 2. If not 2pc. if the Action execute
    * on local EntityGroup. just call
-   * {@link FServer#delete(byte[], com.alibaba.wasp.plan.DeleteAction)} ,
+   * {@link com.alibaba.wasp.fserver.FServer#delete(byte[], com.alibaba.wasp.plan.action.DeleteAction)} ,
    * otherwise it needed process the action by RPC. 3. If 2pc. just call
-   * {@link TwoPhaseCommitProtocol#submit(java.util.Map)}
-   * 
+   * {@link com.alibaba.wasp.fserver.TwoPhaseCommitProtocol#submit(java.util.Map)}
+   *
    * @param plan
    * @return
    */
   public List<WriteResultProto> execDeletePlan(DeletePlan plan)
       throws ServiceException;
+
+  /**
+   *
+   * Execute DMLTransactionPlan with some regular
+   * 1. the plans in a same transaction
+   * 2. the plans effect tables must be filiation.
+   * 3. run with eg transaction. not 2pc
+   *
+   * @param dmlTransactionPlan
+   * @return
+   * @throws com.google.protobuf.ServiceException
+   */
+  public List<WriteResultProto> execDMLTransactionPlans(DMLTransactionPlan dmlTransactionPlan)
+      throws ServiceException;
+
 }

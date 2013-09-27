@@ -17,19 +17,6 @@
  */
 package com.alibaba.wasp.messagequeue;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.plan.action.Action;
@@ -37,8 +24,20 @@ import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.MessageProto;
 import com.alibaba.wasp.storage.StorageActionManager;
 import com.alibaba.wasp.storage.StorageTableNotFoundException;
-
 import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Client for message queue.
@@ -63,7 +62,7 @@ public class MessageQueueClient {
    * 
    * @param message
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public MessageID send(Message message) throws IOException {
     MessageID messageID = generateMessageID();
@@ -82,10 +81,10 @@ public class MessageQueueClient {
 
   /**
    * Receive messages.
-   * 
+   *
    * @return
-   * @throws IOException
-   * @throws HBaseTableNotFoundException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    */
   public List<Message> receive() throws IOException,
       StorageTableNotFoundException {
@@ -93,7 +92,7 @@ public class MessageQueueClient {
     byte[] startKey = entityGroupInfo.getEntityGroupName();
     scan.setStartRow(startKey);
     byte[] stopRow = Bytes.add(entityGroupInfo.getEntityGroupName(),
-        Bytes.toBytes('a'));
+        FConstants.DATA_ROW_SEP_QUERY);
     scan.setStopRow(stopRow);
     ResultScanner scanner = action
         .scan(FConstants.MESSAGEQUEUE_TABLENAME, scan);
@@ -113,12 +112,13 @@ public class MessageQueueClient {
 
   /**
    * unique.
-   * 
+   *
    * @return
    */
   public MessageID generateMessageID() {
     try {
-      return new MessageID(Bytes.add(entityGroupInfo.getEntityGroupName(),
+      return new MessageID(Bytes.add(
+          Bytes.add(entityGroupInfo.getEntityGroupName(), FConstants.DATA_ROW_SEP_STORE),
           InetAddress.getLocalHost().getAddress(),
           Bytes.toBytes(uniqueID.incrementAndGet())));
     } catch (UnknownHostException e) {
@@ -128,9 +128,9 @@ public class MessageQueueClient {
 
   /**
    * Let the message to take effect.
-   * 
+   *
    * @param messageId
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void commitMessage(MessageID messageId) throws IOException {
     Put put = new Put(messageId.getMessageId());
@@ -154,10 +154,10 @@ public class MessageQueueClient {
 
   /**
    * Convert value to action.
-   * 
-   * @param value
+   *
+   * @param result
    * @return
-   * @throws InvalidProtocolBufferException
+   * @throws com.google.protobuf.InvalidProtocolBufferException
    */
   public static Message toMessage(org.apache.hadoop.hbase.client.Result result)
       throws InvalidProtocolBufferException {
@@ -172,10 +172,10 @@ public class MessageQueueClient {
 
   /**
    * Convert message to byte[].
-   * 
+   *
    * @param message
    * @return
-   * @throws InvalidProtocolBufferException
+   * @throws com.google.protobuf.InvalidProtocolBufferException
    */
   public static byte[] toMessage(Message message)
       throws InvalidProtocolBufferException {

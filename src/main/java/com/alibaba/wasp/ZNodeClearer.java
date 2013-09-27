@@ -18,19 +18,19 @@
 
 package com.alibaba.wasp;
 
+import com.alibaba.wasp.zookeeper.MasterAddressTracker;
+import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Abortable;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.Abortable;
-import com.alibaba.wasp.zookeeper.MasterAddressTracker;
-import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
 
 /**
  * <p>

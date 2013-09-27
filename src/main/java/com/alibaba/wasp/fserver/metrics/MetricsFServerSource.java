@@ -58,6 +58,18 @@ public interface MetricsFServerSource extends BaseSource {
   void incrSlowInsert();
 
   /**
+   * Update the Transaction time histogram
+   *
+   * @param t time it took
+   */
+  void updateTransaction(long t);
+
+  /**
+   * Increment the number of slow Transaction that have happened.
+   */
+  void incrSlowTransaction();
+
+  /**
    * Update the GenPlan time histogram
    * 
    * @param t
@@ -123,6 +135,32 @@ public interface MetricsFServerSource extends BaseSource {
   void incrSlowScan();
 
   /**
+   * Update the count time histogram
+   *
+   * @param t
+   *          time it took
+   */
+  void updateCount(long t);
+
+  /**
+   * Increment the number of slow count that have happened.
+   */
+  void incrSlowCount();
+
+   /**
+   * Update the sum time histogram
+   *
+   * @param t
+   *          time it took
+   */
+  void updateSum(long t);
+
+  /**
+   * Increment the number of slow sum that have happened.
+   */
+  void incrSlowSum();
+
+  /**
    * Update the SqlExecute time histogram
    * 
    * @param t
@@ -152,6 +190,9 @@ public interface MetricsFServerSource extends BaseSource {
   static final String ZOOKEEPER_QUORUM_DESC = "Zookeeper Quorum";
   static final String SERVER_NAME_DESC = "Server Name";
   static final String CLUSTER_ID_DESC = "Cluster Id";
+  static final String TRANSACTION_KEY = "transaction";
+  static final String SLOW_TRANSACTION_KEY = "slowTransactionCount";
+  static final String SLOW_TRANSACTION_DESC = "The number of Transactions that took over 1000ms to complete";
   static final String INSERT_KEY = "insert";
   static final String SLOW_INSERT_KEY = "slowInsertCount";
   static final String SLOW_INSERT_DESC = "The number of Inserts that took over 1000ms to complete";
@@ -170,6 +211,12 @@ public interface MetricsFServerSource extends BaseSource {
   static final String GENPLAN_KEY = "genPlan";
   static final String SLOW_GENPLAN_KEY = "slowGenPlanCount";
   static final String SLOW_GENPLAN_DESC = "The number of genPlans that took over 1000ms to complete";
+  static final String COUNT_KEY = "count";
+  static final String SLOW_COUNT_KEY = "slowCountCount";
+  static final String SLOW_COUNT_DESC = "The number of count that took over 1000ms to complete";
+  static final String SUM_KEY = "sum";
+  static final String SLOW_SUM_KEY = "slowSumCount";
+  static final String SLOW_SUM_DESC = "The number of sum that took over 1000ms to complete";
   static final String SQLEXECUTE_KEY = "sqlExecute";
   static final String SLOW_SQLEXECUTE_KEY = "slowSqlExecuteCount";
   static final String SLOW_SQLEXECUTE_DESC = "The number of sqlExecutes that took over 1000ms to complete";

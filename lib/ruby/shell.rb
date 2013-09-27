@@ -202,6 +202,8 @@ Shell.load_command_group(
     exists
     show_tables
     show_indexes
+    unlock_table
+    set_table_state
   ]
 )
 

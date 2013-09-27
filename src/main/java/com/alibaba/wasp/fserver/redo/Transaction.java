@@ -17,11 +17,11 @@
  */
 package com.alibaba.wasp.fserver.redo;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionProto;
 import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate;
 import com.alibaba.wasp.util.MutateList;
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import java.util.List;
 

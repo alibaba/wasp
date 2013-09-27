@@ -17,16 +17,21 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.meta.FMetaServices;
 import com.alibaba.wasp.meta.FTable;
+import com.alibaba.wasp.meta.MemFMetaStore;
 import com.alibaba.wasp.meta.TableSchemaCacheReader;
 import com.alibaba.wasp.plan.CreateTablePlan;
 import com.alibaba.wasp.plan.Plan;
 import com.alibaba.wasp.plan.parser.ParseContext;
+import com.alibaba.wasp.plan.parser.WaspParser;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+
+import java.io.IOException;
 
 /**
  * Util for DruidParser Test
@@ -42,15 +47,29 @@ public class DruidParserTestUtil {
           + " entity group root,"
           + " entity group key(user_id);",
       "CREATE TABLE Photo { Required Int64 user_id columnfamily cf comment 'aaa'; "
-          + " Required Int32 photo_id comment 'child primary key'; "
-          + " Required Int64 time;" + " Required String full_url; "
-          + " Optional String thumbnail_url;" + " Repeated string tag; } "
+          + " Required Int32 photo_id comment 'child primary key'; " + " Optional Int64 time;"
+          + " Optional String full_url; " + " Optional String thumbnail_url;"
+          + " Optional string tag; Optional DATETIME date; Optional Int32 int32Type; } "
           + " primary key(user_id,photo_id), " + " in table User, "
           + " Entity Group Key(user_id) references User; " };
 
   public static String[] INDEX_SEED = {
       "CREATE index PhotosByTime on Photo(user_id,time);",
       "CREATE index PhotosByTag on Photo(tag);" };
+
+  public static void loadTable(Configuration conf) throws MetaException, ZooKeeperConnectionException {
+    MemFMetaStore fmetaServices = new MemFMetaStore();
+    TableSchemaCacheReader reader = TableSchemaCacheReader.getInstance(conf, fmetaServices);
+    ParseContext context = new ParseContext();
+    context.setTsr(reader);
+    DruidDQLParser dqlParser = new DruidDQLParser(conf, null);
+    DruidDDLParser ddlParser = new DruidDDLParser(conf);
+    DruidDMLParser dmlParser = new DruidDMLParser(conf, null);
+    WaspParser druidParser = new WaspParser(ddlParser, dqlParser, dmlParser);
+
+    loadTable(context, druidParser.getDruidDDLParser(), fmetaServices);
+
+  }
 
   public static void loadTable(ParseContext context,
       DruidDDLParser druidParser, FMetaServices fmetaServices) {

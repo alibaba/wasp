@@ -1,14 +1,14 @@
 package com.alibaba.wasp.storage;
 
-import com.alibaba.wasp.plan.action.DeleteAction;import com.alibaba.wasp.plan.action.InsertAction;import com.alibaba.wasp.plan.action.UpdateAction;import org.apache.hadoop.hbase.KeyValue;
+import com.alibaba.wasp.plan.action.DeleteAction;
+import com.alibaba.wasp.plan.action.InsertAction;
+import com.alibaba.wasp.plan.action.UpdateAction;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.plan.action.DeleteAction;
-import com.alibaba.wasp.plan.action.InsertAction;
-import com.alibaba.wasp.plan.action.UpdateAction;
 
 import java.io.IOException;
 

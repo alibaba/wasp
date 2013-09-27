@@ -17,29 +17,20 @@
  */
 package com.alibaba.wasp.fserver;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
+import com.alibaba.wasp.*;
+import com.alibaba.wasp.fserver.metrics.MetricsEntityGroup;
+import com.alibaba.wasp.fserver.redo.*;
+import com.alibaba.wasp.messagequeue.Message;
+import com.alibaba.wasp.messagequeue.MessageQueue;
+import com.alibaba.wasp.meta.*;
+import com.alibaba.wasp.plan.action.*;
+import com.alibaba.wasp.protobuf.ProtobufUtil;
+import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate;
+import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate.MutateType;
+import com.alibaba.wasp.storage.StorageServices;
+import com.alibaba.wasp.storage.StorageServicesImpl;
+import com.alibaba.wasp.storage.StorageTableNotFoundException;
+import com.alibaba.wasp.util.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -51,48 +42,16 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.monitoring.MonitoredTask;
 import org.apache.hadoop.hbase.monitoring.TaskMonitor;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.CancelableProgressable;
-import org.apache.hadoop.hbase.util.ClassSize;
-import org.apache.hadoop.hbase.util.EnvironmentEdgeManager;
-import org.apache.hadoop.hbase.util.HashedBytes;
-import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.NotServingEntityGroupException;
-import com.alibaba.wasp.ReadModel;
-import com.alibaba.wasp.TableNotFoundException;
-import com.alibaba.wasp.fserver.metrics.MetricsEntityGroup;
-import com.alibaba.wasp.fserver.redo.AlreadyCommitTransactionException;
-import com.alibaba.wasp.fserver.redo.AlreadyExsitsTransactionIdException;
-import com.alibaba.wasp.fserver.redo.NotInitlizedRedoException;
-import com.alibaba.wasp.fserver.redo.Redo;
-import com.alibaba.wasp.fserver.redo.RedoLog;
-import com.alibaba.wasp.fserver.redo.RedoLogNotServingException;
-import com.alibaba.wasp.fserver.redo.Transaction;
-import com.alibaba.wasp.fserver.redo.WALEdit;
-import com.alibaba.wasp.messagequeue.Message;
-import com.alibaba.wasp.messagequeue.MessageQueue;
-import com.alibaba.wasp.meta.FTable;
-import com.alibaba.wasp.meta.Field;
-import com.alibaba.wasp.meta.Index;
-import com.alibaba.wasp.meta.RowBuilder;
-import com.alibaba.wasp.meta.StorageTableNameBuilder;
-import com.alibaba.wasp.meta.TableSchemaCacheReader;
-import com.alibaba.wasp.plan.action.ColumnStruct;
-import com.alibaba.wasp.plan.action.DeleteAction;
-import com.alibaba.wasp.plan.action.GetAction;
-import com.alibaba.wasp.plan.action.InsertAction;
-import com.alibaba.wasp.plan.action.Primary;
-import com.alibaba.wasp.plan.action.ScanAction;
-import com.alibaba.wasp.plan.action.UpdateAction;
-import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate.MutateType;
-import com.alibaba.wasp.storage.StorageServices;
-import com.alibaba.wasp.storage.StorageServicesImpl;
-import com.alibaba.wasp.storage.StorageTableNotFoundException;
+import org.apache.hadoop.hbase.util.*;
 import org.cliffc.high_scale_lib.Counter;
+
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 
@@ -121,12 +80,17 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   final Counter readRequestsCount = new Counter();
   final Counter writeRequestsCount = new Counter();
   private final ConcurrentHashMap<HashedBytes, CountDownLatch> lockedRows = new ConcurrentHashMap<HashedBytes, CountDownLatch>();
+
+  private Leases leases;
+  private final ConcurrentHashMap<String, HashedBytes> selectForUpdateLocks = new ConcurrentHashMap<String, HashedBytes>();
   final int rowLockWaitDuration;
   static final int DEFAULT_ROWLOCK_WAIT_DURATION = 30000;
 
   private EntityGroupSplitPolicy splitPolicy;
 
   private final MetricsEntityGroup metricsEntityGroup;
+
+  private final int lockTimeoutPeriod;
   /*
    * Closing can take some time; use the closing flag if there is stuff we don't
    * want to do while in closing state; e.g. like offer this entityGroup up to
@@ -180,7 +144,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   /**
    * default
    * 
-   * @throws IOException
+   * @throws java.io.IOException
    **/
   @SuppressWarnings("unchecked")
   public EntityGroup(Configuration conf, EntityGroupInfo egi, FTable table,
@@ -208,6 +172,14 @@ public class EntityGroup extends Thread implements EntityGroupServices,
     this.rowLockWaitDuration = conf.getInt("wasp.rowlock.wait.duration",
         DEFAULT_ROWLOCK_WAIT_DURATION);
     this.services = service;
+
+    this.leases = new Leases(conf.getInt(FConstants.THREAD_WAKE_FREQUENCY,
+        FConstants.DEFAULT_THREAD_WAKE_FREQUENCY));
+
+    this.lockTimeoutPeriod = conf.getInt(
+        FConstants.SELECT_FOR_UPDATE_LOCK_TIMEOUT,
+        FConstants.DEFAULT_SELECT_FOR_UPDATE_LOCK_TIMEOUT);
+
     if (this.services != null) {
       this.metricsEntityGroup = new MetricsEntityGroup(
           new MetricsEntityGroupWrapperImpl(this));
@@ -222,9 +194,9 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Initialize this entityGroup.
-   * 
+   *
    * @return What the next sequence (edit) id should be.
-   * @throws IOException
+   * @throws java.io.IOException
    *           e
    */
   public void initialize() throws IOException {
@@ -300,7 +272,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   }
 
   /**
-   * @param StorageServices
+   * @param storageServices
    *          the StorageServices to set
    */
   public void setStorageServices(StorageServices storageServices) {
@@ -309,23 +281,30 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * No-index query using primary key.
-   * 
+   *
    * @param action
    * @return
-   * @throws IOException
-   * @throws StorageTableNotFoundException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    */
   public Result get(GetAction action) throws IOException,
       StorageTableNotFoundException {
     Get get = new Get(RowBuilder.build().buildEntityRowKey(this.conf,
         action.getFTableName(), action.getCombinedPrimaryKey()));
     get.setMaxVersions(1);
+
     // as a result of the maximum timestamp value is exclusive, but we need the
     // inclusive one . so plus one to timestamp
-    if (action.getReaderMode() == ReadModel.CURRENT) {
-      this.internalObtainRowLock(action.getCombinedPrimaryKey());
-      this.releaseRowLock(action.getCombinedPrimaryKey());
+    if (action.isForUpdate()) {
+      this.internalObtainRowLock(action.getCombinedPrimaryKey(),
+          action.getSessionId());
+    } else {
+      if (action.getReaderMode() == ReadModel.CURRENT) {
+        this.internalObtainRowLock(action.getCombinedPrimaryKey());
+        this.releaseRowLock(action.getCombinedPrimaryKey());
+      }
     }
+
     readRequestsCount.increment();
     get.setTimeRange(0, timestamp(action.getReaderMode()) + 1);
     return storageServices.getRow(
@@ -336,14 +315,14 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   /**
    * Return an iterator that scans over the EntityGroup, returning the indicated
    * columns and rows specified by the
-   * 
+   *
    * <p>
    * This Iterator must be closed by the caller.
-   * 
+   *
    * @param action
    * @return
-   * @throws IOException
-   * @throws StorageTableNotFoundException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    */
   public EntityGroupScanner getScanner(ScanAction action) throws IOException,
       StorageTableNotFoundException {
@@ -358,12 +337,11 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * return EntityGroupScanner.
-   * 
+   *
    * @param action
-   * @param scanId
    * @return
-   * @throws IOException
-   * @throws StorageTableNotFoundException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    */
   protected EntityGroupScanner instantiateEntityGroupScanner(ScanAction action)
       throws StorageTableNotFoundException, IOException {
@@ -372,11 +350,11 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   }
 
   /**
-   * 
+   *
    * @param readerMode
    *          current,snapshot,inconsistent
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   private long timestamp(ReadModel readerMode) throws IOException {
     long timestamp;
@@ -396,7 +374,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
    * This method needs to be called before any public call that reads or
    * modifies data. It has to be called just before a try. Acquires checks if
    * the entityGroup is closing or closed.
-   * 
+   *
    * @throws com.alibaba.wasp.NotServingEntityGroupException
    *           when the entityGroup is closing or closed
    */
@@ -420,7 +398,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Log insert transaction to redoLog.
-   * 
+   *
    * @param action
    * @return
    */
@@ -450,15 +428,92 @@ public class EntityGroup extends Thread implements EntityGroupServices,
     }
   }
 
+  public OperationStatus transaction(TransactionAction transactionAction)
+      throws IOException {
+    startEntityGroupOperation();
+    writeRequestsCount.increment();
+    try {
+      Transaction transaction = new Transaction(currentReadTimeStamp());
+      for (DMLAction dmlAction : transactionAction.getDmlActions()) {
+        if (dmlAction instanceof InsertAction) {
+          InsertAction action = (InsertAction) dmlAction;
+          internalObtainRowLock(action.getCombinedPrimaryKey());
+          try {
+            prepareInsertEntity(action, transaction);
+          } catch (StorageTableNotFoundException e) {
+            this.releaseRowLock(action.getCombinedPrimaryKey());
+            throw new TableNotFoundException(action.getFTableName());
+          } catch (Throwable e) {
+            this.releaseRowLock(action.getCombinedPrimaryKey());
+            LOG.error("PrepareInsertEntity failed.", e);
+            return new OperationStatus(OperationStatusCode.FAILURE,
+                e.getMessage(), e.getClass().getName());
+          }
+        } else if (dmlAction instanceof UpdateAction) {
+          UpdateAction action = (UpdateAction) dmlAction;
+          internalObtainRowLock(action.getCombinedPrimaryKey());
+          try {
+            if (!prepareUpdateEntity(action, transaction)) {
+              this.releaseRowLock(action.getCombinedPrimaryKey());
+              return OperationStatus.FAILURE;
+            }
+          } catch (StorageTableNotFoundException e) {
+            this.releaseRowLock(action.getCombinedPrimaryKey());
+            throw new TableNotFoundException(action.getFTableName());
+          } catch (Throwable e) {
+            this.releaseRowLock(action.getCombinedPrimaryKey());
+            LOG.error("PrepareUpdateEntity failed.", e);
+            return new OperationStatus(OperationStatusCode.FAILURE, e.getMessage(),
+                e.getClass().getName());
+          }
+        } else if (dmlAction instanceof DeleteAction) {
+          DeleteAction action = (DeleteAction) dmlAction;
+          internalObtainRowLock(action.getCombinedPrimaryKey());
+          try {
+            if (!prepareDeleteEntity(action, transaction)) {
+              this.releaseRowLock(action.getCombinedPrimaryKey());
+              return OperationStatus.FAILURE;
+            }
+          } catch (StorageTableNotFoundException e) {
+            this.releaseRowLock(action.getCombinedPrimaryKey());
+            throw new TableNotFoundException(action.getFTableName());
+          } catch (Throwable e) {
+            this.releaseRowLock(action.getCombinedPrimaryKey());
+            LOG.error("PrepareDeleteEntity failed.", e);
+            return new OperationStatus(OperationStatusCode.FAILURE, e.getMessage(),
+                e.getClass().getName());
+          }
+        }
+      }
+      if (this.metricsEntityGroup != null) {
+        this.metricsEntityGroup.updateInsert();
+      }
+      OperationStatus status = submitTransaction(null, transaction);
+
+      for (DMLAction dmlAction : transactionAction.getDmlActions()) {
+         if (dmlAction instanceof InsertAction) {
+           this.releaseRowLock(((InsertAction)dmlAction).getCombinedPrimaryKey());
+         } else if (dmlAction instanceof UpdateAction) {
+           this.releaseRowLock(((UpdateAction)dmlAction).getCombinedPrimaryKey());
+         } else if (dmlAction instanceof DeleteAction) {
+           this.releaseRowLock(((DeleteAction)dmlAction).getCombinedPrimaryKey());
+         }
+      }
+      return status;
+    } finally {
+      closeEntityGroupOperation();
+    }
+  }
+
   /**
    * Make insert action into transaction;
-   * 
+   *
    * @param action
    *          insert action
    * @param transaction
    *          transaction
-   * @throws IOException
-   * @throws StorageTableNotFoundException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    */
   private void prepareInsertEntity(InsertAction action, Transaction transaction)
       throws IOException, StorageTableNotFoundException {
@@ -522,18 +577,30 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Log update transaction to redoLog.
-   * 
+   *
    * @param action
    *          , basic action of recording update information.
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public OperationStatus update(UpdateAction action)
       throws NotServingEntityGroupException, IOException {
     startEntityGroupOperation();
     writeRequestsCount.increment();
     try {
-      internalObtainRowLock(action.getCombinedPrimaryKey());
+      if (StringUtils.isNullOrEmpty(action.getSessionId())) {
+        internalObtainRowLock(action.getCombinedPrimaryKey());
+      } else {
+        HashedBytes rowkey = selectForUpdateLocks.remove(action.getSessionId());
+        if (rowkey == null || lockedRows.get(rowkey) == null) {
+          throw new SelectForUpdateLockNotFoundException(
+              "the lock not found for session id :"
+                  + action.getSessionId()
+                  + " and rowkey is "
+                  + (rowkey == null ? "NULL" : Bytes.toStringBinary(rowkey
+                  .getBytes())));
+        }
+      }
       currentReadTimeStamp();
       Transaction transaction = new Transaction();
       try {
@@ -568,11 +635,11 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * First delete old records,then insert or update new record.
-   * 
+   *
    * @param action
    * @param transaction
-   * @throws IOException
-   * @throws StorageTableNotFoundException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    */
   private boolean prepareUpdateEntity(UpdateAction action,
       Transaction transaction) throws IOException,
@@ -599,7 +666,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
     // fetch entity data
     Get get = new Get(builder.buildEntityRowKey(this.conf,
         action.getFTableName(), action.getCombinedPrimaryKey()));
-    for (Map.Entry<String, Field> fieldEntry : referField.entrySet()) {
+    for (Entry<String, Field> fieldEntry : referField.entrySet()) {
       get.addColumn(Bytes.toBytes(fieldEntry.getValue().getFamily()),
           Bytes.toBytes(fieldEntry.getValue().getName()));
     }
@@ -623,9 +690,9 @@ public class EntityGroup extends Thread implements EntityGroupServices,
     for (Index index : indexs) {
       Pair<byte[], String> delete = builder.buildIndexKey(index, oldValues,
           result.getRow());
-      if(delete != null) {
+      if (delete != null) {
         transaction.addEntity(ProtobufUtil.toMutate(MutateType.DELETE,
-          new Delete(delete.getFirst()), delete.getSecond()));
+            new Delete(delete.getFirst()), delete.getSecond()));
       }
     }
 
@@ -635,7 +702,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
     for (Index index : indexs) {
       Pair<byte[], String> indexPut = builder.buildIndexKey(index, newValues,
           entityPut.getRow());
-      if(indexPut != null) {
+      if (indexPut != null) {
         Put put = new Put(indexPut.getFirst());
         put.add(FConstants.INDEX_STORING_FAMILY_BYTES,
             FConstants.INDEX_STORE_ROW_QUALIFIER, entityPut.getRow());
@@ -661,7 +728,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Use new value replace old value.
-   * 
+   *
    * @param oldValues
    * @param action
    * @return
@@ -684,11 +751,11 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Log delete transaction to redoLog.
-   * 
+   *
    * @param action
    *          ,basic action of recording delete information
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public OperationStatus delete(DeleteAction action)
       throws NotServingEntityGroupException, IOException {
@@ -769,7 +836,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Append transaction to redoLog.
-   * 
+   *
    * @param transaction
    * @return
    */
@@ -796,8 +863,8 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Obtains or tries to obtain the given row lock.
-   * 
-   * @param waitForLock
+   *
+   * @param row
    *          if true, will block until the lock is available. Otherwise, just
    *          tries to obtain the lock and returns null if unavailable.
    */
@@ -816,7 +883,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
         try {
           if (!existingLatch.await(this.rowLockWaitDuration,
               TimeUnit.MILLISECONDS)) {
-            throw new IOException("Timed out on getting lock for row="
+            throw new DoNotRetryIOException("Timed out on getting lock for row="
                 + Bytes.toStringBinary(row));
           }
         } catch (InterruptedException ie) {
@@ -830,10 +897,46 @@ public class EntityGroup extends Thread implements EntityGroupServices,
     }
   }
 
+  private void internalObtainRowLock(final byte[] row, String sessionId)
+      throws IOException {
+    try {
+      this.internalObtainRowLock(row);
+      HashedBytes rowKey = new HashedBytes(row);
+      this.selectForUpdateLocks.put(sessionId, rowKey);
+      this.leases.createLease(sessionId, this.lockTimeoutPeriod,
+          new LockTimeoutListener(sessionId));
+    } catch (IOException e) {
+      throw e;
+    }
+  }
+
+  /**
+   * Instantiated as a lock lease. If the lease times out, the lcck is released
+   */
+  public class LockTimeoutListener implements LeaseListener {
+    private final String sessionName;
+
+    protected LockTimeoutListener(final String n) {
+      this.sessionName = n;
+    }
+
+    public void leaseExpired() {
+      HashedBytes rowkey = selectForUpdateLocks.remove(this.sessionName);
+      if (rowkey != null) {
+        LOG.info("lock rowkey " + Bytes.toStringBinary(rowkey.getBytes())
+            + " lease expired.");
+        releaseRowLock(rowkey.getBytes());
+      } else {
+        LOG.info("lock rowkey " + Bytes.toStringBinary(rowkey.getBytes())
+            + " lease expired.");
+      }
+    }
+  }
+
   /**
    * Release the row lock!
-   * 
-   * @param lockId
+   *
+   * @param row
    *          The lock ID to release.
    */
   public void releaseRowLock(final byte[] row) {
@@ -847,12 +950,10 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   }
 
   /**
-   * 
-   * @param read
-   *          read or write
+   *
    * @return
-   * @throws NotServingEntityGroupException
-   * @throws IOException
+   * @throws com.alibaba.wasp.NotServingEntityGroupException
+   * @throws java.io.IOException
    */
   private long currentReadTimeStamp() throws IOException {
     Transaction currentTransaction = null;
@@ -881,9 +982,9 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   }
 
   /**
-   * @throws IOException
-   * @throws NotServingEntityGroupException
-   * @see com.alibaba.wasp.messagequeue.MessageQueue#doAsynchronous()
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.NotServingEntityGroupException
+   * @see com.alibaba.wasp.messagequeue.MessageQueue#doAsynchronous(com.alibaba.wasp.messagequeue.Message)
    */
   @Override
   public OperationStatus doAsynchronous(Message message) {
@@ -906,16 +1007,16 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   /**
    * Close down this EntityGroup. Finish the transaction. don't service any more
    * calls.
-   * 
+   *
    * <p>
    * This method could take some time to execute, so don't call it from a
    * time-sensitive thread.
-   * 
+   *
    * @return Vector of all transactions that the EntityGroup has not commited.
    *         Returns empty vector if already closed and null if judged that it
    *         should not close.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    *           e
    */
   public void close() throws IOException {
@@ -927,17 +1028,17 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   /**
    * Close down this EntityGroup. Finish the transaction unless abort parameter
    * is true, don't service any more calls.
-   * 
+   *
    * This method could take some time to execute, so don't call it from a
    * time-sensitive thread.
-   * 
+   *
    * @param abort
    *          true if server is aborting (only during testing)
    * @return Vector of all transactions that the EntityGroup has not commited.
    *         Returns empty vector if already closed and null if judged that it
    *         should not close.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    *           e
    */
   public boolean close(final boolean abort) throws IOException {
@@ -1023,11 +1124,11 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * commit the transaction and close redoLog
-   * 
+   *
    * @param redoLog
    * @param status
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   protected void internalCommitTransaction(Redo redoLog, MonitoredTask status)
       throws IOException {
@@ -1150,7 +1251,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Thread#run()
    */
   @Override
@@ -1189,7 +1290,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
         if (this.metricsEntityGroup != null) {
           this.metricsEntityGroup
               .updateBackgroundRedoLog(EnvironmentEdgeManager
-              .currentTimeMillis() - before);
+                  .currentTimeMillis() - before);
         }
       } catch (IOException e) {
         return;
@@ -1203,7 +1304,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * The status of insure operator.
-   * 
+   *
    */
   private enum InsureStatus {
     SUCCESS,
@@ -1293,10 +1394,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   /**
    * A utility method to create new instances of EntityGroup based on the
    * configuration property.
-   * 
-   * @param log
-   *          The RedoLog is the outbound log for any updates to the EntityGroup
-   *          (There's a single RedoLog for a EntityGroup.)
+   *
    * @param conf
    *          is global configuration settings.
    * @param entityGroupInfo
@@ -1327,15 +1425,13 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Open a EntityGroup.
-   * 
+   *
    * @param info
    *          Info for entityGroup to be opened.
-   * @param log
-   *          RedoLog for entityGroup to use.
    * @param conf
    * @return new EntityGroup
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public static EntityGroup openEntityGroup(final EntityGroupInfo info,
       final FTable ftd, final Configuration conf) throws IOException {
@@ -1344,17 +1440,15 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Open a EntityGroup.
-   * 
+   *
    * @param info
    *          Info for entityGroup to be opened.
-   * @param log
-   *          RedoLog for entityGroup to use.
    * @param conf
    * @param reporter
    *          An interface we can report progress against.
    * @return new EntityGroup
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public static EntityGroup openEntityGroup(final EntityGroupInfo info,
       final FTable table, final Configuration conf,
@@ -1375,10 +1469,10 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Open EntityGroup. Calls initialize and sets sequenceid.
-   * 
+   *
    * @param reporter
    * @return Returns <code>this</code>
-   * @throws IOException
+   * @throws java.io.IOException
    */
   protected EntityGroup openEntityGroup(final CancelableProgressable reporter)
       throws IOException {
@@ -1388,15 +1482,15 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * This will do the necessary cleanup a call to
-   * {@link #createEntityGroup(com.alibaba.wasp.EntityGroupInfo, org.apache.hadoop.conf.Configuration, com.alibaba.wasp.meta.FTable)}
-   * associated {@link RedoLog} file. You use it if you call the other
-   * createEntityGroup, the one that takes an {@link RedoLog} instance but don't
+   * {@link #createEntityGroup(com.alibaba.wasp.EntityGroupInfo, org.apache.hadoop.conf.Configuration, com.alibaba.wasp.meta.FTable, com.alibaba.wasp.fserver.redo.RedoLog, FServerServices)}
+   * associated {@link com.alibaba.wasp.fserver.redo.RedoLog} file. You use it if you call the other
+   * createEntityGroup, the one that takes an {@link com.alibaba.wasp.fserver.redo.RedoLog} instance but don't
    * be surprised by the call to the
    * {@link com.alibaba.wasp.fserver.redo.RedoLog#close()} ()} on the
-   * {@link RedoLog} the EntityGroup was carrying.
-   * 
+   * {@link com.alibaba.wasp.fserver.redo.RedoLog} the EntityGroup was carrying.
+   *
    * @param entityGroup
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static void closeEntityGroup(final EntityGroup entityGroup)
       throws IOException {
@@ -1412,7 +1506,7 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   /**
    * Determines if the specified row is within the row range specified by the
    * specified EntityGroupInfo
-   * 
+   *
    * @param info
    *          EntityGroupInfo that specifies the row range
    * @param row
@@ -1424,17 +1518,17 @@ public class EntityGroup extends Thread implements EntityGroupServices,
     return ((info.getStartKey().length == 0) || (Bytes.compareTo(
         info.getStartKey(), row) <= 0))
         && ((info.getEndKey().length == 0) || (Bytes.compareTo(
-            info.getEndKey(), row) > 0));
+        info.getEndKey(), row) > 0));
   }
 
   /**
    * Merge two EntityGroups. The entityGroups must be adjacent and must not
    * overlap.
-   * 
+   *
    * @param srcA
    * @param srcB
    * @return new merged EntityGroup
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static EntityGroup mergeAdjacent(final EntityGroup srcA,
       final EntityGroup srcB) throws IOException {
@@ -1463,13 +1557,13 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Merge two entityGroups whether they are adjacent or not.
-   * 
+   *
    * @param a
    *          entityGroup a
    * @param b
    *          entityGroup b
    * @return new merged entityGroup
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static EntityGroup merge(EntityGroup a, EntityGroup b)
       throws IOException {
@@ -1552,21 +1646,21 @@ public class EntityGroup extends Thread implements EntityGroupServices,
   /**
    * Convenience method creating new EntityGroups. Used by createTable and by
    * the bootstrap code in the FMaster constructor. Note, this method creates an
-   * {@link RedoLog} for the created entityGroup. It needs to be closed
+   * {@link com.alibaba.wasp.fserver.redo.RedoLog} for the created entityGroup. It needs to be closed
    * explicitly. Use {@link EntityGroup#getLog()} to get access. <b>When done
    * with a entityGroup created using this method, you will need to explicitly
-   * close the {@link RedoLog} it created too; it will not be done for you. Not
+   * close the {@link com.alibaba.wasp.fserver.redo.RedoLog} it created too; it will not be done for you. Not
    * closing the log will leave at least a daemon thread running.</b> Call
    * {@link #closeEntityGroupOperation()} and it will do necessary cleanup for
    * you.
-   * 
+   *
    * @param info
    *          Info for entityGroup to create.
    * @param conf
    * @param table
    * @return new EntityGroup
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public static EntityGroup createEntityGroup(final EntityGroupInfo info,
       final Configuration conf, final FTable table,
@@ -1576,9 +1670,9 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Convenience method creating new EntityGroups. Used by createTable. The
-   * {@link RedoLog} for the created entityGroup needs to be closed explicitly,
+   * {@link com.alibaba.wasp.fserver.redo.RedoLog} for the created entityGroup needs to be closed explicitly,
    * if it is not null. Use {@link EntityGroup#getLog()} to get access.
-   * 
+   *
    * @param info
    *          Info for entityGroup to create.
    * @param conf
@@ -1586,8 +1680,8 @@ public class EntityGroup extends Thread implements EntityGroupServices,
    * @param redoLog
    *          shared RedoLog
    * @return new EntityGroup
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public static EntityGroup createEntityGroup(final EntityGroupInfo info,
       final Configuration conf, final FTable table, final RedoLog redoLog,
@@ -1597,9 +1691,9 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Convenience method creating new EntityGroups. Used by createTable. The
-   * {@link RedoLog} for the created entityGroup needs to be closed explicitly,
+   * {@link com.alibaba.wasp.fserver.redo.RedoLog} for the created entityGroup needs to be closed explicitly,
    * if it is not null. Use {@link EntityGroup#getLog()} to get access.
-   * 
+   *
    * @param info
    *          Info for entityGroup to create.
    * @param conf
@@ -1609,8 +1703,8 @@ public class EntityGroup extends Thread implements EntityGroupServices,
    * @param initialize
    *          - true to initialize the entityGroup
    * @return new EntityGroup
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public static EntityGroup createEntityGroup(final EntityGroupInfo info,
       final Configuration conf, final FTable table, final RedoLog redoLog,
@@ -1620,23 +1714,19 @@ public class EntityGroup extends Thread implements EntityGroupServices,
 
   /**
    * Convenience method creating new EntityGroups. Used by createTable. The
-   * {@link RedoLog} for the created entityGroup needs to be closed explicitly,
+   * {@link com.alibaba.wasp.fserver.redo.RedoLog} for the created entityGroup needs to be closed explicitly,
    * if it is not null. Use {@link EntityGroup#getLog()} to get access.
-   * 
+   *
    * @param info
    *          Info for entityGroup to create.
    * @param conf
    * @param table
-   * @param redoLog
-   *          shared RedoLog
    * @param initialize
    *          - true to initialize the entityGroup
-   * @param ignoreRedoLog
-   *          - true to skip generate new redoLog if it is null, mostly for
-   *          createTable
+   * @param services
    * @return new EntityGroup
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public static EntityGroup createEntityGroup(final EntityGroupInfo info,
       final Configuration conf, final FTable table, final boolean initialize,

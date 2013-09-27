@@ -18,26 +18,25 @@
  */
 package com.alibaba.wasp.session;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.client.FClient;
 import com.alibaba.wasp.jdbc.command.CommandInterface;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
 import com.alibaba.wasp.security.User;
-
 import com.google.protobuf.ServiceException;
+import org.apache.hadoop.hbase.util.Pair;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * A session represents an embedded database connection. When using the server
  * mode, this object resides on the server side and communicates with a
  * SessionRemote object on the client side.
  */
-public class Session implements SessionInterface {
+public class ExecutionEngineSession implements SessionInterface {
 
   private final User user;
 
@@ -47,7 +46,7 @@ public class Session implements SessionInterface {
 
   private Executor executor;
 
-  public Session(User user, String sessionId) {
+  public ExecutionEngineSession(User user, String sessionId) {
     this.user = user;
     this.sessionId = sessionId;
   }
@@ -68,17 +67,22 @@ public class Session implements SessionInterface {
     return sessionId;
   }
 
+  @Override
+  public void setSessionId(String sessionId) {
+
+  }
+
   /**
    * 
-   * @see java.lang.Object#hashCode()
+   * @see Object#hashCode()
    */
   public int hashCode() {
     return sessionId.hashCode();
   }
 
   /**
-   * 
-   * @see java.lang.Object#toString()
+   *
+   * @see Object#toString()
    */
   public String toString() {
     return "Session#" + sessionId + " (user: " + user.getName() + ")";
@@ -116,9 +120,9 @@ public class Session implements SessionInterface {
   public interface Executor<T> extends Closeable {
 
     /**
-     * 
+     *
      * @return T
-     * @throws ServiceException
+     * @throws com.google.protobuf.ServiceException
      */
     public T execute() throws ServiceException;
 
@@ -134,21 +138,26 @@ public class Session implements SessionInterface {
 
     /**
      * the last scan.
-     * 
+     *
      * @return
      */
     public boolean isLastScan();
   }
 
   /**
-   * @see com.alibaba.wasp.session.SessionInterface#prepareCommand(FClient,
-   *      java.lang.String, int)
+   * @see com.alibaba.wasp.session.SessionInterface#prepareCommand(com.alibaba.wasp.client.FClient,
+   *      String, int, com.alibaba.wasp.ReadModel, boolean)
    */
   @Override
   public CommandInterface prepareCommand(FClient fClient, String sql,
-      int fetchSize, ReadModel readModel) {
+      int fetchSize, ReadModel readModel, boolean autoCommit, ExecuteSession statementSession) {
     // NO-implements
     return null;
+  }
+
+  @Override
+  public CommandInterface prepareCommand(FClient fClient, List<String> sqls, boolean autoCommit, ExecuteSession statementSession) {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public void afterWriting() {

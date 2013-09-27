@@ -17,13 +17,13 @@
  */
 package com.alibaba.wasp.master;
 
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.hadoop.classification.InterfaceAudience;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.protobuf.generated.ClusterStatusProtos;
+import org.apache.hadoop.classification.InterfaceAudience;
+
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * State of a entityGroup while undergoing transitions.

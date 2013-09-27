@@ -17,18 +17,18 @@
  */
 package com.alibaba.wasp.util;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import com.alibaba.wasp.FConstants;import com.alibaba.wasp.storage.StorageActionManager;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.storage.StorageActionManager;
+import org.apache.commons.logging.Log;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.storage.StorageActionManager;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 public class ResultInHBasePrinter {
 

@@ -17,22 +17,18 @@
  */
 package com.alibaba.wasp.ipc;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import com.alibaba.wasp.ipc.protobuf.generated.TestProtos;import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto;
-import com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto;
-import com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto;
-import com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto;
+import com.alibaba.wasp.ipc.protobuf.generated.TestProtos;
 import com.alibaba.wasp.ipc.protobuf.generated.TestRpcServiceProtos.TestProtobufRpcProto;
+import com.google.protobuf.RpcController;
+import com.google.protobuf.ServiceException;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.protobuf.RpcController;
-import com.google.protobuf.ServiceException;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /**
  * Test for testing protocol buffer based RPC mechanism. This test depends on
@@ -87,7 +83,7 @@ public class TestProtoBufRpc {
     PBServerImpl serverImpl = new PBServerImpl();
     // Get RPC server for server side implementation
     server = WaspRPC.getServer(TestRpcService.class, serverImpl,
-        new Class[] { TestRpcService.class }, ADDRESS, PORT, conf);
+        new Class[]{TestRpcService.class}, ADDRESS, PORT, conf);
     addr = server.getListenerAddress();
     server.start();
     server.openServer();

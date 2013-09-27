@@ -19,51 +19,7 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map.Entry;
-
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.FConstants;import com.alibaba.wasp.FieldKeyWord;import com.alibaba.wasp.TableNotFoundException;import com.alibaba.wasp.meta.FTable;import com.alibaba.wasp.meta.Index;import com.alibaba.wasp.meta.TableSchemaCacheReader;import com.alibaba.wasp.plan.AlterTablePlan;import com.alibaba.wasp.plan.CreateIndexPlan;import com.alibaba.wasp.plan.CreateTablePlan;import com.alibaba.wasp.plan.DescTablePlan;import com.alibaba.wasp.plan.DropIndexPlan;import com.alibaba.wasp.plan.DropTablePlan;import com.alibaba.wasp.plan.ShowIndexesPlan;import com.alibaba.wasp.plan.ShowTablesPlan;import com.alibaba.wasp.plan.TruncateTablePlan;import com.alibaba.wasp.plan.parser.ParseContext;import com.alibaba.wasp.plan.parser.UnsupportedException;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlColumnDefinition;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateIndexStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlDropTableStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlPartitionByKey;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowCreateTableStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowIndexesStatement;import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowTablesStatement;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.DataType;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.FieldKeyWord;
-import com.alibaba.wasp.TableNotFoundException;
-import com.alibaba.wasp.meta.FTable;
-import com.alibaba.wasp.meta.FTable.TableType;
-import com.alibaba.wasp.meta.Field;
-import com.alibaba.wasp.meta.Index;
-import com.alibaba.wasp.meta.TableSchemaCacheReader;
-import com.alibaba.wasp.plan.AlterTablePlan;
-import com.alibaba.wasp.plan.CreateIndexPlan;
-import com.alibaba.wasp.plan.CreateTablePlan;
-import com.alibaba.wasp.plan.DescTablePlan;
-import com.alibaba.wasp.plan.DropIndexPlan;
-import com.alibaba.wasp.plan.DropTablePlan;
-import com.alibaba.wasp.plan.ShowIndexesPlan;
-import com.alibaba.wasp.plan.ShowTablesPlan;
-import com.alibaba.wasp.plan.ShowTablesPlan.ShowTablesType;
-import com.alibaba.wasp.plan.TruncateTablePlan;
-import com.alibaba.wasp.plan.parser.ParseContext;
-import com.alibaba.wasp.plan.parser.UnsupportedException;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlColumnDefinition;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateIndexStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement.TableCategory;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlDescribeStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlDropTableStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlPartitionByKey;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowCreateTableStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowIndexesStatement;
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowTablesStatement;
-
+import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
@@ -80,8 +36,51 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLTableElement;
 import com.alibaba.druid.sql.ast.statement.SQLTruncateStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableAddColumn;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableChangeColumn;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlAlterTableStatement;
+import com.alibaba.wasp.DataType;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.FieldKeyWord;
+import com.alibaba.wasp.TableExistsException;
+import com.alibaba.wasp.TableNotFoundException;
+import com.alibaba.wasp.meta.FTable;
+import com.alibaba.wasp.meta.Field;
+import com.alibaba.wasp.meta.Index;
+import com.alibaba.wasp.meta.TableSchemaCacheReader;
+import com.alibaba.wasp.plan.AlterTablePlan;
+import com.alibaba.wasp.plan.CreateIndexPlan;
+import com.alibaba.wasp.plan.CreateTablePlan;
+import com.alibaba.wasp.plan.DescTablePlan;
+import com.alibaba.wasp.plan.DropIndexPlan;
+import com.alibaba.wasp.plan.DropTablePlan;
+import com.alibaba.wasp.plan.NotingTodoPlan;
+import com.alibaba.wasp.plan.ShowIndexesPlan;
+import com.alibaba.wasp.plan.ShowTablesPlan;
+import com.alibaba.wasp.plan.TruncateTablePlan;
+import com.alibaba.wasp.plan.parser.ParseContext;
+import com.alibaba.wasp.plan.parser.UnsupportedException;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlAlterTableChangeColumn;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlColumnDefinition;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateIndexStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlDescribeStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlDropTableStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlPartitionByKey;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowCreateTableStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowIndexesStatement;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlShowTablesStatement;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Use Druid (https://github.com/AlibabaTech/druid) to parse the sql and
@@ -149,7 +148,7 @@ public class DruidDDLParser extends DruidParser {
       // This is a TRUNCATE TABLE SQL
       getTruncatePlan(context, (SQLTruncateStatement) stmt, metaEventOperation);
     } else {
-      throw new UnsupportedException("Unsupported SQLStatement " + stmt);
+      throw new UnsupportedException("Unsupported SQLStatement " + SQLUtils.toSQLString(stmt));
     }
   }
 
@@ -265,9 +264,10 @@ public class DruidDDLParser extends DruidParser {
 
     List<SQLAlterTableItem> items = sqlAlterTableStatement.getItems();
     for (SQLAlterTableItem item : items) {
-      if (item instanceof MySqlAlterTableChangeColumn) {
+      if (item instanceof WaspSqlAlterTableChangeColumn) {
         // Alter Table Change Column
-        MySqlAlterTableChangeColumn changeColumn = (MySqlAlterTableChangeColumn) item;
+        WaspSqlAlterTableChangeColumn changeColumn = (WaspSqlAlterTableChangeColumn) item;
+
         SQLName columnName = changeColumn.getColumnName();
         LinkedHashMap<String, Field> ftableColumns = newTable.getColumns();
         String oldColumnName = parseName(columnName);
@@ -281,6 +281,14 @@ public class DruidDDLParser extends DruidParser {
         Field field = ftableColumns.get(oldColumnName); // Change this Field
         SQLColumnDefinition newColumnDefinition = changeColumn
             .getNewColumnDefinition();
+        // ColumnFamily specify do not supported.
+        if (newColumnDefinition instanceof WaspSqlColumnDefinition) {
+          WaspSqlColumnDefinition waspSqlColumnDefinition =
+              (WaspSqlColumnDefinition) newColumnDefinition;
+          if (waspSqlColumnDefinition.getColumnFamily() != null) {
+            throw new UnsupportedException("Alter Table, columnFamily specify do not supported.");
+          }
+        }
         if (newColumnDefinition.getDataType() != null) {
           field.setType(parse(newColumnDefinition.getDataType()));
         }
@@ -307,7 +315,8 @@ public class DruidDDLParser extends DruidParser {
         // check Duplicate column name
         metaEventOperation.areLegalTableColumns(ftableColumns.values(),
             addFields);
-
+        // Do not support add ColumnFamily dynamic right now.
+        metaEventOperation.checkColumnFamilyName(ftableColumns.values(), addFields);
         if (first) {
           this.addFieldByPosition(-1, addFields, ftableColumns, newTable);
         } else if (afterColumn != null) {
@@ -332,11 +341,11 @@ public class DruidDDLParser extends DruidParser {
         Field field = ftableColumns.remove(cname);
         if (field == null) {
           throw new UnsupportedException("Unsupported Do not find this column "
-              + ((SQLAlterTableDropColumnItem) item).getColumnName());
+              +  SQLUtils.toSQLString(((SQLAlterTableDropColumnItem) item).getColumnName()));
         }
         newTable.setColumns(ftableColumns);
       } else {
-        throw new UnsupportedException(item + " SQLAlterTableItem Unsupported");
+        throw new UnsupportedException(SQLUtils.toSQLString(item) + " SQLAlterTableItem Unsupported");
       }
     }
 
@@ -425,7 +434,16 @@ public class DruidDDLParser extends DruidParser {
     // Check Table Name is legal.
     metaEventOperation.isLegalTableName(tableName);
     // Check if the table exists
-    metaEventOperation.checkTableNotExists(tableName, true);
+    boolean tableNotExit = metaEventOperation.checkTableNotExists(tableName, true);
+    if(!tableNotExit) {
+      if(waspSqlCreateTableStatement.isIfNotExiists()) {
+        context.setPlan(new NotingTodoPlan());
+        LOG.debug("table " + tableName + " exits , isIfNotExiists is true, ignore");
+        return;
+      } else {
+        throw new TableExistsException(tableName + " is already exists!");
+      }
+    }
 
     // Table category.
     WaspSqlCreateTableStatement.TableCategory category = waspSqlCreateTableStatement.getCategory();
@@ -643,7 +661,11 @@ public class DruidDDLParser extends DruidParser {
     List<String> desc = new ArrayList<String>();
     for (SQLSelectOrderByItem item : items) {
       String columnName = parseName(item.getExpr());
-      columns.add(columnName);
+      if (columns.contains(columnName)) {
+        throw new UnsupportedException("Index have two same field '" + columnName + "'");
+      } else {
+        columns.add(columnName);
+      }
       if (item.getType() == SQLOrderingSpecification.DESC) {
         desc.add(columnName);
       }
@@ -658,6 +680,9 @@ public class DruidDDLParser extends DruidParser {
     colList.addAll(columns);
     if (metaEventOperation.arePrimaryKeys(fTable, colList)) {
       throw new UnsupportedException("Index keys is Primary Keys.");
+    }
+    if (metaEventOperation.containPrimaryKeys(fTable, colList)) {
+      throw new UnsupportedException("Index keys contain all Primary Keys.");
     }
 
     LinkedHashMap<String, Field> indexKeys = metaEventOperation

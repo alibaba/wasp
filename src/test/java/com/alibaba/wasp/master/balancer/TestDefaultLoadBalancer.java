@@ -20,19 +20,19 @@
 
 package com.alibaba.wasp.master.balancer;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.master.EntityGroupPlan;
 import com.alibaba.wasp.master.LoadBalancer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Test the load balancer that is created by default.

@@ -18,25 +18,25 @@
  */
 package com.alibaba.wasp.master;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Threads;
-import org.apache.hadoop.ipc.RemoteException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.WaspTestingUtility;
 import com.alibaba.wasp.fserver.redo.MemRedoLog;
 import com.alibaba.wasp.fserver.redo.Redo;
 import com.alibaba.wasp.meta.FMetaScanner;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Threads;
+import org.apache.hadoop.ipc.RemoteException;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestRestartCluster {
   private static final Log LOG = LogFactory.getLog(TestRestartCluster.class);

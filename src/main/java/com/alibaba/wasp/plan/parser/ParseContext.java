@@ -19,16 +19,15 @@
  */
 package com.alibaba.wasp.plan.parser;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
-
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.meta.TableSchemaCacheReader;
 import com.alibaba.wasp.plan.Plan;
 
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
 /**
  * Parse Context: The current parse context for parsing sql
@@ -51,7 +50,9 @@ public class ParseContext {
   /** use to read table schema **/
   protected TableSchemaCacheReader tsr;
 
-  protected ReadModel readModel = ReadModel.SNAPSHOT;
+  protected ReadModel readModel = ReadModel.INCONSISTENT;
+
+  protected String sessionId;
 
   /** execute plan **/
   private Plan plan;
@@ -62,6 +63,9 @@ public class ParseContext {
   private static Random rand = new Random();
 
   private boolean genWholePlan = true;
+
+  private boolean isTransaction = false;
+
 
   /**
    * Generate a unique executionId. An executionId, together with user name and
@@ -125,6 +129,14 @@ public class ParseContext {
     this.sql = sql;
   }
 
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  public void setSessionId(String sessionId) {
+    this.sessionId = sessionId;
+  }
+
   /**
    * @return the sp
    */
@@ -153,6 +165,14 @@ public class ParseContext {
    */
   public void setReadModel(ReadModel readModel) {
     this.readModel = readModel;
+  }
+
+  public boolean isTransaction() {
+    return isTransaction;
+  }
+
+  public void setTransaction(boolean transaction) {
+    isTransaction = transaction;
   }
 
   /**

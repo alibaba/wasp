@@ -17,25 +17,24 @@
  */
 package com.alibaba.wasp.master.balancer;
 
+import com.alibaba.wasp.ClusterStatus;
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.master.FMasterServices;
+import com.alibaba.wasp.master.LoadBalancer;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Sets;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.ClusterStatus;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.master.FMasterServices;
-import com.alibaba.wasp.master.LoadBalancer;
-
-import com.google.common.base.Joiner;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Sets;
 
 /**
  * The base class for load balancers. It provides the the functions used to by

@@ -20,7 +20,6 @@
 
 package com.alibaba.wasp.plan.parser.druid;
 
-import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.meta.FMetaTestUtil;import com.alibaba.wasp.meta.MemFMetaStore;import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.meta.FMetaTestUtil;
@@ -28,6 +27,7 @@ import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.meta.MemFMetaStore;
 import com.alibaba.wasp.meta.TableSchemaCacheReader;
 import com.alibaba.wasp.plan.parser.ParseContext;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -86,12 +86,12 @@ public class TestDruidDMLFailParser {
     // primary keys not full
     String sql3 = "Insert into Photo(photo_id,time) values(1, 10000),(2,20000);";
     // Not all Required Field show up
-    String sql4 = "Insert into Photo(user_id,photo_id, time) values(1,1000,10000);";
+    // String sql4 = "Insert into Photo(user_id,photo_id, time) values(1,1000,10000);";
     // Give too much values
     String sql5 = "Insert into User(user_id,name,value) values(1,'binlijin',1.,'aa');";
     // Give too few values
     String sql6 = "Insert into User(user_id,name,value) values(1,'binlijin');";
-    String[] sqlList = { sql1, sql2, sql3, sql4, sql5, sql6 };
+    String[] sqlList = { sql1, sql2, sql3, sql5, sql6 }; //
     for (String sql : sqlList) {
       context.setSql(sql);
       boolean result = DruidParserTestUtil.execute(context, druidDMLParser);
@@ -114,7 +114,9 @@ public class TestDruidDMLFailParser {
     // primary keys not full
     String sql6 = "UPDATE Photo SET photo_id=2000 WHERE user_id = 321 and photo_id = 123";
 
-    String[] sqlList = { sql1, sql2, sql3, sql4, sql5, sql6 };
+    String sql7 = "UPDATE Photo SET int32Type = '22' WHERE user_id = 123 and photo_id=123;";
+
+    String[] sqlList = { sql1, sql2, sql3, sql4, sql5, sql6, sql7 };
     // sql1, sql2, sql3, sql4, sql5, sql6
     // DruidDMLParser druidParser = new DruidDMLParser(conf);
     for (String sql : sqlList) {

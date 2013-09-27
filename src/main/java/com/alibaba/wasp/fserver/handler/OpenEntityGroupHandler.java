@@ -19,12 +19,6 @@
  */
 package com.alibaba.wasp.fserver.handler;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.Server;import com.alibaba.wasp.executor.EventHandler;import com.alibaba.wasp.fserver.EntityGroup;import com.alibaba.wasp.meta.FTable;import com.alibaba.wasp.zookeeper.ZKAssign;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.CancelableProgressable;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.executor.EventHandler;
@@ -32,7 +26,13 @@ import com.alibaba.wasp.fserver.EntityGroup;
 import com.alibaba.wasp.fserver.FServerServices;
 import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.zookeeper.ZKAssign;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.CancelableProgressable;
 import org.apache.zookeeper.KeeperException;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Handles opening of a entityGroup on a FServer.
@@ -243,7 +243,7 @@ public class OpenEntityGroupHandler extends EventHandler {
   /**
    * Thread to run entityGroup post open tasks. Call {@link #getException()}
    * after the thread finishes to check for exceptions running
-   * {@link FServerServices#postOpenDeployTasks(EntityGroup, boolean)} .
+   * {@link com.alibaba.wasp.fserver.FServerServices#postOpenDeployTasks(com.alibaba.wasp.fserver.EntityGroup, boolean)} .
    */
   static class PostOpenDeployTasksThread extends Thread {
     private Exception exception = null;

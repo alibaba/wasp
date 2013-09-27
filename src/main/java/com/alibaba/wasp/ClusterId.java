@@ -19,11 +19,10 @@
 
 package com.alibaba.wasp;
 
-import java.util.UUID;
-
 import com.alibaba.wasp.protobuf.generated.ClusterIdProtos;
-
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import java.util.UUID;
 
 /**
  * The identifier for this cluster. It is serialized to the filesystem and up
@@ -89,7 +88,7 @@ public class ClusterId {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

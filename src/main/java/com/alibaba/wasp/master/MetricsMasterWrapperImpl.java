@@ -18,7 +18,7 @@
  */
 package com.alibaba.wasp.master;
 
-import com.alibaba.wasp.ServerName;import com.alibaba.wasp.master.metrics.MetricsMasterWrapper;import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;import com.alibaba.wasp.ClusterId;
+import com.alibaba.wasp.ClusterId;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.master.metrics.MetricsMasterWrapper;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;

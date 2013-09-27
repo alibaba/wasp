@@ -17,40 +17,39 @@
  */
 package com.alibaba.wasp.fserver;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.plan.action.Action;
+
+import java.util.List;
+import java.util.Map;
 
 public interface TwoPhaseCommitProtocol {
 
   /**
    * cancel this commit
    * 
-   * @throws IOException
+   * @throws java.io.IOException
    */
   abstract void rollback();
 
   /**
    * apply
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   abstract void commit();
 
   /**
    * one phase:pre commit
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   abstract boolean prepare();
 
   /**
-   * 
+   *
    * @param transcations
-   * @throws IOException
+   * @throws java.io.IOException
    */
   abstract boolean submit(Map<EntityGroupInfo, List<Action>> transcations);
 }

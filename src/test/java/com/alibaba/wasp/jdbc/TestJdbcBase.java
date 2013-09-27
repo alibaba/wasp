@@ -17,8 +17,8 @@
  */
 package com.alibaba.wasp.jdbc;
 
-import com.alibaba.wasp.util.Utils;import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.util.Utils;
+import org.apache.hadoop.conf.Configuration;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -137,7 +137,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Write a message to system out if trace is enabled.
-   * 
+   *
    * @param x
    *          the value to write
    */
@@ -147,7 +147,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Write a message to system out if trace is enabled.
-   * 
+   *
    * @param s
    *          the message to write
    */
@@ -166,7 +166,7 @@ public abstract class TestJdbcBase {
   /**
    * Print the currently used memory, the message and the given time in
    * milliseconds.
-   * 
+   *
    * @param s
    *          the message
    * @param time
@@ -178,7 +178,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Get the number of megabytes heap memory in use.
-   * 
+   *
    * @return the used megabytes
    */
   public static int getMemoryUsed() {
@@ -198,7 +198,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Called if the test reached a point that was not expected.
-   * 
+   *
    * @throws AssertionError
    *           always throws an AssertionError
    */
@@ -208,7 +208,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Called if the test reached a point that was not expected.
-   * 
+   *
    * @param string
    *          the error message
    * @throws AssertionError
@@ -222,7 +222,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Print a message to system out.
-   * 
+   *
    * @param s
    *          the message
    */
@@ -237,7 +237,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Print a message, prepended with the specified time in milliseconds.
-   * 
+   *
    * @param millis
    *          the time in milliseconds
    * @param s
@@ -252,7 +252,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Print the current time and a message to system out.
-   * 
+   *
    * @param s
    *          the message
    */
@@ -263,7 +263,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Format the time in the format hh:mm:ss.1234 where 1234 is milliseconds.
-   * 
+   *
    * @param millis
    *          the time in milliseconds
    * @return the formatted time
@@ -280,7 +280,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param message
    *          the message to print in case of error
    * @param expected
@@ -299,7 +299,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -315,7 +315,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -339,7 +339,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -367,7 +367,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param message
    *          the message to use if the check fails
    * @param expected
@@ -405,7 +405,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -419,7 +419,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two result sets are equal, and if not throw an exception.
-   * 
+   *
    * @param message
    *          the message to use if the check fails
    * @param rs0
@@ -447,7 +447,7 @@ public abstract class TestJdbcBase {
   /**
    * Check if the first value is larger or equal than the second value, and if
    * not throw an exception.
-   * 
+   *
    * @param a
    *          the first value
    * @param b
@@ -463,7 +463,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that a result contains the given substring.
-   * 
+   *
    * @param result
    *          the result value
    * @param contains
@@ -479,7 +479,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that a text starts with the expected characters..
-   * 
+   *
    * @param text
    *          the text
    * @param expectedStart
@@ -495,7 +495,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -511,7 +511,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -531,7 +531,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -551,7 +551,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -567,7 +567,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that the passed boolean is true.
-   * 
+   *
    * @param condition
    *          the condition
    * @throws AssertionError
@@ -579,7 +579,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that the passed object is null.
-   * 
+   *
    * @param obj
    *          the object
    * @throws AssertionError
@@ -593,7 +593,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that the passed boolean is true.
-   * 
+   *
    * @param message
    *          the message to print if the condition is false
    * @param condition
@@ -609,7 +609,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that the passed boolean is false.
-   * 
+   *
    * @param value
    *          the condition
    * @throws AssertionError
@@ -621,7 +621,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that the passed boolean is false.
-   * 
+   *
    * @param message
    *          the message to print if the condition is false
    * @param value
@@ -637,7 +637,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that the result set row count matches.
-   * 
+   *
    * @param expected
    *          the number of expected rows
    * @param rs
@@ -656,7 +656,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that the result set of a query is exactly this value.
-   * 
+   *
    * @param stat
    *          the statement
    * @param sql
@@ -676,7 +676,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check that the result set of a query is exactly this value.
-   * 
+   *
    * @param expected
    *          the expected result value
    * @param stat
@@ -699,7 +699,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if the result set meta data is correct.
-   * 
+   *
    * @param rs
    *          the result set
    * @param columnCount
@@ -780,7 +780,7 @@ public abstract class TestJdbcBase {
   /**
    * Check if a result set contains the expected data. The sort order is
    * significant
-   * 
+   *
    * @param rs
    *          the result set
    * @param data
@@ -795,7 +795,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if a result set contains the expected data.
-   * 
+   *
    * @param ordered
    *          if the sort order is significant
    * @param rs
@@ -888,7 +888,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Check if two values are equal, and if not throw an exception.
-   * 
+   *
    * @param expected
    *          the expected value
    * @param actual
@@ -906,7 +906,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Create a new object of the calling class.
-   * 
+   *
    * @return the new test
    */
   public static TestJdbcBase createCaller() {
@@ -915,7 +915,7 @@ public abstract class TestJdbcBase {
 
   /**
    * Create a new object of the given class.
-   * 
+   *
    * @param className
    *          the class name
    * @return the new test

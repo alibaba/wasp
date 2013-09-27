@@ -18,10 +18,10 @@
  */
 package com.alibaba.wasp.monitoring;
 
-import org.apache.hadoop.classification.InterfaceAudience;
 import com.alibaba.wasp.executor.ExecutorService;
 import com.alibaba.wasp.executor.ExecutorService.ExecutorStatus;
 import com.alibaba.wasp.util.VersionInfo;
+import org.apache.hadoop.classification.InterfaceAudience;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;

@@ -21,7 +21,6 @@ import com.alibaba.wasp.ipc.VersionedProtocol;
 import com.alibaba.wasp.protobuf.generated.MasterProtos.IsMasterRunningRequest;
 import com.alibaba.wasp.protobuf.generated.MasterProtos.IsMasterRunningResponse;
 import com.alibaba.wasp.protobuf.generated.MasterProtos.MasterService;
-
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
 
@@ -35,8 +34,8 @@ public interface MasterProtocol extends VersionedProtocol,
    *          IsMasterRunningRequest
    * @return IsMasterRunningRequest that contains:<br>
    *         isMasterRunning: true if master is available
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public IsMasterRunningResponse isMasterRunning(RpcController c,
-      IsMasterRunningRequest req) throws ServiceException;
+                                                 IsMasterRunningRequest req) throws ServiceException;
 }

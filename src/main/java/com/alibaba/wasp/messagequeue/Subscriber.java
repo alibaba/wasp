@@ -17,16 +17,16 @@
  */
 package com.alibaba.wasp.messagequeue;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.hadoop.hbase.HConstants.OperationStatusCode;
-import org.apache.hadoop.hbase.client.Delete;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.fserver.EntityGroup;
 import com.alibaba.wasp.fserver.OperationStatus;
 import com.alibaba.wasp.storage.StorageActionManager;
 import com.alibaba.wasp.storage.StorageTableNotFoundException;
+import org.apache.hadoop.hbase.HConstants.OperationStatusCode;
+import org.apache.hadoop.hbase.client.Delete;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Subscriber of message queue.
@@ -78,7 +78,7 @@ public class Subscriber implements MessageQueue<OperationStatus> {
    * return recently messages.
    * 
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public List<Message> receive() throws IOException {
     try {

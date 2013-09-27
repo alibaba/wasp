@@ -17,41 +17,6 @@
  */
 package com.alibaba.wasp.master;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.management.ObjectName;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.Chore;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.HasThread;
-import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.hbase.util.Sleeper;
-import org.apache.hadoop.hbase.util.Strings;
-import org.apache.hadoop.hbase.util.Threads;
-import org.apache.hadoop.metrics2.util.MBeans;
-import org.apache.hadoop.net.DNS;
 import com.alibaba.wasp.ClusterId;
 import com.alibaba.wasp.ClusterStatus;
 import com.alibaba.wasp.DeserializationException;
@@ -66,7 +31,6 @@ import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.TableNotDisabledException;
 import com.alibaba.wasp.TableNotFoundException;
 import com.alibaba.wasp.UnknownEntityGroupException;
-import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.client.FConnectionManager;
 import com.alibaba.wasp.executor.EventHandler;
 import com.alibaba.wasp.executor.ExecutorService;
@@ -178,10 +142,43 @@ import com.alibaba.wasp.zookeeper.LoadBalancerTracker;
 import com.alibaba.wasp.zookeeper.ZKClusterId;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
-import org.apache.zookeeper.KeeperException;
-
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Chore;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.HasThread;
+import org.apache.hadoop.hbase.util.Pair;
+import org.apache.hadoop.hbase.util.Sleeper;
+import org.apache.hadoop.hbase.util.Strings;
+import org.apache.hadoop.hbase.util.Threads;
+import org.apache.hadoop.metrics2.util.MBeans;
+import org.apache.hadoop.net.DNS;
+import org.apache.zookeeper.KeeperException;
+
+import javax.management.ObjectName;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FMaster extends HasThread implements FMasterAdminProtocol,
     FServerStatusProtocol, FMasterMonitorProtocol, FMasterServices, Server {
@@ -310,9 +307,9 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
     if (initialIsa.getAddress() == null) {
       throw new IllegalArgumentException("Failed resolve of " + initialIsa);
     }
-    this.rpcServer = WaspRPC.getServer(FMaster.class, this, new Class<?>[] {
+    this.rpcServer = WaspRPC.getServer(FMaster.class, this, new Class<?>[]{
         FMasterMonitorProtocol.class, FMasterAdminProtocol.class,
-        FServerStatusProtocol.class, FMetaServerProtocol.class },
+        FServerStatusProtocol.class, FMetaServerProtocol.class},
         initialIsa.getHostName(), // BindAddress is IP we got for this server.
         initialIsa.getPort(), conf);
     // Set our address.
@@ -447,7 +444,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
   /**
    * Initialize all ZK based system trackers.
    * 
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws InterruptedException
    */
   private void initializeZKBasedSystemTrackers() throws IOException,
@@ -512,7 +509,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Finish initialization of FMaster after becoming the primary master.
-   * 
+   *
    * <ol>
    * <li>Initialize master components - server manager, assignment manager,
    * fserver tracker, etc</li>
@@ -523,12 +520,12 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
    * <li>
    * <li>Handle either fresh cluster start or master failover</li>
    * </ol>
-   * 
+   *
    * @param masterRecovery
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    * @throws InterruptedException
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   private void finishInitialization(MonitoredTask status, boolean masterRecovery)
       throws IOException, InterruptedException, KeeperException {
@@ -625,12 +622,12 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Create a {@link FServerManager} instance.
-   * 
+   *
    * @param master
    * @param services
    * @return An instance of {@link FServerManager}
-   * @throws ZooKeeperConnectionException
-   * @throws IOException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
+   * @throws java.io.IOException
    */
   FServerManager createServerManager(final Server master,
       final FMasterServices services) throws IOException {
@@ -700,7 +697,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Get the ZK wrapper object - needed by master_jsp.java
-   * 
+   *
    * @return the zookeeper wrapper
    */
   public ZooKeeperWatcher getZooKeeperWatcher() {
@@ -764,7 +761,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Use this when trying to figure when its ok to send in rpcs. Used by tests.
-   * 
+   *
    * @return True if we have successfully run {@link WaspServer#openServer()}
    */
   boolean isRpcServerOpen() {
@@ -844,7 +841,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * @return Get remote side's InetAddress
-   * @throws UnknownHostException
+   * @throws java.net.UnknownHostException
    */
   InetAddress getRemoteInetAddress(final int port, final long serverStartCode)
       throws UnknownHostException {
@@ -1004,7 +1001,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Assigns balancer switch according to BalanceSwitchMode
-   * 
+   *
    * @param b
    *          new balancer switch
    * @param mode
@@ -1266,18 +1263,18 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
   /**
    * We do the following in a different thread. If it is not completed in time,
    * we will time it out and assume it is not easy to recover.
-   * 
+   *
    * 1. Create a new ZK session. (since our current one is expired) 2. Try to
    * become a primary master again 3. Initialize all ZK based system trackers.
    * 4. Assign root and meta. (they are already assigned, but we need to update
    * our internal memory state to reflect it) 5. Process any RIT if any during
    * the process of our recovery.
-   * 
+   *
    * @return True if we could successfully recover from ZK session expiry.
    * @throws InterruptedException
-   * @throws IOException
-   * @throws KeeperException
-   * @throws ExecutionException
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.util.concurrent.ExecutionException
    */
   private boolean tryRecoveringExpiredZKSession() throws InterruptedException,
       IOException, KeeperException, ExecutionException {
@@ -1322,7 +1319,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
   /**
    * Check to see if the current trigger for abort is due to ZooKeeper session
    * expiry, and If yes, whether we can recover from ZK session expiry.
-   * 
+   *
    * @param msg
    *          Original abort message
    * @param t
@@ -1433,9 +1430,9 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
   /**
    * Report whether this master is currently the active master or not. If not
    * active master, we are parked on ZK waiting to become active.
-   * 
+   *
    * This method is used for testing.
-   * 
+   *
    * @return true if active master, false if not.
    */
   public boolean isActiveMaster() {
@@ -1446,9 +1443,9 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
    * Report whether this master has completed with its initialization and is
    * ready. If ready, the master is also the active master. A standby master is
    * never ready.
-   * 
+   *
    * This method is used for testing.
-   * 
+   *
    * @return true if master is ready to go, false if not.
    */
   public boolean isInitialized() {
@@ -1522,14 +1519,14 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Get list of TableDescriptors for requested tables.
-   * 
+   *
    * @param controller
    *          Unused (set to null).
    * @param req
    *          GetTableDescriptorsRequest that contains: - tableNames: requested
    *          tables, or if empty, all are requested
    * @return GetTableDescriptorsResponse
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public GetTableDescriptorsResponse getTableDescriptors(
       RpcController controller, GetTableDescriptorsRequest req)
@@ -1577,7 +1574,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
    * Compute the average load across all fservers. Currently, this uses a very
    * naive computation - just uses the number of entityGroups being served,
    * ignoring stats about number of requests.
-   * 
+   *
    * @return the average load
    */
   public double getAverageLoad() {
@@ -1624,7 +1621,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Utility for constructing an instance of the passed FMaster class.
-   * 
+   *
    * @param masterClass
    * @param conf
    * @return FMaster instance.
@@ -1803,11 +1800,11 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
   /**
    * Get the number of entityGroups of the table that have been updated by the
    * alter.
-   * 
+   *
    * @return Pair indicating the number of entityGroups updated Pair.getFirst is
    *         the entityGroups that are yet to be updated Pair.getSecond is the
    *         total number of entityGroups of the table
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public GetSchemaAlterStatusResponse getSchemaAlterStatus(
@@ -1852,11 +1849,11 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
   }
 
   /**
-   * 
+   *
    * @param tableName
    * @param rowKey
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public Pair<EntityGroupInfo, ServerName> getTableEntityGroupForRow(
       final byte[] tableName, final byte[] rowKey) throws IOException {
@@ -2092,8 +2089,8 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Return if the table locked.
-   * 
-   * @throws ServiceException
+   *
+   * @throws com.google.protobuf.ServiceException
    */
   @Override
   public IsTableLockedResponse isTableLocked(RpcController controller,
@@ -2106,7 +2103,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Unlock the table
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   @Override
   public UnlockTableResponse unlockTable(RpcController controller, UnlockTableRequest request)
@@ -2122,7 +2119,7 @@ public class FMaster extends HasThread implements FMasterAdminProtocol,
 
   /**
    * Set table state
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public SetTableStateResponse
       setTableState(RpcController controller, SetTableStateRequest request) throws ServiceException {

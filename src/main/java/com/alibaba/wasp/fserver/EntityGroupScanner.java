@@ -19,11 +19,6 @@
  */
 package com.alibaba.wasp.fserver;
 
-import com.alibaba.wasp.protobuf.generated.ClientProtos;import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.meta.FTable;
@@ -32,11 +27,21 @@ import com.alibaba.wasp.meta.StorageTableNameBuilder;
 import com.alibaba.wasp.plan.action.ColumnStruct;
 import com.alibaba.wasp.plan.action.ScanAction;
 import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
+import com.alibaba.wasp.protobuf.generated.ClientProtos;
+import com.alibaba.wasp.util.ParserUtils;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NavigableSet;
 
 /**
  * EntityGroupScanner describes iterators over rows in an EntityGroup.
@@ -89,7 +94,7 @@ public class EntityGroupScanner implements InternalScanner {
   /**
    * Initialization
    * 
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    **/
   private void initlize() throws IOException {
@@ -175,6 +180,22 @@ public class EntityGroupScanner implements InternalScanner {
           get.addColumn(Bytes.toBytes(col.getFamilyName()),
               Bytes.toBytes(col.getColumnName()));
         }
+        FilterList filters =  new FilterList();
+        for (ColumnStruct columnStruct : action.getNotIndexConditionColumns()) {
+          Filter filter = new SingleColumnValueFilter(Bytes.toBytes(columnStruct.getFamilyName()),
+              Bytes.toBytes(columnStruct.getColumnName()),
+              ParserUtils.convertIntValueToCompareOp(columnStruct.getCompareOp()), columnStruct.getValue());
+          filters.addFilter(filter);
+
+          NavigableSet<byte[]> qualifierSet = get.getFamilyMap().get(
+              Bytes.toBytes(columnStruct.getFamilyName()));
+          if(qualifierSet !=null &&
+              (!qualifierSet.contains(columnStruct.getColumnName())) ){
+            get.addColumn(Bytes.toBytes(columnStruct.getFamilyName()),
+                Bytes.toBytes(columnStruct.getColumnName()));
+          }
+        }
+        get.setFilter(filters);
         gets.add(get);
       } else {
         this.results.add(ProtobufUtil.toQeuryResultProto(result));
@@ -189,8 +210,10 @@ public class EntityGroupScanner implements InternalScanner {
               StorageTableNameBuilder.buildEntityTableName(this.action
                   .getEntityTableName()), gets);
       for (int i = 0; i < entityResults.length; i++) {
-        this.results.add(ProtobufUtil.toQeuryResultProto(entityResults[i],
-            indexResults[i]));
+        if(!entityResults[i].isEmpty()) {
+          this.results.add(ProtobufUtil.toQeuryResultProto(entityResults[i],
+              indexResults[i]));
+        }
       }
     }
 

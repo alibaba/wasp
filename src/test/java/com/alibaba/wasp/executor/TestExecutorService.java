@@ -18,10 +18,16 @@
  */
 package com.alibaba.wasp.executor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.alibaba.wasp.Server;
+import com.alibaba.wasp.conf.WaspConfiguration;
+import com.alibaba.wasp.executor.EventHandler.EventType;
+import com.alibaba.wasp.executor.ExecutorService.Executor;
+import com.alibaba.wasp.executor.ExecutorService.ExecutorStatus;
+import com.alibaba.wasp.executor.ExecutorService.ExecutorType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -29,16 +35,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.Server;
-import com.alibaba.wasp.conf.WaspConfiguration;
-import com.alibaba.wasp.executor.EventHandler.EventType;
-import com.alibaba.wasp.executor.ExecutorService.Executor;
-import com.alibaba.wasp.executor.ExecutorService.ExecutorStatus;
-import com.alibaba.wasp.executor.ExecutorService.ExecutorType;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestExecutorService {
   private static final Log LOG = LogFactory.getLog(TestExecutorService.class);

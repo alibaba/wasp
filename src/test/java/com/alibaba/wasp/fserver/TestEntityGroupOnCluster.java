@@ -17,13 +17,6 @@
  */
 package com.alibaba.wasp.fserver;
 
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.WaspTestingUtility;import com.alibaba.wasp.ZooKeeperConnectionException;import com.alibaba.wasp.fserver.redo.Redo;import com.alibaba.wasp.meta.Index;import com.alibaba.wasp.plan.CreateIndexPlan;import com.alibaba.wasp.plan.CreateTablePlan;import com.alibaba.wasp.plan.GlobalQueryPlan;import com.alibaba.wasp.plan.InsertPlan;import com.alibaba.wasp.plan.Plan;import com.alibaba.wasp.plan.action.UpdateAction;import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;import com.alibaba.wasp.plan.parser.druid.DruidParserTestUtil;import com.alibaba.wasp.protobuf.generated.ClientProtos;import com.alibaba.wasp.protobuf.generated.WaspProtos;import junit.framework.Assert;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.MediumTests;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.WaspTestingUtility;
@@ -52,8 +45,16 @@ import com.alibaba.wasp.plan.parser.druid.DruidDDLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDMLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidParserTestUtil;
+import com.alibaba.wasp.protobuf.generated.ClientProtos;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.StringBytesPair;
+import com.alibaba.wasp.protobuf.generated.WaspProtos;
+import junit.framework.Assert;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.MediumTests;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -303,7 +304,7 @@ public class TestEntityGroupOnCluster {
       FTable testFTable) throws IOException {
     LOG.info(" ScanAction " + scanAction.toString());
     EntityGroupScanner scanner = eg.getScanner(scanAction);
-    List<ClientProtos.QueryResultProto> results = new ArrayList<ClientProtos.QueryResultProto>(
+    List<QueryResultProto> results = new ArrayList<QueryResultProto>(
         scanner.getCaching());
     // Collect values to be returned here
     scanner.next(results);

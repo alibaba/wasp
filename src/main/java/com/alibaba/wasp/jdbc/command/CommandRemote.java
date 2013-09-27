@@ -17,13 +17,6 @@
  */
 package com.alibaba.wasp.jdbc.command;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.alibaba.wasp.jdbc.result.ResultInterface;import com.alibaba.wasp.jdbc.result.ResultRemote;import com.alibaba.wasp.jdbc.result.ResultTransfer;import com.alibaba.wasp.jdbc.value.Value;import com.alibaba.wasp.session.SessionFactory;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.client.FClient;
@@ -35,9 +28,17 @@ import com.alibaba.wasp.jdbc.result.ResultTransfer;
 import com.alibaba.wasp.jdbc.value.Value;
 import com.alibaba.wasp.jdbc.value.ValueInt;
 import com.alibaba.wasp.meta.Field;
-import com.alibaba.wasp.session.RemoteSession;
+import com.alibaba.wasp.session.ConnectionSession;
+import com.alibaba.wasp.session.ExecuteSession;
 import com.alibaba.wasp.session.SessionFactory;
 import com.alibaba.wasp.util.New;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents the client-side part of a SQL statement. This class is not used in
@@ -50,15 +51,18 @@ public class CommandRemote implements CommandInterface {
   private final ArrayList<ParameterInterface> parameters;
   private final String sql;
   private final int fetchSize;
-  private RemoteSession session;
+  private ConnectionSession session;
   private final FClient fClient;
   private int id;
   private boolean isQuery;
   private final int created;
   private final ReadModel readModel;
+  private final boolean autoCommit;
+  private ExecuteSession statementSession;
+  private final List<String> sqls;
 
-  public CommandRemote(FClient fClient, RemoteSession session, String sql,
-      int fetchSize, ReadModel readModel) {
+  public CommandRemote(FClient fClient, ConnectionSession session, String sql,
+      int fetchSize, ReadModel readModel, boolean autoCommit, ExecuteSession statementSession, List<String> sqls) {
     this.sql = sql;
     parameters = New.arrayList();
     prepare(session, true);
@@ -68,10 +72,18 @@ public class CommandRemote implements CommandInterface {
     this.fClient = fClient;
     this.fetchSize = fetchSize;
     this.readModel = readModel;
+    this.autoCommit = autoCommit;
+    this.statementSession = statementSession;
+    this.sqls = sqls;
     created = session.getLastReconnect();
   }
 
-  private void prepare(RemoteSession s, boolean createParams) {
+  public CommandRemote(FClient fClient, ConnectionSession session, List<String> sqls,
+                       boolean autoCommit, ExecuteSession statementSession) {
+    this(fClient, session, null, 0, null, autoCommit, statementSession, sqls);
+  }
+
+  private void prepare(ConnectionSession s, boolean createParams) {
     if (fetchSize > 0) {
       isQuery = true;
     }
@@ -112,12 +124,9 @@ public class CommandRemote implements CommandInterface {
       ResultRemote result = null;
       prepareIfRequired();
       try {
-        List<Field> fields = getFileds(sql);
-        String tablename = getTableName(sql);
-        ResultTransfer transfer = new ResultTransfer(fields,
-            tablename, RemoteSession.COMMAND_EXECUTE_QUERY);
-        result = new ResultRemote(fClient, SessionFactory.createQuerySession(), transfer, sql, objectId,
-            fetchSize, true, readModel);
+        ResultTransfer transfer = new ResultTransfer(null, null);
+        result = new ResultRemote(fClient, SessionFactory.createExecuteSession(), transfer, sql, objectId,
+            fetchSize, true, readModel, false, null);
         isQuery = result.isQuery();
         if (!isQuery() && result.getRowCount() > 0) {
           throw JdbcException.get(SQLErrorCode.METHOD_ONLY_ALLOWED_FOR_QUERY,
@@ -147,10 +156,39 @@ public class CommandRemote implements CommandInterface {
       prepareIfRequired();
       ResultRemote result = null;
       String tablename = getTableName(sql);
-      ResultTransfer transfer = new ResultTransfer(null, tablename,
-          RemoteSession.COMMAND_EXECUTE_QUERY);
+      ResultTransfer transfer = new ResultTransfer(null, tablename);
       try {
-        result = new ResultRemote(fClient, SessionFactory.createQuerySession(), transfer, sql, readModel);
+        result = new ResultRemote(fClient, statementSession, transfer, sql, readModel);
+        result.next();
+        isQuery = result.isQuery();
+        if (isQuery()) {
+          throw JdbcException.get(SQLErrorCode.METHOD_NOT_ALLOWED_FOR_QUERY,
+              "sql:" + sql);
+        }
+        Value[] values = result.currentRow();
+        if (values == null || values.length == 0) {
+          return 0;
+        }
+        if (values[0] instanceof ValueInt) {
+          return ((ValueInt) values[0]).getInt();
+        }
+
+      } catch (IOException e) {
+        session.removeServer(e);
+      }
+      return transfer.getCounts();
+    }
+  }
+
+  @Override
+  public int executeTransaction() throws SQLException {
+    checkParameters();
+    synchronized (session) {
+      prepareIfRequired();
+      ResultRemote result = null;
+      ResultTransfer transfer = new ResultTransfer(null, null);
+      try {
+        result = new ResultRemote(fClient, statementSession, transfer, sqls, true);
         result.next();
         isQuery = result.isQuery();
         if (isQuery()) {

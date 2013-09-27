@@ -18,9 +18,9 @@
  */
 package com.alibaba.wasp.master;
 
-import java.util.concurrent.Callable;
-
 import com.alibaba.wasp.EntityGroupInfo;
+
+import java.util.concurrent.Callable;
 
 /**
  * A callable object that invokes the corresponding action that needs to be

@@ -66,7 +66,7 @@ public class LocalQueryPlan extends DQLPlan {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

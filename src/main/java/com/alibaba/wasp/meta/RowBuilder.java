@@ -19,15 +19,10 @@ package com.alibaba.wasp.meta;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.QueryConditionException;
 import com.alibaba.wasp.plan.action.ColumnStruct;
 import com.alibaba.wasp.plan.action.InsertAction;
 import com.alibaba.wasp.plan.action.UpdateAction;
@@ -36,7 +31,12 @@ import com.alibaba.wasp.plan.parser.QueryInfo;
 import com.alibaba.wasp.plan.parser.UnsupportedException;
 import com.alibaba.wasp.plan.parser.druid.DruidParser;
 import com.alibaba.wasp.util.ParserUtils;
-import com.alibaba.wasp.util.Utils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -66,21 +66,34 @@ public class RowBuilder {
    * @param index
    * @param queryInfo
    * @return
-   * @throws UnsupportedException
+   * @throws com.alibaba.wasp.plan.parser.UnsupportedException
    */
   public Pair<byte[], byte[]> buildStartkeyAndEndkey(Index index,
-      QueryInfo queryInfo) throws UnsupportedException {
+      QueryInfo queryInfo) throws UnsupportedException, QueryConditionException {
     List<IndexField> indexFields = new ArrayList<IndexField>();
-    Condition range = queryInfo.getRangeCondition();
+    LinkedHashMap<String, Condition> eqConditions = queryInfo
+            .getEqConditions();
+    LinkedHashMap<String, Condition> rangeConditions = queryInfo
+            .getRangeConditions();
+    Condition range = null;
 
     for (Field field : index.getIndexKeys().values()) {
-      if (range == null || !field.getName().equals(range.getFieldName())) {
-        LinkedHashMap<String, Condition> eqConditions = queryInfo
-            .getEqConditions();
-        Condition entry = ParserUtils.getCondition(field.getName(),
-            eqConditions);
+      Condition entry = ParserUtils.getCondition(field.getName(),
+          eqConditions);
+      if(entry != null) {
         addToIndexFields(DruidParser.convert(field, entry.getValue()),
             indexFields, field);
+      } else {
+        entry = ParserUtils.getCondition(field.getName(),
+            rangeConditions);
+        if(entry != null) {
+          if(isLastIndexField(index, field)) {
+            range = entry;
+          } else {
+            throw new QueryConditionException("range condition must be at the last field in a index, the invalid field is " + field.getName());
+          }
+        }
+
       }
     }
 
@@ -90,6 +103,15 @@ public class RowBuilder {
     } else {// has range condition
       return buildStartEndKeyWithRange(prefixKey, range, index);
     }
+  }
+
+  private boolean isLastIndexField(Index index, Field field) {
+    Field[] fields = index.getIndexKeys().values().toArray(new Field[]{});
+    if(fields.length == 0) {
+      return false;
+    }
+    Field theLastField = fields[fields.length - 1];
+    return field == theLastField;
   }
 
   private Pair<byte[], byte[]> buildStartEndKeyWithRange(byte[] prefixKey,
@@ -175,12 +197,12 @@ public class RowBuilder {
   }
 
   /**
-   * 
+   *
    * Build a entity row key by sorted primary key conditions.
-   * 
+   *
    * @param primaryKeyPairs
    * @return
-   * @throws UnsupportedException
+   * @throws com.alibaba.wasp.plan.parser.UnsupportedException
    */
   public byte[] genRowkey(List<Pair<String, byte[]>> primaryKeyPairs)
       throws UnsupportedException {
@@ -202,7 +224,7 @@ public class RowBuilder {
 
   /**
    * Build a row key by using one index schema.
-   * 
+   *
    * @param index
    * @param indexFields
    * @return
@@ -241,7 +263,7 @@ public class RowBuilder {
 
   /**
    * Convert values to index key/value.
-   * 
+   *
    * @param index
    * @param result
    * @return
@@ -261,7 +283,7 @@ public class RowBuilder {
 
   /**
    * Build a variety of indexes.
-   * 
+   *
    * @param index
    * @param values
    * @return
@@ -292,7 +314,7 @@ public class RowBuilder {
 
   /**
    * Tool method.
-   * 
+   *
    * @param value
    * @param indexFields
    * @param field
@@ -306,7 +328,7 @@ public class RowBuilder {
 
   /**
    * Return current family:column value.
-   * 
+   *
    * @param results
    * @param family
    * @param name
@@ -327,7 +349,7 @@ public class RowBuilder {
 
   /**
    * Return true which is INT32 or INT64 or FLOAT or DOUBLE.
-   * 
+   *
    * @param indexField
    * @return
    */
@@ -340,11 +362,11 @@ public class RowBuilder {
 
   /**
    * Convert update action to put.
-   * 
+   *
    * @param action
    *          UpdateAction
    * @return
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public Put buildPut(UpdateAction action) throws MetaException {
     return buildPut(
@@ -354,11 +376,11 @@ public class RowBuilder {
 
   /**
    * Convert insert action to put.
-   * 
+   *
    * @param action
    *          InsertAction
    * @return
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public Put buildPut(InsertAction action) throws MetaException {
     return buildPut(

@@ -19,17 +19,17 @@
  */
 package com.alibaba.wasp.fserver.handler;
 
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.executor.EventHandler;
 import com.alibaba.wasp.fserver.EntityGroup;
 import com.alibaba.wasp.fserver.FServerServices;
 import com.alibaba.wasp.zookeeper.ZKAssign;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.KeeperException;
+
+import java.io.IOException;
 
 /**
  * Handles closing of a entityGroup on a FServer.

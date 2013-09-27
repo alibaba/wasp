@@ -18,15 +18,15 @@
  */
 package com.alibaba.wasp.util;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-
+import com.alibaba.wasp.conf.WaspConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import com.alibaba.wasp.conf.WaspConfiguration;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 
 public abstract class ServerCommandLine extends Configured implements Tool {
   private static final Log LOG = LogFactory.getLog(ServerCommandLine.class);

@@ -17,49 +17,49 @@ public final class TestRpcServiceProtos {
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request,
           com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto> done);
-      
+
       public abstract void echo(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto request,
           com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto> done);
-      
+
       public abstract void error(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request,
           com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto> done);
-      
+
     }
-    
+
     public static com.google.protobuf.Service newReflectiveService(
         final Interface impl) {
       return new TestProtobufRpcProto() {
-        @java.lang.Override
+        @Override
         public  void ping(
             com.google.protobuf.RpcController controller,
             com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request,
             com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto> done) {
           impl.ping(controller, request, done);
         }
-        
-        @java.lang.Override
+
+        @Override
         public  void echo(
             com.google.protobuf.RpcController controller,
             com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto request,
             com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto> done) {
           impl.echo(controller, request, done);
         }
-        
-        @java.lang.Override
+
+        @Override
         public  void error(
             com.google.protobuf.RpcController controller,
             com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request,
             com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto> done) {
           impl.error(controller, request, done);
         }
-        
+
       };
     }
-    
+
     public static com.google.protobuf.BlockingService
         newReflectiveBlockingService(final BlockingInterface impl) {
       return new com.google.protobuf.BlockingService() {
@@ -67,14 +67,14 @@ public final class TestRpcServiceProtos {
             getDescriptorForType() {
           return getDescriptor();
         }
-        
+
         public final com.google.protobuf.Message callBlockingMethod(
             com.google.protobuf.Descriptors.MethodDescriptor method,
             com.google.protobuf.RpcController controller,
             com.google.protobuf.Message request)
             throws com.google.protobuf.ServiceException {
           if (method.getService() != getDescriptor()) {
-            throw new java.lang.IllegalArgumentException(
+            throw new IllegalArgumentException(
               "Service.callBlockingMethod() given method descriptor for " +
               "wrong service type.");
           }
@@ -86,15 +86,15 @@ public final class TestRpcServiceProtos {
             case 2:
               return impl.error(controller, (com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto)request);
             default:
-              throw new java.lang.AssertionError("Can't get here.");
+              throw new AssertionError("Can't get here.");
           }
         }
-        
+
         public final com.google.protobuf.Message
             getRequestPrototype(
             com.google.protobuf.Descriptors.MethodDescriptor method) {
           if (method.getService() != getDescriptor()) {
-            throw new java.lang.IllegalArgumentException(
+            throw new IllegalArgumentException(
               "Service.getRequestPrototype() given method " +
               "descriptor for wrong service type.");
           }
@@ -106,15 +106,15 @@ public final class TestRpcServiceProtos {
             case 2:
               return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto.getDefaultInstance();
             default:
-              throw new java.lang.AssertionError("Can't get here.");
+              throw new AssertionError("Can't get here.");
           }
         }
-        
+
         public final com.google.protobuf.Message
             getResponsePrototype(
             com.google.protobuf.Descriptors.MethodDescriptor method) {
           if (method.getService() != getDescriptor()) {
-            throw new java.lang.IllegalArgumentException(
+            throw new IllegalArgumentException(
               "Service.getResponsePrototype() given method " +
               "descriptor for wrong service type.");
           }
@@ -126,28 +126,28 @@ public final class TestRpcServiceProtos {
             case 2:
               return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDefaultInstance();
             default:
-              throw new java.lang.AssertionError("Can't get here.");
+              throw new AssertionError("Can't get here.");
           }
         }
-        
+
       };
     }
-    
+
     public abstract void ping(
         com.google.protobuf.RpcController controller,
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request,
         com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto> done);
-    
+
     public abstract void echo(
         com.google.protobuf.RpcController controller,
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto request,
         com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto> done);
-    
+
     public abstract void error(
         com.google.protobuf.RpcController controller,
         com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request,
         com.google.protobuf.RpcCallback<com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto> done);
-    
+
     public static final
         com.google.protobuf.Descriptors.ServiceDescriptor
         getDescriptor() {
@@ -157,7 +157,7 @@ public final class TestRpcServiceProtos {
         getDescriptorForType() {
       return getDescriptor();
     }
-    
+
     public final void callMethod(
         com.google.protobuf.Descriptors.MethodDescriptor method,
         com.google.protobuf.RpcController controller,
@@ -165,7 +165,7 @@ public final class TestRpcServiceProtos {
         com.google.protobuf.RpcCallback<
           com.google.protobuf.Message> done) {
       if (method.getService() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
+        throw new IllegalArgumentException(
           "Service.callMethod() given method descriptor for wrong " +
           "service type.");
       }
@@ -186,15 +186,15 @@ public final class TestRpcServiceProtos {
               done));
           return;
         default:
-          throw new java.lang.AssertionError("Can't get here.");
+          throw new AssertionError("Can't get here.");
       }
     }
-    
+
     public final com.google.protobuf.Message
         getRequestPrototype(
         com.google.protobuf.Descriptors.MethodDescriptor method) {
       if (method.getService() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
+        throw new IllegalArgumentException(
           "Service.getRequestPrototype() given method " +
           "descriptor for wrong service type.");
       }
@@ -206,15 +206,15 @@ public final class TestRpcServiceProtos {
         case 2:
           return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto.getDefaultInstance();
         default:
-          throw new java.lang.AssertionError("Can't get here.");
+          throw new AssertionError("Can't get here.");
       }
     }
-    
+
     public final com.google.protobuf.Message
         getResponsePrototype(
         com.google.protobuf.Descriptors.MethodDescriptor method) {
       if (method.getService() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
+        throw new IllegalArgumentException(
           "Service.getResponsePrototype() given method " +
           "descriptor for wrong service type.");
       }
@@ -226,26 +226,26 @@ public final class TestRpcServiceProtos {
         case 2:
           return com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDefaultInstance();
         default:
-          throw new java.lang.AssertionError("Can't get here.");
+          throw new AssertionError("Can't get here.");
       }
     }
-    
+
     public static Stub newStub(
         com.google.protobuf.RpcChannel channel) {
       return new Stub(channel);
     }
-    
+
     public static final class Stub extends com.alibaba.wasp.ipc.protobuf.generated.TestRpcServiceProtos.TestProtobufRpcProto implements Interface {
       private Stub(com.google.protobuf.RpcChannel channel) {
         this.channel = channel;
       }
-      
+
       private final com.google.protobuf.RpcChannel channel;
-      
+
       public com.google.protobuf.RpcChannel getChannel() {
         return channel;
       }
-      
+
       public  void ping(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request,
@@ -260,7 +260,7 @@ public final class TestRpcServiceProtos {
             com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.class,
             com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDefaultInstance()));
       }
-      
+
       public  void echo(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto request,
@@ -275,7 +275,7 @@ public final class TestRpcServiceProtos {
             com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.class,
             com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.getDefaultInstance()));
       }
-      
+
       public  void error(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request,
@@ -291,36 +291,36 @@ public final class TestRpcServiceProtos {
             com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDefaultInstance()));
       }
     }
-    
+
     public static BlockingInterface newBlockingStub(
         com.google.protobuf.BlockingRpcChannel channel) {
       return new BlockingStub(channel);
     }
-    
+
     public interface BlockingInterface {
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto ping(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request)
           throws com.google.protobuf.ServiceException;
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto echo(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto request)
           throws com.google.protobuf.ServiceException;
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto error(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request)
           throws com.google.protobuf.ServiceException;
     }
-    
+
     private static final class BlockingStub implements BlockingInterface {
       private BlockingStub(com.google.protobuf.BlockingRpcChannel channel) {
         this.channel = channel;
       }
-      
+
       private final com.google.protobuf.BlockingRpcChannel channel;
-      
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto ping(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request)
@@ -331,8 +331,8 @@ public final class TestRpcServiceProtos {
           request,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDefaultInstance());
       }
-      
-      
+
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto echo(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoRequestProto request)
@@ -343,8 +343,8 @@ public final class TestRpcServiceProtos {
           request,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EchoResponseProto.getDefaultInstance());
       }
-      
-      
+
+
       public com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto error(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyRequestProto request)
@@ -355,11 +355,11 @@ public final class TestRpcServiceProtos {
           request,
           com.alibaba.wasp.ipc.protobuf.generated.TestProtos.EmptyResponseProto.getDefaultInstance());
       }
-      
+
     }
   }
-  
-  
+
+
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
@@ -367,7 +367,7 @@ public final class TestRpcServiceProtos {
   private static com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    java.lang.String[] descriptorData = {
+    String[] descriptorData = {
       "\n\026test_rpc_service.proto\032\ntest.proto2\250\001\n" +
       "\024TestProtobufRpcProto\022/\n\004ping\022\022.EmptyReq" +
       "uestProto\032\023.EmptyResponseProto\022-\n\004echo\022\021" +

@@ -1,24 +1,22 @@
 package com.alibaba.wasp.meta;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.FConstants;import com.alibaba.wasp.plan.parser.UnsupportedException;import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
+import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
+import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
+import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.plan.parser.Condition;
 import com.alibaba.wasp.plan.parser.QueryInfo;
 import com.alibaba.wasp.plan.parser.UnsupportedException;
 import com.alibaba.wasp.util.New;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 
-import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
-import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
-import com.alibaba.druid.sql.ast.expr.SQLIntegerExpr;
-import com.alibaba.druid.sql.ast.expr.SQLNumberExpr;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 public class RowBuilderTestUtil {
 
@@ -103,8 +101,8 @@ public class RowBuilderTestUtil {
     fieldValue.put(index1Condition.getFieldName(), index1Condition);
     fieldValue.put(index2Condition.getFieldName(), index2Condition);
 
-    List<Condition> ranges = new ArrayList<Condition>();
-    ranges.add(index3Condition);
+    LinkedHashMap<String, Condition> ranges = new LinkedHashMap<String, Condition>();
+    ranges.put(index3Condition.getFieldName(), index3Condition);
     return new QueryInfo(QueryInfo.QueryType.SCAN, fieldValue, ranges);
   }
 }

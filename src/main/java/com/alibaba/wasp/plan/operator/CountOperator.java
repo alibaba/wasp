@@ -20,7 +20,7 @@
 package com.alibaba.wasp.plan.operator;
 
 
-public class CountOperator extends Operator{
+public class CountOperator extends Operator {
 
 
   @Override

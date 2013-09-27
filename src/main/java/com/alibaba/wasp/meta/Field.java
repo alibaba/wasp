@@ -17,10 +17,10 @@
  */
 package com.alibaba.wasp.meta;
 
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.FieldKeyWord;import com.alibaba.wasp.protobuf.generated.MetaProtos;import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.FieldKeyWord;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnSchema;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
+import org.apache.hadoop.hbase.util.Bytes;
 
 /**
  * Represent a column or a type of a table or object

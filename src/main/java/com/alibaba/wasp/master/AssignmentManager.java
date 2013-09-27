@@ -18,36 +18,6 @@
  */
 package com.alibaba.wasp.master;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.Chore;
-import org.apache.hadoop.hbase.Stoppable;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.hbase.util.Threads;
-import org.apache.hadoop.ipc.RemoteException;
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupTransaction;
@@ -76,11 +46,41 @@ import com.alibaba.wasp.zookeeper.ZKAssign;
 import com.alibaba.wasp.zookeeper.ZKTable;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperListener;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Chore;
+import org.apache.hadoop.hbase.Stoppable;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Pair;
+import org.apache.hadoop.hbase.util.Threads;
+import org.apache.hadoop.ipc.RemoteException;
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.data.Stat;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Manages and performs entityGroup assignment.
@@ -163,13 +163,13 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Constructs a new assignment manager.
-   * 
+   *
    * @param server
    * @param serverManager
    * @param service
    * @param metricsMaster
-   * @throws KeeperException
-   * @throws IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    */
   public AssignmentManager(Server server, FServerManager serverManager,
       final LoadBalancer balancer, final ExecutorService service,
@@ -214,8 +214,8 @@ public class AssignmentManager extends ZooKeeperListener {
   }
 
   /**
-   * Get a named {@link ThreadFactory} that just builds daemon threads
-   * 
+   * Get a named {@link java.util.concurrent.ThreadFactory} that just builds daemon threads
+   *
    * @param prefix
    *          name prefix for all threads created from the factory
    * @return a thread factory that creates named, daemon threads
@@ -248,7 +248,7 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * This SHOULD not be public. It is public now because of some unit tests.
-   * 
+   *
    * TODO: make it package private and keep EntityGroupStates in the master
    * package
    */
@@ -263,7 +263,7 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Add a entityGroupPlan for the specified entityGroup.
-   * 
+   *
    * @param encodedName
    * @param plan
    */
@@ -285,7 +285,7 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * Set the list of entityGroups that will be reopened because of an update in
    * table schema
-   * 
+   *
    * @param entityGroups
    *          list of entityGroups that should be tracked for reopen
    */
@@ -297,10 +297,10 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Used by the client to identify if all entityGroups have the schema updates
-   * 
+   *
    * @param tableName
    * @return Pair indicating the status of the alter command
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public Pair<Integer, Integer> getReopenStatus(byte[] tableName)
       throws IOException {
@@ -340,9 +340,9 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * Called on startup. Figures whether a fresh cluster start of we are joining
    * extant running cluster.
-   * 
-   * @throws IOException
-   * @throws KeeperException
+   *
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException
    * @throws InterruptedException
    */
   void joinCluster() throws IOException, KeeperException, InterruptedException {
@@ -377,11 +377,11 @@ public class AssignmentManager extends ZooKeeperListener {
    * processes the list of dead servers by scanning the FMETA. Used by master
    * joining an cluster. If we figure this is a clean cluster startup, will
    * assign all user entityGroups.
-   * 
+   *
    * @param deadServers
    *          Map of dead servers and their entityGroups. Can be null.
-   * @throws KeeperException
-   * @throws IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    * @throws InterruptedException
    */
   void processDeadServersAndEntityGroupsInTransition(
@@ -426,7 +426,7 @@ public class AssignmentManager extends ZooKeeperListener {
       processDeadServersAndRecoverLostEntityGroups(deadServers, nodes);
     } else {
       // Fresh cluster startup.
-      LOG.info("Clean cluster startup. Assigning userentityGroups");
+      LOG.info("Clean cluster startup. Assigning user entityGroups");
       assignAllUserEntityGroups();
     }
   }
@@ -435,14 +435,14 @@ public class AssignmentManager extends ZooKeeperListener {
    * If entityGroup is up in zk in transition, then do fixup and block and wait
    * until the entityGroup is assigned and out of transition. Used on startup
    * for catalog entityGroups.
-   * 
+   *
    * @param egInfo
    *          EntityGroup to look for.
    * @return True if we processed a entityGroup in transition else false if
    *         entityGroup was not up in zk in transition.
    * @throws InterruptedException
-   * @throws KeeperException
-   * @throws IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    */
   boolean processEntityGroupInTransitionAndBlockUntilAssigned(
       final EntityGroupInfo egInfo) throws InterruptedException,
@@ -466,14 +466,14 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * Process failover of new master for entityGroup
    * <code>encodedEntityGroupName</code> up in zookeeper.
-   * 
+   *
    * @param encodedEntityGroupName
    *          EntityGroup to process failover for.
    * @param entityGroupInfo
    *          If null we'll go get it from meta table.
    * @return True if we processed <code>entityGroupInfo</code> as a EGIT.
-   * @throws KeeperException
-   * @throws IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    */
   boolean processEntityGroupInTransition(final String encodedEntityGroupName,
       final EntityGroupInfo entityGroupInfo) throws KeeperException,
@@ -514,7 +514,7 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * This call is invoked only during failover mode startup, zk assignment node
    * processing. The locker is set in the caller.
-   * 
+   *
    * It should be private but it is used by some test too.
    */
   void processEntityGroupsInTransition(
@@ -613,12 +613,12 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Put the entityGroup <code>egInfo</code> into an offline state up in zk.
-   * 
+   *
    * You need to have lock on the entityGroup before calling this method.
-   * 
+   *
    * @param egInfo
    * @param oldEGt
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   private void forceOffline(final EntityGroupInfo egInfo,
       final EntityGroupTransaction oldEGt) throws KeeperException {
@@ -634,7 +634,7 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * Add to the in-memory copy of entityGroups in transition and then call close
    * handler on passed entityGroup <code>egInfo</code>
-   * 
+   *
    * @param egInfo
    * @param state
    * @param oldData
@@ -648,7 +648,7 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * When a entityGroup is closed, it should be removed from the
    * entityGroupsToReopen
-   * 
+   *
    * @param egInfo
    *          EntityGroupInfo of the entityGroup which was closed
    */
@@ -665,7 +665,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * <p>
    * This deals with skipped transitions (we got a CLOSED but didn't see CLOSING
    * yet).
-   * 
+   *
    * @param egTransition
    * @param expectedVersion
    */
@@ -909,7 +909,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * state and convert it to SPLITTING instead. This can happen in case where
    * master wants to close a entityGroup at same time a entityGroupserver starts
    * a split. The split won. Clean out old PENDING_CLOSE state.
-   * 
+   *
    * @param egState
    * @return True if we converted from PENDING_CLOSE to SPLITTING
    */
@@ -929,7 +929,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * Handle a ZK unassigned node transition triggered by HBCK repair tool.
    * <p>
    * This is handled in a separate code path because it breaks the normal rules.
-   * 
+   *
    * @param egTransition
    */
   private void handleHBCK(EntityGroupTransaction egTransition) {
@@ -974,11 +974,11 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * New unassigned node has been created.
-   * 
+   *
    * <p>
    * This happens when an FSERVER begins the OPENING or CLOSING of a entityGroup
    * by creating an unassigned node.
-   * 
+   *
    * <p>
    * When this happens we must:
    * <ol>
@@ -993,11 +993,11 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Existing unassigned node has had data changed.
-   * 
+   *
    * <p>
    * This happens when an FSERVER transitions from OFFLINE to OPENING, or
    * between OPENING/OPENED and CLOSING/CLOSED.
-   * 
+   *
    * <p>
    * When this happens we must:
    * <ol>
@@ -1060,11 +1060,11 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * New unassigned node has been created.
-   * 
+   *
    * <p>
    * This happens when an FSERVER begins the OPENING, SPLITTING or CLOSING of a
    * entityGroup by creating a znode.
-   * 
+   *
    * <p>
    * When this happens we must:
    * <ol>
@@ -1109,7 +1109,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * <p>
    * Used when a entityGroup has been successfully opened on a entityGroup
    * server.
-   * 
+   *
    * @param entityGroupInfo
    * @param sn
    */
@@ -1131,7 +1131,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * Pass the assignment event to a worker for processing. Each worker is a
    * single thread executor service. The reason for just one thread is to make
    * sure all events for a given entityGroup are processed in order.
-   * 
+   *
    * @param path
    */
   private void handleAssignmentEvent(final String path) {
@@ -1162,7 +1162,7 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * Add the server to the set serversInUpdatingTimer, then {@link TimerUpdater}
    * will update timers for this server in background
-   * 
+   *
    * @param sn
    */
   private void addToServersInUpdatingTimer(final ServerName sn) {
@@ -1180,7 +1180,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * assign -- there we have a different mechanism for extending the
    * entityGroups in transition timer (we turn it off temporarily -- because
    * there is no entityGroupplan involved when bulk assigning.
-   * 
+   *
    * @param sn
    */
   private void updateTimers(final ServerName sn) {
@@ -1214,7 +1214,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * transition and removes in-memory assignment information.
    * <p>
    * Used when a entityGroup has been closed and should remain closed.
-   * 
+   *
    * @param entityGroupInfo
    */
   public void entityGroupOffline(final EntityGroupInfo entityGroupInfo) {
@@ -1259,7 +1259,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * or OFFLINE state or not in transition (in-memory not zk), and of course,
    * the chosen server is up and running (It may have just crashed!). If the
    * in-memory checks pass, the zk node is forced to OFFLINE before assigning.
-   * 
+   *
    * @param entityGroup
    *          server to be assigned
    * @param setOfflineInZK
@@ -1298,7 +1298,7 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Bulk assign entityGroups to <code>destination</code>.
-   * 
+   *
    * @param destination
    * @param entityGroups
    *          EntityGroups to assign.
@@ -1576,7 +1576,7 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Caller must hold lock on the passed <code>state</code> object.
-   * 
+   *
    * @param state
    * @param setOfflineInZK
    * @param forceNewPlan
@@ -1799,7 +1799,7 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Set entityGroup as OFFLINED up in zookeeper
-   * 
+   *
    * @param state
    * @return the version of the offline node if setting of the OFFLINE node was
    *         successful, -1 otherwise.
@@ -1908,7 +1908,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * Unassign the list of entityGroups. Configuration knobs:
    * wasp.bulk.waitbetween.reopen indicates the number of milliseconds to wait
    * before unassigning another entityGroup from this entityGroup server
-   * 
+   *
    * @param entityGroups
    * @throws InterruptedException
    */
@@ -1945,7 +1945,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * back and parent is revivified?
    * <p>
    * If a EntityGroupPlan is already set, it will remain.
-   * 
+   *
    * @param entityGroup
    *          server to be unassigned
    */
@@ -1963,7 +1963,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * back and parent is revivified?
    * <p>
    * If a EntityGroupPlan is already set, it will remain.
-   * 
+   *
    * @param entityGroup
    *          server to be unassigned
    * @param force
@@ -2060,7 +2060,7 @@ public class AssignmentManager extends ZooKeeperListener {
   }
 
   /**
-   * 
+   *
    * @param entityGroup
    *          entityGroupinfo of znode to be deleted.
    */
@@ -2092,9 +2092,9 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * @param path
    * @return True if znode is in SPLIT or SPLITTING state.
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           Can happen if the znode went away in meantime.
-   * @throws DeserializationException
+   * @throws com.alibaba.wasp.DeserializationException
    */
   private boolean isSplitOrSplitting(final String path) throws KeeperException,
       DeserializationException {
@@ -2121,7 +2121,7 @@ public class AssignmentManager extends ZooKeeperListener {
    * <p>
    * If the entityGroup is already assigned, returns immediately. Otherwise,
    * method blocks until the entityGroup is assigned.
-   * 
+   *
    * @param entityGroupInfo
    *          entityGroup to wait on assignment for
    * @throws InterruptedException
@@ -2142,9 +2142,9 @@ public class AssignmentManager extends ZooKeeperListener {
    * <p>
    * This is a synchronous call and will return once every entityGroup has been
    * assigned. If anything fails, an exception is thrown
-   * 
+   *
    * @throws InterruptedException
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void assign(Map<EntityGroupInfo, ServerName> entityGroups)
       throws IOException, InterruptedException {
@@ -2174,9 +2174,9 @@ public class AssignmentManager extends ZooKeeperListener {
    * <p>
    * This is a synchronous call and will return once every entityGroup has been
    * assigned. If anything fails, an exception is thrown
-   * 
+   *
    * @throws InterruptedException
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void assign(List<EntityGroupInfo> entityGroups) throws IOException,
       InterruptedException {
@@ -2208,10 +2208,10 @@ public class AssignmentManager extends ZooKeeperListener {
    * This is a synchronous call and will return once every entityGroup has been
    * assigned. If anything fails, an exception is thrown and the cluster should
    * be shutdown.
-   * 
+   *
    * @throws InterruptedException
-   * @throws IOException
-   * @throws KeeperException
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException
    */
   private void assignAllUserEntityGroups() throws IOException,
       InterruptedException, KeeperException {
@@ -2257,7 +2257,7 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Wait until no entityGroups in transition.
-   * 
+   *
    * @param timeout
    *          How long to wait.
    * @return True if nothing in entityGroups in transition.
@@ -2289,10 +2289,10 @@ public class AssignmentManager extends ZooKeeperListener {
    * <p>
    * Returns a map of servers that are not found to be online and the
    * entityGroups they were hosting.
-   * 
+   *
    * @return map of servers not online to their assigned entityGroups, as stored
    *         in META
-   * @throws IOException
+   * @throws java.io.IOException
    */
   Map<ServerName, List<EntityGroupInfo>> rebuildUserEntityGroups()
       throws IOException, KeeperException {
@@ -2394,10 +2394,10 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * Recover the tables that were not fully moved to DISABLED state. These
    * tables are in DISABLING state when the master restarted/switched.
-   * 
-   * @throws KeeperException
-   * @throws TableNotFoundException
-   * @throws IOException
+   *
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws com.alibaba.wasp.TableNotFoundException
+   * @throws java.io.IOException
    */
   private void recoverTableInDisablingState() throws KeeperException,
       TableNotFoundException, IOException {
@@ -2417,10 +2417,10 @@ public class AssignmentManager extends ZooKeeperListener {
   /**
    * Recover the tables that are not fully moved to ENABLED state. These tables
    * are in ENABLING state when the master restarted/switched
-   * 
-   * @throws KeeperException
-   * @throws TableNotFoundException
-   * @throws IOException
+   *
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws com.alibaba.wasp.TableNotFoundException
+   * @throws java.io.IOException
    */
   private void recoverTableInEnablingState() throws KeeperException,
       TableNotFoundException, IOException {
@@ -2446,14 +2446,14 @@ public class AssignmentManager extends ZooKeeperListener {
    * EntityGroupServers which failed while there was no active master or
    * entityGroups that were in EGIT.
    * <p>
-   * 
+   *
    * @param deadServers
    *          The list of dead servers which failed while there was no active
    *          master. Can be null.
    * @param nodes
    *          The entityGroups in EGIT
-   * @throws IOException
-   * @throws KeeperException
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException
    */
   private void processDeadServersAndRecoverLostEntityGroups(
       Map<ServerName, List<EntityGroupInfo>> deadServers, List<String> nodes)
@@ -2527,10 +2527,10 @@ public class AssignmentManager extends ZooKeeperListener {
 
   /**
    * Wait on entityGroup to clear entityGroups-in-transition.
-   * 
+   *
    * @param egInfo
    *          EntityGroup to wait on.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void waitOnEntityGroupToClearEntityGroupsInTransition(
       final EntityGroupInfo egInfo) throws IOException, InterruptedException {
@@ -2591,10 +2591,10 @@ public class AssignmentManager extends ZooKeeperListener {
      * Creates a periodic monitor to check for time outs on entityGroup
      * transition operations. This will deal with retries if for some reason
      * something doesn't happen within the specified timeout.
-     * 
+     *
      * @param period
      * @param stopper
-     *          When {@link Stoppable#isStopped()} is true, this thread will
+     *          When {@link org.apache.hadoop.hbase.Stoppable#isStopped()} is true, this thread will
      *          cleanup and exit cleanly.
      * @param timeout
      */

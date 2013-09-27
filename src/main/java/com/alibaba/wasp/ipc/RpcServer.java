@@ -19,12 +19,11 @@
 
 package com.alibaba.wasp.ipc;
 
+import com.alibaba.wasp.protobuf.generated.RPCProtos;
+import com.google.protobuf.Message;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
-import com.alibaba.wasp.protobuf.generated.RPCProtos;import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcRequestBody;
-
-import com.google.protobuf.Message;
 
 public interface RpcServer {
   /** The port this server runs on. */
@@ -48,7 +47,7 @@ public interface RpcServer {
    *           e
    */
   Message call(Class<? extends VersionedProtocol> protocol,
-      RPCProtos.RpcRequestBody param, long receiveTime) throws IOException;
+               RPCProtos.RpcRequestBody param, long receiveTime) throws IOException;
 
   InetSocketAddress getListenerAddress();
 

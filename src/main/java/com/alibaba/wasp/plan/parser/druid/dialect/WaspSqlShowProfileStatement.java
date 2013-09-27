@@ -17,11 +17,11 @@
  */
 package com.alibaba.wasp.plan.parser.druid.dialect;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlStatementImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -39,9 +39,9 @@ public class WaspSqlShowProfileStatement extends MySqlStatementImpl {
 
   private List<Type>        types            = new ArrayList<Type>();
 
-  private SQLExpr           forQuery;
+  private SQLExpr forQuery;
 
-  private Limit             limit;
+  private Limit limit;
 
   public List<Type> getTypes() {
       return types;

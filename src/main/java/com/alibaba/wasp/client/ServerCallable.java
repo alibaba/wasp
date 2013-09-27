@@ -20,16 +20,19 @@
 
 package com.alibaba.wasp.client;
 
-import com.alibaba.wasp.EntityGroupLocation;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.EntityGroupLocation;
+import com.alibaba.wasp.FConstants;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.DoNotRetryIOException;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.ipc.RemoteException;
-import com.alibaba.wasp.EntityGroupLocation;
-import com.alibaba.wasp.FConstants;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -87,7 +90,7 @@ public abstract class ServerCallable<T> implements Callable<T> {
 
   /**
    * Connect to the server hosting entityGroup with row from table name.
-   * 
+   *
    * @param reload
    *          Set this to true if connection should re-find the entityGroup
    * @throws java.io.IOException
@@ -162,6 +165,11 @@ public abstract class ServerCallable<T> implements Callable<T> {
             getConnection().clearCaches(egl.getHostnamePort());
           }
         }
+
+        if(t instanceof RuntimeException) {
+          throw new RuntimeException(t);
+        }
+
         RetriesExhaustedException.ThrowableWithExtraContext qt = new RetriesExhaustedException.ThrowableWithExtraContext(
             t, System.currentTimeMillis(), toString());
         exceptions.add(qt);
@@ -223,6 +231,39 @@ public abstract class ServerCallable<T> implements Callable<T> {
     if (t instanceof DoNotRetryIOException) {
       throw (DoNotRetryIOException) t;
     }
+    if(t instanceof IOException) {
+      RuntimeException runtimeException = unwrapRuntimeException(t);
+      if(runtimeException != null) {
+        return runtimeException;
+      }
+    }
     return t;
+  }
+
+  private static RuntimeException unwrapRuntimeException(Throwable t) {
+    if(StringUtils.isNotEmpty(t.getMessage())) {
+      try {
+        Class exceptionClass = Class.forName(t.getMessage());
+        Constructor cn = exceptionClass.getConstructor(String.class);
+        cn.setAccessible(true);
+        String firstLine = t.getMessage();
+
+        Object ex = cn.newInstance(firstLine);
+        if(ex instanceof RuntimeException) {
+          return (RuntimeException)ex;
+        }
+      } catch (ClassNotFoundException e) {
+        //ignore
+      } catch (NoSuchMethodException e) {
+        //ignore
+      } catch (InvocationTargetException e) {
+        //ignore
+      } catch (InstantiationException e) {
+        //ignore
+      } catch (IllegalAccessException e) {
+        //ignore
+      }
+    }
+    return null;
   }
 }

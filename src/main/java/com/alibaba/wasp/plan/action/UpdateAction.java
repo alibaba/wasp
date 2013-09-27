@@ -19,21 +19,21 @@
  */
 package com.alibaba.wasp.plan.action;
 
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.messagequeue.Message;import com.alibaba.wasp.protobuf.generated.MetaProtos;import com.google.protobuf.ByteString;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.messagequeue.Message;
 import com.alibaba.wasp.messagequeue.MessageID;
 import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
+import com.google.protobuf.ByteString;
 
 import java.util.Arrays;
 
-public class UpdateAction extends PrimaryAction implements Message {
+public class UpdateAction extends PrimaryAction implements Message,DMLAction {
 
   // ///////////////// used for message //////////////
   private boolean isCommited = false;
   private MessageID messageId;
+  private String sessionId;
 
   // ///////////////// used for message //////////////
 
@@ -74,15 +74,24 @@ public class UpdateAction extends PrimaryAction implements Message {
     this.isCommited = isCommited;
   }
 
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  public void setSessionId(String sessionId) {
+    this.sessionId = sessionId;
+  }
+
   /**
    * Convert UpdateActionProto to UpdateAction.
    * 
-   * @param proto
+   * @param updateActionProto
    * @return
    */
   public static UpdateAction convert(MetaProtos.UpdateActionProto updateActionProto) {
     UpdateAction action = new UpdateAction(updateActionProto.getTableName(),
         updateActionProto.getPrimayKey().toByteArray());
+    action.setSessionId(updateActionProto.getSessionId());
     for (MetaProtos.ColumnStructProto col : updateActionProto.getColsList()) {
       action.addEntityColumn(col.getTableName(), col.getFamilyName(),
           col.getColumnName(), DataType.convertDataTypeProtosToDataType(col
@@ -101,14 +110,20 @@ public class UpdateAction extends PrimaryAction implements Message {
     MetaProtos.UpdateActionProto.Builder builder = MetaProtos.UpdateActionProto.newBuilder();
     builder.setTableName(action.getFTableName());
     builder.setPrimayKey(ByteString.copyFrom(action.getCombinedPrimaryKey()));
+    builder.setSessionId(action.getSessionId());
     for (ColumnStruct col : action.getColumns()) {
       builder.addCols(ProtobufUtil.toColumnStructProto(col));
     }
     return builder.build();
   }
 
+  @Override
+  public String getTableName() {
+    return fTableName;
+  }
+
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

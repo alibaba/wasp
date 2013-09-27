@@ -17,6 +17,13 @@
  */
 package com.alibaba.wasp.master;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.Server;
+import com.alibaba.wasp.ServerName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,13 +34,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.Server;import com.alibaba.wasp.ServerName;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.Server;
-import com.alibaba.wasp.ServerName;
 
 
 /**

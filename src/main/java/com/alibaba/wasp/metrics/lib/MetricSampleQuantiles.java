@@ -224,7 +224,7 @@ public class MetricSampleQuantiles {
    * Get a snapshot of the current values of all the tracked quantiles.
    * 
    * @return snapshot of the tracked quantiles
-   * @throws IOException if no items have been added to the estimator
+   * @throws java.io.IOException if no items have been added to the estimator
    */
   synchronized public Map<MetricQuantile, Long> snapshot() throws IOException {
     // flush the buffer first for best results

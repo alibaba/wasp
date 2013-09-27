@@ -17,10 +17,10 @@
  */
 package com.alibaba.wasp.client;
 
+import com.alibaba.wasp.ReadModel;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Abortable;
 import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.ReadModel;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -42,6 +42,16 @@ public interface FClientInterface extends Closeable, Abortable {
   public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(String sql, ReadModel mode, int fetchSize)
       throws IOException;
 
+   /**
+   * Execute sql.
+   *
+   * @param sql
+   *
+   * @return List<ExecuteResult>
+   */
+  public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(String sql, ReadModel mode, int fetchSize, String sessionId)
+      throws IOException;
+
   /**
    * Execute sql.
    *
@@ -52,18 +62,38 @@ public interface FClientInterface extends Closeable, Abortable {
   public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(String sql)
       throws IOException;
 
+   /**
+   * Execute sql.
+   *
+   * @param sql
+   *
+   * @return List<ExecuteResult>
+   */
+  public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(String sql, String sessionId)
+      throws IOException;
+
+  /**
+   * Execute Transaction sqls.
+   *
+   * @param sqls
+   *
+   * @return List<ExecuteResult>
+   */
+  public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(List<String> sqls, String sessionId)
+      throws IOException;
+
   /**
    * Next result.
    * 
    * @param sessionId
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public Pair<String, Pair<Boolean, List<ExecuteResult>>> next(String sessionId)
       throws IOException;
 
   /**
-   * Returns the {@link Configuration} object used by this instance.
+   * Returns the {@link org.apache.hadoop.conf.Configuration} object used by this instance.
    * <p>
    * The reference returned is not a copy, so any change made to it will affect
    * this instance.

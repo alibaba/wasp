@@ -17,8 +17,6 @@
  */
 package com.alibaba.wasp.plan.parser.druid.dialect;
 
-import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement.TableCategory;
-
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
 import com.alibaba.druid.sql.ast.statement.SQLCreateTableStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
@@ -28,6 +26,7 @@ import com.alibaba.druid.sql.dialect.mysql.parser.MySqlSelectParser;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.SQLExprParser;
 import com.alibaba.druid.sql.parser.Token;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlCreateTableStatement.TableCategory;
 
 /**
  * Create table dialect.

@@ -18,11 +18,11 @@
  */
 package com.alibaba.wasp.zookeeper;
 
+import com.alibaba.wasp.conf.WaspConfiguration;
+import org.apache.hadoop.conf.Configuration;
+
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import com.alibaba.wasp.conf.WaspConfiguration;import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.conf.WaspConfiguration;
 
 /**
  * Tool for reading ZooKeeper servers from Wasp XML configuration and producing

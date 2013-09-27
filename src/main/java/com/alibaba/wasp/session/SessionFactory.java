@@ -17,7 +17,7 @@
  */
 package com.alibaba.wasp.session;
 
-import com.alibaba.wasp.jdbc.ConnectionInfo;import com.alibaba.wasp.jdbc.ConnectionInfo;
+import com.alibaba.wasp.jdbc.ConnectionInfo;
 import com.alibaba.wasp.security.User;
 
 import java.sql.SQLException;
@@ -35,23 +35,23 @@ public class SessionFactory {
    * @param user
    * @return
    */
-  public static Session createSession(String sessionId, User user) {
-    return new Session(user, sessionId);
+  public static ExecutionEngineSession createExecutionEngineSession(String sessionId, User user) {
+    return new ExecutionEngineSession(user, sessionId);
   }
 
-  public static QuerySession createQuerySession(){
-    return new QuerySession();
+  public static ExecuteSession createExecuteSession(){
+    return new ExecuteSession();
   }
 
   /**
-   * Return session used by jdbc.
+   * Return session used by jdbc connection.
    * 
    * @param ci
    * @return
-   * @throws SQLException
+   * @throws java.sql.SQLException
    */
-  public static RemoteSession createSession(ConnectionInfo ci)
+  public static ConnectionSession createConnectionSession(ConnectionInfo ci)
       throws SQLException {
-    return new RemoteSession(ci);
+    return new ConnectionSession(ci);
   }
 }

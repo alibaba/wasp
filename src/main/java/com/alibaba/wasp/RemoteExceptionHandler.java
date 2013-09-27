@@ -19,9 +19,9 @@
  */
 package com.alibaba.wasp;
 
-import java.io.IOException;
-
 import org.apache.hadoop.ipc.RemoteException;
+
+import java.io.IOException;
 
 /**
  * An immutable class which contains a static method for handling
@@ -35,9 +35,9 @@ public class RemoteExceptionHandler {
 
   /**
    * Examine passed Throwable. See if its carrying a RemoteException. If so, run
-   * {@link #decodeRemoteException(RemoteException)} on it. Otherwise, pass back
+   * {@link #decodeRemoteException(org.apache.hadoop.ipc.RemoteException)} on it. Otherwise, pass back
    * <code>t</code> unaltered.
-   * 
+   *
    * @param t
    *          Throwable to examine.
    * @return Decoded RemoteException carried by <code>t</code> or <code>t</code>
@@ -57,7 +57,7 @@ public class RemoteExceptionHandler {
 
   /**
    * Examine passed IOException. See if its carrying a RemoteException. If so,
-   * run {@link #decodeRemoteException(RemoteException)} on it. Otherwise, pass
+   * run {@link #decodeRemoteException(org.apache.hadoop.ipc.RemoteException)} on it. Otherwise, pass
    * back <code>e</code> unaltered.
    * 
    * @param e

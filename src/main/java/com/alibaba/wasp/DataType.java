@@ -17,16 +17,6 @@
  */
 package com.alibaba.wasp;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
-
-import com.alibaba.wasp.jdbc.value.ValueByte;import com.alibaba.wasp.jdbc.value.ValueLong;import com.alibaba.wasp.session.SessionInterface;import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.jdbc.JdbcException;
 import com.alibaba.wasp.jdbc.value.Value;
 import com.alibaba.wasp.jdbc.value.ValueBoolean;
@@ -49,6 +39,16 @@ import com.alibaba.wasp.plan.parser.UnsupportedException;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.DataTypeProtos;
 import com.alibaba.wasp.session.SessionInterface;
 import com.alibaba.wasp.util.New;
+import org.apache.hadoop.hbase.util.Bytes;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Wasp's based data model.

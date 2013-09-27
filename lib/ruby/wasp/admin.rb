@@ -50,7 +50,7 @@ module Wasp
 
     # Execute a query
     def executeQuery(sql_sentence,args = {})
-      @formatter.format(@stat, sql_sentence)
+      @formatter.format(@conn.createStatement(), sql_sentence)
     end
 
     #----------------------------------------------------------------------------------------------
@@ -252,6 +252,18 @@ module Wasp
     # Is table enabled
     def enabled?(table_name)
       @admin.isTableEnabled(table_name)
+    end
+
+    #----------------------------------------------------------------------------------------------
+    # UnlockTable table
+    def unlock_table(table_name)
+      @admin.unlockTable(table_name)
+    end
+
+    #----------------------------------------------------------------------------------------------
+    # Set Table State
+    def set_table_state(table_name, state)
+      @admin.setTableState(table_name, state)
     end
 
     #----------------------------------------------------------------------------------------------

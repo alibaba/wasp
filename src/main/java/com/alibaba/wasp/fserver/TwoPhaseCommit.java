@@ -17,18 +17,18 @@
  */
 package com.alibaba.wasp.fserver;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.messagequeue.Message;import com.alibaba.wasp.messagequeue.MessageID;import com.alibaba.wasp.messagequeue.Publisher;import com.alibaba.wasp.plan.action.Action;import com.alibaba.wasp.storage.StorageActionManager;import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.messagequeue.Message;
 import com.alibaba.wasp.messagequeue.MessageID;
 import com.alibaba.wasp.messagequeue.Publisher;
 import com.alibaba.wasp.plan.action.Action;
 import com.alibaba.wasp.storage.StorageActionManager;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * TwoPhaseCommit is implemention of TwoPhaseCommitProtocol,it will be used by
@@ -76,7 +76,7 @@ public class TwoPhaseCommit implements TwoPhaseCommitProtocol {
   }
 
   /**
-   * 
+   *
    * @see TwoPhaseCommitProtocol#commit()
    */
   @Override
@@ -91,8 +91,8 @@ public class TwoPhaseCommit implements TwoPhaseCommitProtocol {
   }
 
   /**
-   * 
-   * @see TwoPhaseCommitProtocol#preCommit()
+   *
+   * @see TwoPhaseCommitProtocol#prepare()
    */
   @Override
   public boolean prepare() {
@@ -104,7 +104,7 @@ public class TwoPhaseCommit implements TwoPhaseCommitProtocol {
       for (Action action : entry.getValue()) {
         try {
           List<MessageID> messages = preparedMessage.get(entityGroupName);
-          if (messages != null) {
+          if (messages == null) {
             messages = new ArrayList<MessageID>();
           }
           messages.add(pub.doAsynchronous((Message) action));
@@ -118,7 +118,7 @@ public class TwoPhaseCommit implements TwoPhaseCommitProtocol {
   }
 
   /**
-   * 
+   *
    * @see TwoPhaseCommitProtocol#submit(java.util.Map)
    */
   @Override

@@ -17,9 +17,9 @@
  */
 package com.alibaba.wasp;
 
-import java.io.IOException;
-
 import org.apache.hadoop.hbase.util.Bytes;
+
+import java.io.IOException;
 
 public class MetaException extends IOException {
   private static final long serialVersionUID = 1L << 17 - 1L;

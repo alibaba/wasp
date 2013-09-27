@@ -19,11 +19,7 @@
  */
 package com.alibaba.wasp.plan.execute;
 
-import com.alibaba.wasp.EntityGroupLocation;import com.alibaba.wasp.UnknownSessionException;import com.alibaba.wasp.fserver.LeaseException;import com.alibaba.wasp.fserver.LeaseListener;import com.alibaba.wasp.fserver.TwoPhaseCommitProtocol;import com.alibaba.wasp.plan.GlobalQueryPlan;import com.alibaba.wasp.plan.InsertPlan;import com.alibaba.wasp.protobuf.ResponseConverter;import com.alibaba.wasp.protobuf.generated.ClientProtos;import com.alibaba.wasp.session.Session;import com.alibaba.wasp.session.SessionFactory;import com.google.protobuf.ServiceException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Pair;
+import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupLocation;
 import com.alibaba.wasp.FConstants;
@@ -34,6 +30,10 @@ import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.client.ClientProtocol;
 import com.alibaba.wasp.client.FConnection;
 import com.alibaba.wasp.client.FConnectionManager;
+import com.alibaba.wasp.coprocessor.DoubleColumnInterpreter;
+import com.alibaba.wasp.coprocessor.FloatColumnInterpreter;
+import com.alibaba.wasp.coprocessor.IntegerColumnInterpreter;
+import com.alibaba.wasp.coprocessor.WaspAggregationClient;
 import com.alibaba.wasp.fserver.FServer;
 import com.alibaba.wasp.fserver.FServerServices;
 import com.alibaba.wasp.fserver.LeaseException;
@@ -44,6 +44,10 @@ import com.alibaba.wasp.fserver.OperationStatus;
 import com.alibaba.wasp.fserver.TwoPhaseCommit;
 import com.alibaba.wasp.fserver.TwoPhaseCommitProtocol;
 import com.alibaba.wasp.meta.FTable;
+import com.alibaba.wasp.meta.Field;
+import com.alibaba.wasp.meta.StorageTableNameBuilder;
+import com.alibaba.wasp.plan.AggregateQueryPlan;
+import com.alibaba.wasp.plan.DMLTransactionPlan;
 import com.alibaba.wasp.plan.DQLPlan;
 import com.alibaba.wasp.plan.DeletePlan;
 import com.alibaba.wasp.plan.GlobalQueryPlan;
@@ -51,21 +55,34 @@ import com.alibaba.wasp.plan.InsertPlan;
 import com.alibaba.wasp.plan.LocalQueryPlan;
 import com.alibaba.wasp.plan.UpdatePlan;
 import com.alibaba.wasp.plan.action.Action;
+import com.alibaba.wasp.plan.action.ColumnStruct;
 import com.alibaba.wasp.plan.action.DeleteAction;
 import com.alibaba.wasp.plan.action.GetAction;
 import com.alibaba.wasp.plan.action.InsertAction;
 import com.alibaba.wasp.plan.action.ScanAction;
+import com.alibaba.wasp.plan.action.TransactionAction;
 import com.alibaba.wasp.plan.action.UpdateAction;
+import com.alibaba.wasp.plan.parser.AggregateInfo;
+import com.alibaba.wasp.plan.parser.AggregateInfo.AggregateType;
+import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.protobuf.RequestConverter;
 import com.alibaba.wasp.protobuf.ResponseConverter;
 import com.alibaba.wasp.protobuf.generated.ClientProtos;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ScanResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto;
-import com.alibaba.wasp.session.Session;
-import com.alibaba.wasp.session.Session.QueryExecutor;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
+import com.alibaba.wasp.session.ExecutionEngineSession;
 import com.alibaba.wasp.session.SessionFactory;
+import com.alibaba.wasp.util.ParserUtils;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.coprocessor.LongColumnInterpreter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -90,7 +107,7 @@ public class ExecutionEngine implements Execution, Closeable {
   private final FServer server;
 
   private Leases leases;
-  protected final ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<String, Session>();
+  protected final ConcurrentHashMap<String, ExecutionEngineSession> sessions = new ConcurrentHashMap<String, ExecutionEngineSession>();
   private final Random rand = new Random();
   private final FConnection connection;
   private final TwoPhaseCommitProtocol twoPhaseCommit;
@@ -134,7 +151,7 @@ public class ExecutionEngine implements Execution, Closeable {
       }
 
       Leases.Lease lease = null;
-      Session session = null;
+      ExecutionEngineSession session = null;
 
       boolean lastScan = false;
       if (StringUtils.isNotEmpty(sessionId)) {
@@ -153,11 +170,15 @@ public class ExecutionEngine implements Execution, Closeable {
           if (localQueryPlan.getScanAction() != null) {
             session.setExecutor(new LocalScanExecutor(localQueryPlan));
           } else if (localQueryPlan.getGetAction() != null) {
+            localQueryPlan.getGetAction().setSessionId(sessionName);
             session.setExecutor(new LocalGetExecutor(localQueryPlan));
           }
-        } else {
+        } else if (plan instanceof GlobalQueryPlan) {
           session.setExecutor(new GlobalQueryExecutor((GlobalQueryPlan) plan,
               server));
+        } else if (plan instanceof AggregateQueryPlan) {
+          session.setExecutor(new AggregateQueryExecutor(
+              (AggregateQueryPlan) plan, server));
         }
       }
 
@@ -181,16 +202,17 @@ public class ExecutionEngine implements Execution, Closeable {
                     new ArrayList<ClientProtos.QueryResultProto>(),
                     new ArrayList<ClientProtos.StringDataTypePair>())));
       } else {
-        Session.QueryExecutor executor = null;
+        ExecutionEngineSession.QueryExecutor executor = null;
         try {
           lease = leases.removeLease(sessionName);
-          executor = (Session.QueryExecutor) session.getExecutor();
+          executor = (ExecutionEngineSession.QueryExecutor) session
+              .getExecutor();
           results = executor.execute();
           lastScan = executor.isLastScan();
-           return new Pair<Boolean, Pair<String, Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>>>>(
-            lastScan,
-            new Pair<String, Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>>>(
-                sessionName, results));
+          return new Pair<Boolean, Pair<String, Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>>>>(
+              lastScan,
+              new Pair<String, Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>>>(
+                  sessionName, results));
         } finally {
           // We're done. On way out re-add the above removed lease.
           // Adding resets expiration time on lease.
@@ -214,17 +236,18 @@ public class ExecutionEngine implements Execution, Closeable {
     }
   }
 
-  private Session addSession() throws LeaseStillHeldException {
+  private ExecutionEngineSession addSession() throws LeaseStillHeldException {
     long sessionId = -1;
-    Session session;
+    ExecutionEngineSession session;
     while (true) {
       sessionId = rand.nextLong();
       if (sessionId == -1) {
         continue;
       }
       String sessionName = String.valueOf(sessionId);
-      session = SessionFactory.createSession(sessionName, null);
-      Session existing = sessions.putIfAbsent(sessionName, session);
+      session = SessionFactory.createExecutionEngineSession(sessionName, null);
+      ExecutionEngineSession existing = sessions.putIfAbsent(sessionName,
+          session);
       if (existing == null) {
         this.leases.createLease(sessionName, this.sessionLeaseTimeoutPeriod,
             new SessionListener(sessionName));
@@ -255,10 +278,10 @@ public class ExecutionEngine implements Execution, Closeable {
    * Execute UpdatePlan with some regular 1. when only have one Action in the
    * UpdatePlan. it will update without 2pc 2. If not 2pc. if the Action execute
    * on local EntityGroup. just call
-   * {@link FServer#update(byte[], com.alibaba.wasp.plan.action.UpdateAction)} ,
+   * {@link com.alibaba.wasp.fserver.FServer#update(byte[], com.alibaba.wasp.plan.action.UpdateAction)} ,
    * otherwise it needed process the action by RPC. 3. If 2pc. just call
-   * {@link TwoPhaseCommitProtocol#submit(java.util.Map)}
-   * 
+   * {@link com.alibaba.wasp.fserver.TwoPhaseCommitProtocol#submit(java.util.Map)}
+   *
    * @param plan
    */
   @Override
@@ -314,7 +337,7 @@ public class ExecutionEngine implements Execution, Closeable {
   /**
    * for 2pc, the Actions in the same EntityGroup will be in the identity
    * submit.
-   * 
+   *
    * @param actions
    * @return
    */
@@ -338,10 +361,10 @@ public class ExecutionEngine implements Execution, Closeable {
    * Execute InsertPlan with some regular 1. when only have one Action in the
    * InsertPlan. it will insert without 2pc 2. If not 2pc. if the Action execute
    * on local EntityGroup. just call
-   * {@link FServer#insert(byte[], com.alibaba.wasp.plan.action.InsertAction)} ,
+   * {@link com.alibaba.wasp.fserver.FServer#insert(byte[], com.alibaba.wasp.plan.action.InsertAction)} ,
    * otherwise it needed process the action by RPC. 3. If 2pc. just call
-   * {@link TwoPhaseCommitProtocol#submit(java.util.Map)}
-   * 
+   * {@link com.alibaba.wasp.fserver.TwoPhaseCommitProtocol#submit(java.util.Map)}
+   *
    * @param plan
    * @return
    */
@@ -400,9 +423,9 @@ public class ExecutionEngine implements Execution, Closeable {
    * Execute DeletePlan with some regular 1. when only have one Action in the
    * DeletePlan. it will delete without 2pc 2. If not 2pc. if the Action execute
    * on local EntityGroup. just call
-   * {@link FServer#delete(byte[], com.alibaba.wasp.plan.action.DeleteAction)} ,
+   * {@link com.alibaba.wasp.fserver.FServer#delete(byte[], com.alibaba.wasp.plan.action.DeleteAction)} ,
    * otherwise it needed process the action by RPC. 3. If 2pc. just call
-   * {@link TwoPhaseCommitProtocol#submit(java.util.Map)}
+   * {@link com.alibaba.wasp.fserver.TwoPhaseCommitProtocol#submit(java.util.Map)}
    * 
    * @param plan
    * @return
@@ -458,8 +481,53 @@ public class ExecutionEngine implements Execution, Closeable {
   }
 
   @Override
+  public List<ClientProtos.WriteResultProto> execDMLTransactionPlans(
+      DMLTransactionPlan plan) throws ServiceException {
+    List<ClientProtos.WriteResultProto> writeResultProtos = new ArrayList<ClientProtos.WriteResultProto>();
+    List<TransactionAction> actions = plan.getActions();
+    if (actions.size() == 1) {
+      TransactionAction action = actions.get(0);
+      EntityGroupInfo entityGroupInfo = action.getEntityGroupLocation()
+          .getEntityGroupInfo();
+      ServerName serverName = new ServerName(action.getEntityGroupLocation()
+          .getHostname(), action.getEntityGroupLocation().getPort(),
+          ServerName.NON_STARTCODE);
+      try {
+        if (workingOnLocalServer(server, serverName)) {
+          ClientProtos.TransactionResponse response = server.transaction(
+              entityGroupInfo.getEntityGroupName(), action);
+          writeResultProtos.add(response.getResult());
+        } else {
+          ClientProtocol clientProtocol = connection.getClient(
+              serverName.getHostname(), serverName.getPort());
+          ClientProtos.TransactionResponse response = clientProtocol
+              .transaction(null,
+                  RequestConverter.buildTransactionRequest(action));
+          writeResultProtos.add(response.getResult());
+        }
+      } catch (ServiceException e) {
+        if (e.getCause() != null && e.getCause() instanceof IOException) {
+          connection.clearCaches(serverName.getHostAndPort());
+        }
+        throw e;
+      } catch (Exception e) {
+        if (e instanceof IOException) {
+          connection.clearCaches(serverName.getHostAndPort());
+        }
+        throw new ServiceException(e);
+      }
+    } else {
+      // TODO
+    }
+
+    LOG.debug("execDMLPlans:" + plan.toString() + ",SUCCESS:"
+        + writeResultProtos.size());
+    return writeResultProtos;
+  }
+
+  @Override
   public void close() throws IOException {
-    if(connection != null) {
+    if (connection != null) {
       connection.close();
     }
   }
@@ -476,7 +544,7 @@ public class ExecutionEngine implements Execution, Closeable {
     }
 
     public void leaseExpired() {
-      Session s = sessions.remove(this.sessionName);
+      ExecutionEngineSession s = sessions.remove(this.sessionName);
       if (s != null) {
         LOG.info("Session " + this.sessionName + " lease expired.");
         try {
@@ -494,7 +562,8 @@ public class ExecutionEngine implements Execution, Closeable {
   /**
    * Global query plan executor.
    */
-  private class GlobalQueryExecutor implements Session.QueryExecutor {
+  private class GlobalQueryExecutor implements
+      ExecutionEngineSession.QueryExecutor {
 
     private boolean lastScan = false;
 
@@ -524,7 +593,8 @@ public class ExecutionEngine implements Execution, Closeable {
     public GlobalQueryExecutor(GlobalQueryPlan plan, FServer server) {
       this.plan = plan;
       this.fetchSize = this.plan.getFetchRows();
-      this.queryResultProtos = new ArrayList<ClientProtos.QueryResultProto>(this.fetchSize);
+      this.queryResultProtos = new ArrayList<ClientProtos.QueryResultProto>(
+          this.fetchSize);
       this.nameDataTypePairs = new ArrayList<ClientProtos.StringDataTypePair>();
       this.resultList = new ArrayList<ClientProtos.QueryResultProto>();
       this.server = server;
@@ -533,7 +603,7 @@ public class ExecutionEngine implements Execution, Closeable {
     }
 
     /**
-     * @see com.alibaba.wasp.session.Session.Executor#execute()
+     * @see com.alibaba.wasp.session.ExecutionEngineSession.Executor#execute()
      */
     @Override
     public Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>> execute()
@@ -590,16 +660,16 @@ public class ExecutionEngine implements Execution, Closeable {
     }
 
     /**
-     * @see com.alibaba.wasp.session.Session.Executor#close()
+     * @see com.alibaba.wasp.session.ExecutionEngineSession.Executor#close()
      */
     @Override
     public void close() throws IOException {
       if (closed) {
         return;
       } else {
-//        queryResultProtos.clear();
-//        nameDataTypePairs.clear();
-//        resultList.clear();
+        // queryResultProtos.clear();
+        // nameDataTypePairs.clear();
+        // resultList.clear();
         if (scannerId != -1) {
           try {
             server.scan(null, plan.getAction(), true, scannerId, true, true,
@@ -614,7 +684,172 @@ public class ExecutionEngine implements Execution, Closeable {
     }
 
     /**
-     * @see com.alibaba.wasp.session.Session.QueryExecutor#isLastScan()
+     * @see com.alibaba.wasp.session.ExecutionEngineSession.QueryExecutor#isLastScan()
+     */
+    @Override
+    public boolean isLastScan() {
+      return lastScan;
+    }
+  }
+
+  /**
+   * Aggregate query plan executor.
+   */
+  private class AggregateQueryExecutor implements
+      ExecutionEngineSession.QueryExecutor {
+
+    private boolean lastScan = true;
+
+    private final FTable tableDesc;
+
+    private final AggregateQueryPlan plan;
+
+    private final List<ClientProtos.QueryResultProto> queryResultProtos;
+
+    private final List<ClientProtos.StringDataTypePair> nameDataTypePairs;
+
+    private final FServer server;
+
+    private boolean closed = true;
+
+    private final WaspAggregationClient aggregationClient;
+
+    /**
+     * @param plan
+     */
+    public AggregateQueryExecutor(AggregateQueryPlan plan, FServer server) {
+      this.plan = plan;
+      this.queryResultProtos = new ArrayList<ClientProtos.QueryResultProto>();
+      this.nameDataTypePairs = new ArrayList<ClientProtos.StringDataTypePair>();
+      this.server = server;
+      this.tableDesc = plan.getTableDesc();
+      this.aggregationClient = new WaspAggregationClient(server.getConfiguration());
+    }
+
+    /**
+     * @see com.alibaba.wasp.session.ExecutionEngineSession.Executor#execute()
+     */
+    @Override
+    public Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>> execute()
+        throws ServiceException {
+      queryResultProtos.clear();
+      nameDataTypePairs.clear();
+      ScanAction action = plan.getAction();
+      List<ColumnStruct> columnStructs = action.getNotIndexConditionColumns();
+      AggregateInfo info = plan.getQueryInfo().getAggregateInfo();
+      Scan scan = new Scan();
+
+      scan.addColumn(Bytes.toBytes(info.getField().getFamily()),
+          Bytes.toBytes(info.getField().getName()));
+
+      for (ColumnStruct col : columnStructs) {
+        if(info.getField().getFamily().equals(col.getFamilyName())
+            && info.getField().getName().equals(col.getColumnName())) {
+          continue;
+        }
+        scan.addColumn(Bytes.toBytes(col.getFamilyName()),
+            Bytes.toBytes(col.getColumnName()));
+      }
+
+      FilterList filters = new FilterList();
+      // Filter columnNotNullFilter = new SingleColumnValueFilter(
+      // Bytes.toBytes(info.getField().getFamily()),
+      // Bytes.toBytes(info.getField().getName()),
+      // CompareFilter.CompareOp.NOT_EQUAL,
+      // HConstants.EMPTY_BYTE_ARRAY
+      // );
+      for (ColumnStruct columnStruct : columnStructs) {
+        SingleColumnValueFilter filter = new SingleColumnValueFilter(
+            Bytes.toBytes(columnStruct.getFamilyName()),
+            Bytes.toBytes(columnStruct.getColumnName()),
+            ParserUtils.convertIntValueToCompareOp(columnStruct.getCompareOp()),
+            columnStruct.getValue());
+        filters.addFilter(filter);
+      }
+      scan.setFilter(filters);
+
+      String tableName =  StorageTableNameBuilder.buildEntityTableName(plan.getTableDesc().getTableName());
+
+      AggregateType type = info.getAggregateType();
+
+      byte[] value = null;
+      DataType resultDataType = DataType.STRING;
+
+      try {
+        switch (type) {
+          case COUNT: {
+            long count = aggregationClient.count(Bytes.toBytes(tableName),
+                null, scan);
+            value = Bytes.toBytes(count);
+            resultDataType = DataType.INT64;
+            break;
+          }
+          case SUM: {
+            value = getSumValue(tableName, info.getField(), scan);
+            resultDataType = info.getField().getType();
+            break;
+          }
+        }
+      } catch (Throwable throwable) {
+        throw new ServiceException(throwable);
+      }
+
+      ClientProtos.QueryResultProto.Builder builder = ClientProtos.QueryResultProto.newBuilder();
+            builder.addResult(ProtobufUtil.toStringBytesPair(new KeyValue(Bytes.toBytes(type.getMethodName()),
+                Bytes.toBytes(info.getField().getFamily()), Bytes.toBytes(type.getMethodName()), value)));
+            queryResultProtos.add(builder.build());
+
+      MetaProtos.DataTypeProtos dataTypeProtos = DataType.convertDataTypeToDataTypeProtos(resultDataType) ;
+            ClientProtos.StringDataTypePair.Builder stringDataTypePairBuilder = ClientProtos.StringDataTypePair
+              .newBuilder();
+      stringDataTypePairBuilder.setDataType(dataTypeProtos);
+      stringDataTypePairBuilder.setName(type.getMethodName());
+      nameDataTypePairs.add(stringDataTypePairBuilder.build());
+
+      return new Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>>(
+          queryResultProtos, nameDataTypePairs);
+    }
+
+    private byte[] getSumValue(String tableName, Field field, Scan scan) throws Throwable {
+      switch (field.getType()) {
+        case INT32: {
+          Integer sum = aggregationClient
+                    .sum(Bytes.toBytes(tableName), new IntegerColumnInterpreter(),
+                        scan, Bytes.toBytes(field.getName()));
+          return Bytes.toBytes(sum == null ? 0 : sum.intValue());
+        }
+        case INT64: {
+          Long sum = aggregationClient
+                    .sum(Bytes.toBytes(tableName), new LongColumnInterpreter(),
+                        scan, Bytes.toBytes(field.getName()));
+          return Bytes.toBytes(sum == null ? 0 : sum.longValue());
+        }
+        case FLOAT: {
+          Float sum = aggregationClient
+                    .sum(Bytes.toBytes(tableName), new FloatColumnInterpreter(),
+                        scan, Bytes.toBytes(field.getName()));
+          return Bytes.toBytes(sum == null ? 0 : sum.floatValue());
+        }
+        case DOUBLE: {
+          Double sum = aggregationClient
+                    .sum(Bytes.toBytes(tableName), new DoubleColumnInterpreter(),
+                        scan, Bytes.toBytes(field.getName()));
+          return Bytes.toBytes(sum == null ? 0 : sum.doubleValue());
+        }
+      }
+      return null;
+    }
+
+    /**
+     * @see com.alibaba.wasp.session.ExecutionEngineSession.Executor#close()
+     */
+    @Override
+    public void close() throws IOException {
+      closed = true;
+    }
+
+    /**
+     * @see com.alibaba.wasp.session.ExecutionEngineSession.QueryExecutor#isLastScan()
      */
     @Override
     public boolean isLastScan() {
@@ -625,7 +860,8 @@ public class ExecutionEngine implements Execution, Closeable {
   /**
    * Local query plan executor.
    */
-  private class LocalScanExecutor implements Session.QueryExecutor {
+  private class LocalScanExecutor implements
+      ExecutionEngineSession.QueryExecutor {
 
     private boolean closed = false;
 
@@ -655,7 +891,8 @@ public class ExecutionEngine implements Execution, Closeable {
     public LocalScanExecutor(LocalQueryPlan plan) {
       this.plan = plan;
       this.fetchSize = this.plan.getFetchRows();
-      this.queryResultProtos = new ArrayList<ClientProtos.QueryResultProto>(this.fetchSize);
+      this.queryResultProtos = new ArrayList<ClientProtos.QueryResultProto>(
+          this.fetchSize);
       this.nameDataTypePairs = new ArrayList<ClientProtos.StringDataTypePair>();
       this.resultList = new ArrayList<ClientProtos.QueryResultProto>();
       this.limit = this.plan.getScanAction().getLimit();
@@ -666,7 +903,6 @@ public class ExecutionEngine implements Execution, Closeable {
         throws ServiceException {
       try {
         queryResultProtos.clear();
-
         ScanAction action = plan.getScanAction();
         EntityGroupLocation entityGroupLocation = action
             .getEntityGroupLocation();
@@ -694,7 +930,6 @@ public class ExecutionEngine implements Execution, Closeable {
             nameDataTypePairs.addAll(response.getMetaList());
           }
           resultList.addAll(response.getResultList());
-
           if (limit != -1) {
             queryResultProtos.addAll(resultList);
             resultList.clear();
@@ -763,9 +998,9 @@ public class ExecutionEngine implements Execution, Closeable {
         return;
       } else {
         if (localScan) {
-//          queryResultProtos.clear();
-//          nameDataTypePairs.clear();
-//          resultList.clear();
+          // queryResultProtos.clear();
+          // nameDataTypePairs.clear();
+          // resultList.clear();
           try {
             server.scan(null, null, true, scannerId, true);
           } catch (ServiceException e) {
@@ -790,7 +1025,8 @@ public class ExecutionEngine implements Execution, Closeable {
   /**
    * Local query plan executor.
    */
-  private class LocalGetExecutor implements Session.QueryExecutor {
+  private class LocalGetExecutor implements
+      ExecutionEngineSession.QueryExecutor {
 
     private final LocalQueryPlan plan;
 
@@ -853,8 +1089,8 @@ public class ExecutionEngine implements Execution, Closeable {
      */
     @Override
     public void close() throws IOException {
-//      queryResultProtos.clear();
-//      nameDataTypePairs.clear();
+      // queryResultProtos.clear();
+      // nameDataTypePairs.clear();
     }
 
     @Override

@@ -19,11 +19,11 @@
  */
 package com.alibaba.wasp.meta;
 
-import com.alibaba.wasp.MetaException;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.MetaException;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.MetaException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -186,6 +186,17 @@ public class TableSchemaCacheReader extends AbstractMetaService implements
     return tableIndexes.get(compositeName);
   }
 
+  public List<Index> leftMatchIndexsByComposite(String tableName, String compositeName) {
+    ConcurrentHashMap<String, List<Index>> tableIndexes = compositeIndex
+        .get(tableName);
+    for (String indexName : tableIndexes.keySet()) {
+      if(indexName.startsWith(compositeName)) {
+        return tableIndexes.get(indexName);
+      }
+    }
+    return null;
+  }
+
   public Set<Index> getIndexsByField(String tableName, String column) {
     List<Index> indexsByKeyField = this.getIndexsByKeyField(tableName, column);
     List<Index> indexsByStoringField = this.getIndexsByStoringField(tableName,
@@ -249,4 +260,5 @@ public class TableSchemaCacheReader extends AbstractMetaService implements
   public void setConf(Configuration conf) {
     this.conf = conf;
   }
+
 }

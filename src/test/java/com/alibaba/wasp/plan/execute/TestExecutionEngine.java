@@ -17,14 +17,6 @@
  */
 package com.alibaba.wasp.plan.execute;
 
-import com.alibaba.wasp.WaspTestingUtility;import com.alibaba.wasp.protobuf.generated.ClientProtos;import com.google.protobuf.ServiceException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.util.ReflectionUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.WaspTestingUtility;
@@ -39,10 +31,19 @@ import com.alibaba.wasp.plan.UpdatePlan;
 import com.alibaba.wasp.plan.parser.ParseContext;
 import com.alibaba.wasp.plan.parser.Parser;
 import com.alibaba.wasp.plan.parser.WaspParser;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
+import com.alibaba.wasp.protobuf.generated.ClientProtos;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
+import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto;
 import com.alibaba.wasp.util.ResultInHBasePrinter;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
+import org.apache.hadoop.util.ReflectionUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.server.NIOServerCnxn;
 import org.apache.zookeeper.server.PrepRequestProcessor;
@@ -123,7 +124,7 @@ public class TestExecutionEngine {
     parser.generatePlan(context);
 
     InsertPlan plan = (InsertPlan) context.getPlan();
-    List<ClientProtos.WriteResultProto> writeResultProtos = engine.execInsertPlan(plan);
+    List<WriteResultProto> writeResultProtos = engine.execInsertPlan(plan);
     assertTrue(writeResultProtos.size() == 1);
 
     for (ClientProtos.WriteResultProto writeResultProto : writeResultProtos) {
@@ -139,13 +140,13 @@ public class TestExecutionEngine {
   }
 
   /**
-   * 
+   *
    * @param sql
    *          the columns -> value Map
    * @param exits
    *          if exits the target by PK. if test delete. it will be false, and
    *          query result is null
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   private void testExecQueryPlan(String sql, boolean exits)
       throws ServiceException, IOException {
@@ -159,7 +160,7 @@ public class TestExecutionEngine {
 
     LocalQueryPlan plan = (LocalQueryPlan) context.getPlan();
 
-    Pair<Boolean, Pair<String, Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>>>> rets = engine
+    Pair<Boolean, Pair<String, Pair<List<QueryResultProto>, List<StringDataTypePair>>>> rets = engine
         .execQueryPlan(plan, "", false);
     if (!exits) {
       assertTrue(rets.getSecond().getSecond().getFirst().size() == 0);
@@ -186,7 +187,7 @@ public class TestExecutionEngine {
     parser.generatePlan(context);
 
     UpdatePlan plan = (UpdatePlan) context.getPlan();
-    List<ClientProtos.WriteResultProto> writeResultProtos = engine.execUpdatePlan(plan);
+    List<WriteResultProto> writeResultProtos = engine.execUpdatePlan(plan);
     assertTrue(writeResultProtos.size() == 1);
 
     for (ClientProtos.WriteResultProto writeResultProto : writeResultProtos) {
@@ -208,7 +209,7 @@ public class TestExecutionEngine {
     parser.generatePlan(context);
 
     DeletePlan plan = (DeletePlan) context.getPlan();
-    List<ClientProtos.WriteResultProto> writeResultProtos = engine.execDeletePlan(plan);
+    List<WriteResultProto> writeResultProtos = engine.execDeletePlan(plan);
     assertTrue(writeResultProtos.size() == 1);
 
     for (ClientProtos.WriteResultProto writeResultProto : writeResultProtos) {

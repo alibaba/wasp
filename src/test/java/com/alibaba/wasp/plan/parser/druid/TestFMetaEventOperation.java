@@ -17,13 +17,12 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.alibaba.wasp.ZooKeeperConnectionException;import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.meta.FMetaTestUtil;import com.alibaba.wasp.meta.Index;import com.alibaba.wasp.meta.MemFMetaStore;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
+import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.statement.SQLSelect;
+import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
+import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
+import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.wasp.MetaException;
 import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.conf.WaspConfiguration;
@@ -34,15 +33,15 @@ import com.alibaba.wasp.meta.MemFMetaStore;
 import com.alibaba.wasp.meta.TableSchemaCacheReader;
 import com.alibaba.wasp.plan.parser.ParseContext;
 import com.alibaba.wasp.plan.parser.QueryInfo;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestFMetaEventOperation {
 
@@ -99,7 +98,7 @@ public class TestFMetaEventOperation {
             SQLExpr where = sqlSelectQueryBlock.getWhere();
             LOG.debug("SELECT SQL:where " + where);
             QueryInfo queryInfo = druidParser.parseWhereClause(table,
-                metaEventOperation, where);
+                metaEventOperation, where, false);
             Index index = metaEventOperation.checkAndGetIndex(table,
                 queryInfo.getAllConditionFieldName());
             // Get the right Index

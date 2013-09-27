@@ -17,14 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.NotAllChildTableDisableException;
 import com.alibaba.wasp.Server;
@@ -41,8 +33,16 @@ import com.alibaba.wasp.master.FServerManager;
 import com.alibaba.wasp.master.TableLockManager;
 import com.alibaba.wasp.meta.FMetaReader;
 import com.alibaba.wasp.meta.FTable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 import org.cloudera.htrace.Trace;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Handler to run disable of a table.
@@ -53,6 +53,7 @@ public class DisableTableHandler extends EventHandler {
   private final String tableNameStr;
   private final AssignmentManager assignmentManager;
   private TableLockManager tableLockManager;
+  private FTable ftable;
 
   public DisableTableHandler(Server server,
       AssignmentManager assignmentManager, byte[] tableName,
@@ -62,6 +63,7 @@ public class DisableTableHandler extends EventHandler {
     this.tableName = tableName;
     this.tableNameStr = Bytes.toString(this.tableName);
     this.assignmentManager = assignmentManager;
+    this.ftable = FMetaReader.getTable(server.getConfiguration(), tableNameStr);
 
     // Check if table exists
     // do we want to keep this in-memory as well? i guess this is
@@ -70,6 +72,27 @@ public class DisableTableHandler extends EventHandler {
     if (!FMetaReader.tableExists(server.getConfiguration(), this.tableNameStr)) {
       throw new TableNotFoundException(tableNameStr);
     }
+
+    // Check all child table are disabled
+    if(ftable.isRootTable()) {
+      List<FTable> childs = FMetaReader.getChildTable(
+          server.getConfiguration(), tableNameStr);
+      if (childs != null && childs.size() > 0) {
+        Set<String> disableTables = this.assignmentManager.getZKTable()
+            .getDisabledTables();
+        StringBuilder tableNames = new StringBuilder();
+        for (FTable child : childs) {
+          if (!disableTables.contains(child.getTableName())) {
+            tableNames.append(child.getTableName()).append(",");
+          }
+        }
+        if (tableNames.length() > 0) {
+          throw new NotAllChildTableDisableException(tableNames.toString()
+              .replaceAll("$,", ""));
+        }
+      }
+    }
+
     // There could be multiple client requests trying to disable or enable
     // the table at the same time. Ensure only the first request is honored
     // After that, no other requests can be accepted until the table reaches
@@ -108,6 +131,7 @@ public class DisableTableHandler extends EventHandler {
       handleDisableTable();
     } catch (IOException e) {
       LOG.error("Error trying to disable table " + this.tableNameStr, e);
+      throw e;
     } catch (KeeperException e) {
       LOG.error("Error trying to disable table " + this.tableNameStr, e);
     } finally {
@@ -116,32 +140,16 @@ public class DisableTableHandler extends EventHandler {
   }
 
   private void handleDisableTable() throws IOException, KeeperException {
-    // Set table disabling flag up in zk.
-    this.assignmentManager.getZKTable().setDisablingTable(this.tableNameStr);
     boolean done = false;
-    FTable ftable = FMetaReader.getTable(server.getConfiguration(),
-        tableNameStr);
     // Child Table
     if (ftable.isChildTable()) {
       done = true;
     } else {
-      List<FTable> childs = FMetaReader.getChildTable(
-          server.getConfiguration(), tableNameStr);
-      if (childs != null && childs.size() > 0) {
-        Set<String> disableTables = this.assignmentManager.getZKTable()
-            .getDisabledTables();
-        StringBuilder tableNames = new StringBuilder();
-        for (FTable child : childs) {
-          if (!disableTables.contains(child.getTableName())) {
-            tableNames.append(child.getTableName()).append(",");
-          }
-        }
-        if (tableNames.length() > 0) {
-          throw new NotAllChildTableDisableException(tableNames.toString()
-              .replaceAll("$,", ""));
-        }
-      }
+
     }
+    // Set table disabling flag up in zk.
+    this.assignmentManager.getZKTable().setDisablingTable(this.tableNameStr);
+
     while (true) {
       if (done) {
         break;

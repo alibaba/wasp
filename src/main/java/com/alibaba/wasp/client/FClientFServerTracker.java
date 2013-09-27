@@ -17,14 +17,14 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.zookeeper.FServerTracker;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
 import org.apache.zookeeper.KeeperException;
+
+import java.io.IOException;
+import java.util.List;
 
 public class FClientFServerTracker extends FServerTracker {
 

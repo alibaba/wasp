@@ -19,10 +19,10 @@
  */
 package com.alibaba.wasp.plan.operator;
 
+import com.alibaba.wasp.util.Node;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.alibaba.wasp.util.Node;import com.alibaba.wasp.util.Node;
 
 /**
  * Basic Operator.

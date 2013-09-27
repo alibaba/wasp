@@ -18,13 +18,13 @@
 
 package com.alibaba.wasp.meta;
 
-import java.io.IOException;
-import java.util.List;
-
-import com.alibaba.wasp.ServerName;import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.MetaException;
 import com.alibaba.wasp.ServerName;
+import org.apache.hadoop.conf.Configuration;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Writes entityGroup and assignment information to <code>.FMETA.</code>.
@@ -54,7 +54,7 @@ public class FMetaEditor extends AbstractMetaService {
    * 
    * @param parent
    *          Parent row we're to remove daughter reference from
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static void deleteDaughtersReferencesInParent(
       final Configuration conf, final EntityGroupInfo parent)
@@ -65,7 +65,7 @@ public class FMetaEditor extends AbstractMetaService {
   /**
    * @param conf
    * @param egInfo
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void addEntityGroupToMeta(final Configuration conf,
       final EntityGroupInfo egInfo) throws MetaException {
@@ -73,10 +73,10 @@ public class FMetaEditor extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param egInfos
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void addEntityGroupsToMeta(final Configuration conf,
       final List<EntityGroupInfo> egInfos) throws MetaException {
@@ -85,7 +85,7 @@ public class FMetaEditor extends AbstractMetaService {
 
   /**
    * @param table
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void createTable(final Configuration conf, final FTable table)
       throws MetaException {
@@ -93,11 +93,11 @@ public class FMetaEditor extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param tableNameStr
    * @param newTable
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void alterTable(final Configuration conf,
       final String tableNameStr, final FTable newTable) throws MetaException {
@@ -106,11 +106,11 @@ public class FMetaEditor extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param tableNameStr
    * @param index
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void addIndex(final Configuration conf,
       final String tableNameStr, final Index index) throws MetaException {
@@ -118,10 +118,10 @@ public class FMetaEditor extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param entityGroupInfo
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void deleteEntityGroup(final Configuration conf,
       final EntityGroupInfo entityGroupInfo) throws MetaException {
@@ -129,7 +129,7 @@ public class FMetaEditor extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param tableNameStr
    */
@@ -139,11 +139,11 @@ public class FMetaEditor extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param tableName
    * @param index
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void deleteIndex(final Configuration conf,
       final String tableName, final Index index) throws MetaException {
@@ -151,10 +151,10 @@ public class FMetaEditor extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param deleteStorageTable
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void deleteStorageTable(final Configuration conf,
       String deleteStorageTable) throws MetaException {

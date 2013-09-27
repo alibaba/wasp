@@ -40,7 +40,7 @@ public class CreateIndexPlan extends DDLPlan {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

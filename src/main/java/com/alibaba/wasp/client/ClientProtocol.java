@@ -19,21 +19,6 @@ package com.alibaba.wasp.client;
 
 import com.alibaba.wasp.ipc.VersionedProtocol;
 import com.alibaba.wasp.protobuf.generated.ClientProtos;
-import com.alibaba.wasp.ipc.VersionedProtocol;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ClientService;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.GetRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.GetResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.InsertRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.InsertResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ScanRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ScanResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateResponse;
-
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
 
@@ -53,7 +38,7 @@ public interface ClientProtocol extends ClientProtos.ClientService.BlockingInter
    */
   @Override
   public ClientProtos.ExecuteResponse execute(RpcController controller,
-      ClientProtos.ExecuteRequest request) throws ServiceException;
+                                              ClientProtos.ExecuteRequest request) throws ServiceException;
 
   /**
    * @see com.alibaba.wasp.protobuf.generated.ClientProtos.ClientService.BlockingInterface#get(com.google.protobuf.RpcController,

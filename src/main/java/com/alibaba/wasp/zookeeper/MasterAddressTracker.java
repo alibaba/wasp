@@ -17,13 +17,13 @@
  */
 package com.alibaba.wasp.zookeeper;
 
-import java.io.IOException;
-
-import org.apache.hadoop.hbase.Abortable;
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.ServerName;
+import org.apache.hadoop.hbase.Abortable;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
+
+import java.io.IOException;
 
 /**
  * Manages the location of the current active FMaster for the FServer.
@@ -50,7 +50,7 @@ public class MasterAddressTracker extends ZooKeeperNodeTracker {
    * This constructor does not trigger any actions, you must call methods
    * explicitly. Normally you will just want to execute {@link #start()} to
    * begin tracking of the master address.
-   * 
+   *
    * @param watcher
    *          zk reference and watcher
    * @param abortable
@@ -63,7 +63,7 @@ public class MasterAddressTracker extends ZooKeeperNodeTracker {
   /**
    * Get the address of the current master if one is available. Returns null if
    * no current master.
-   * 
+   *
    * @return Server name or null if timed out.
    */
   public ServerName getMasterAddress() {
@@ -74,7 +74,7 @@ public class MasterAddressTracker extends ZooKeeperNodeTracker {
    * Get the address of the current master if one is available. Returns null if
    * no current master. If refresh is set, try to load the data from ZK again,
    * otherwise, cached data will be used.
-   * 
+   *
    * @param refresh
    *          whether to refresh the data by calling ZK directly.
    * @return Server name or null if timed out.
@@ -91,13 +91,13 @@ public class MasterAddressTracker extends ZooKeeperNodeTracker {
   /**
    * Get master address. Use this instead of {@link #getMasterAddress()} if you
    * do not have an instance of this tracker in your context.
-   * 
+   *
    * @param zkw
    *          ZooKeeperWatcher to use
    * @return ServerName stored in the the master address znode or null if no
    *         znode present.
-   * @throws KeeperException
-   * @throws IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    */
   public static ServerName getMasterAddress(final ZooKeeperWatcher zkw)
       throws KeeperException, IOException {
@@ -119,7 +119,7 @@ public class MasterAddressTracker extends ZooKeeperNodeTracker {
    * Set master address into the <code>master</code> znode or into the backup
    * subdirectory of backup masters; switch off the passed in <code>znode</code>
    * path.
-   * 
+   *
    * @param zkw
    *          The ZooKeeperWatcher to use.
    * @param znode
@@ -128,7 +128,7 @@ public class MasterAddressTracker extends ZooKeeperNodeTracker {
    * @param master
    *          ServerName of the current master
    * @return true if node created, false if not; a watch is set in both cases
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static boolean setMasterAddress(final ZooKeeperWatcher zkw,
       final String znode, final ServerName master) throws KeeperException {

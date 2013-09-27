@@ -18,18 +18,18 @@
  */
 package com.alibaba.wasp.master;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.Server;
+import com.alibaba.wasp.ServerName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.classification.InterfaceAudience;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.classification.InterfaceAudience;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.Server;
-import com.alibaba.wasp.ServerName;
 
 /**
  * Performs bulk reopen of the list of entityGroups provided to it.

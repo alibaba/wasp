@@ -20,7 +20,7 @@
 package com.alibaba.wasp.plan.operator;
 
 
-public class InsertOperator extends Operator{
+public class InsertOperator extends Operator {
 
   @Override
   public String getName() {

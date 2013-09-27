@@ -17,9 +17,6 @@
  */
 package com.alibaba.wasp.jdbc.result;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.ClientConcernedException;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.FConstants;
@@ -30,9 +27,12 @@ import com.alibaba.wasp.fserver.OperationStatus;
 import com.alibaba.wasp.jdbc.JdbcException;
 import com.alibaba.wasp.jdbc.value.Value;
 import com.alibaba.wasp.jdbc.value.ValueInt;
-import com.alibaba.wasp.session.QuerySession;
+import com.alibaba.wasp.session.ExecuteSession;
 import com.alibaba.wasp.util.New;
 import com.alibaba.wasp.util.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Pair;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -53,7 +53,7 @@ public class ResultRemote implements ResultInterface {
   private Log log = LogFactory.getLog(ResultRemote.class);
 
   private int fetchSize;
-  private QuerySession session;
+  private ExecuteSession session;
   private int id;
   // private final ResultColumn[] columns;
   private Value[] currentRow;
@@ -73,9 +73,14 @@ public class ResultRemote implements ResultInterface {
 
   private transient boolean isClose;
 
-  public ResultRemote(FClient fClient, QuerySession session,
+  private transient boolean isTransaction;
+
+  private List<String> sqls;
+
+
+  public ResultRemote(FClient fClient, ExecuteSession session,
       ResultTransfer transfer, String sql, int id, int fetchSize,
-      boolean isExecuteQuery, ReadModel readModel) throws IOException,
+      boolean isExecuteQuery, ReadModel readModel, boolean isTransaction, List<String> sqls) throws IOException,
       SQLException {
     this.session = session;
     this.id = id;
@@ -86,13 +91,21 @@ public class ResultRemote implements ResultInterface {
     this.sql = sql;
     this.fClient = fClient;
     this.isExecuteQuery = isExecuteQuery;
+    this.isTransaction = isTransaction;
+    this.sqls = sqls;
     fetchRows(false);
   }
 
-  public ResultRemote(FClient fClient, QuerySession session,
+  public ResultRemote(FClient fClient, ExecuteSession session,
       ResultTransfer transfer, String sql, ReadModel readModel)
       throws IOException, SQLException {
-    this(fClient, session, transfer, sql, 0, 0, false, readModel);
+    this(fClient, session, transfer, sql, 0, 0, false, readModel, false, null);
+  }
+
+  public ResultRemote(FClient fClient, ExecuteSession session,
+      ResultTransfer transfer, List<String> sqls, boolean isTransaction)
+      throws IOException, SQLException {
+    this(fClient, session, transfer, null, 0, 0, false, null, isTransaction, sqls);
   }
 
   private static void mapColumn(HashMap<Integer, String> map, String label,
@@ -141,6 +154,15 @@ public class ResultRemote implements ResultInterface {
   @Override
   public boolean isQuery() {
     return this.isQuery || this.isExecuteQuery;
+  }
+
+  @Override
+  public String getSessionId() {
+    if(session != null) {
+      return session.getSessionId();
+    } else {
+      return null;
+    }
   }
 
   @Override
@@ -223,14 +245,22 @@ public class ResultRemote implements ResultInterface {
       int fetch = Math.min(fetchSize, rowCount - rowOffset);
       Pair<String, Pair<Boolean, List<ExecuteResult>>> pair = null;
       try {
-        if (rowOffset == 0 && rowOffset < fetchSize
-            && session.getSessionId() == null) {
-          pair = fClient.execute(sql, ReadModel.CURRENT, fetchSize);
-          session.setSessionId(pair.getFirst());
-        } else if (rowOffset < fetch && session.getSessionId() != null) {
-          pair = fClient.next(session.getSessionId());
-        } else if (!isExecuteQuery) {
-          pair = fClient.execute(sql);
+        if(!isTransaction) {
+          if (rowOffset == 0 && rowOffset < fetchSize
+              && session.getSessionId() == null) {
+            pair = fClient.execute(sql, ReadModel.CURRENT, fetchSize);
+            session.setSessionId(pair.getFirst());
+          } else if (rowOffset < fetch && session.getSessionId() != null) {
+            pair = fClient.next(session.getSessionId());
+          } else if (!isExecuteQuery) {
+            pair = fClient.execute(sql, session.getSessionId());
+          }
+        } else {
+          if(isExecuteQuery) {
+            pair = fClient.execute(sql, ReadModel.CURRENT, fetchSize);
+          } else {
+            pair = fClient.execute(sqls, session.getSessionId());
+          }
         }
       } catch (IOException ioe) {
         if (ioe instanceof ClientConcernedException) {

@@ -18,25 +18,24 @@
  */
 package com.alibaba.wasp.zookeeper;
 
+import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.zookeeper.KeeperException;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.alibaba.wasp.master.AssignmentManager;
-import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos;
-import org.apache.zookeeper.KeeperException;
-
 /**
- * Helper class for table state tracking for use by {@link AssignmentManager}.
+ * Helper class for table state tracking for use by {@link com.alibaba.wasp.master.AssignmentManager}.
  * Reads, caches and sets state up in zookeeper. If multiple read/write clients,
  * will make for confusion. Read-only clients other than AssignmentManager
  * interested in learning table state can use the read-only utility methods in
  * {@link ZKTableReadOnly}.
- * 
+ *
  * <p>
  * To save on trips to the zookeeper ensemble, internally we cache table state.
  */
@@ -69,8 +68,8 @@ public class ZKTable {
 
   /**
    * Gets a list of all the tables set as disabled in zookeeper.
-   * 
-   * @throws KeeperException
+   *
+   * @throws org.apache.zookeeper.KeeperException
    */
   private void populateTableStates() throws KeeperException {
     synchronized (this.cache) {
@@ -90,9 +89,9 @@ public class ZKTable {
   /**
    * Sets the specified table as DISABLED in zookeeper. Fails silently if the
    * table is already disabled in zookeeper. Sets no watches.
-   * 
+   *
    * @param tableName
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zookeeper exception
    */
   public void setDisabledTable(String tableName) throws KeeperException {
@@ -108,9 +107,9 @@ public class ZKTable {
   /**
    * Sets the specified table as DISABLING in zookeeper. Fails silently if the
    * table is already disabled in zookeeper. Sets no watches.
-   * 
+   *
    * @param tableName
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zookeeper exception
    */
   public void setDisablingTable(final String tableName) throws KeeperException {
@@ -126,9 +125,9 @@ public class ZKTable {
   /**
    * Sets the specified table as ENABLING in zookeeper. Fails silently if the
    * table is already disabled in zookeeper. Sets no watches.
-   * 
+   *
    * @param tableName
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zookeeper exception
    */
   public void setEnablingTable(final String tableName) throws KeeperException {
@@ -144,10 +143,10 @@ public class ZKTable {
   /**
    * Sets the specified table as ENABLING in zookeeper atomically If the table
    * is already in ENABLING state, no operation is performed
-   * 
+   *
    * @param tableName
    * @return if the operation succeeds or not
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zookeeper exception
    */
   public boolean checkAndSetEnablingTable(final String tableName)
@@ -164,10 +163,10 @@ public class ZKTable {
   /**
    * Sets the specified table as ENABLING in zookeeper atomically If the table
    * isn't in DISABLED state, no operation is performed
-   * 
+   *
    * @param tableName
    * @return if the operation succeeds or not
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zookeeper exception
    */
   public boolean checkDisabledAndSetEnablingTable(final String tableName)
@@ -184,10 +183,10 @@ public class ZKTable {
   /**
    * Sets the specified table as DISABLING in zookeeper atomically If the table
    * isn't in ENABLED state, no operation is performed
-   * 
+   *
    * @param tableName
    * @return if the operation succeeds or not
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zookeeper exception
    */
   public boolean checkEnabledAndSetDisablingTable(final String tableName)
@@ -268,9 +267,9 @@ public class ZKTable {
   /**
    * Deletes the table in zookeeper. Fails silently if the table is not
    * currently disabled in zookeeper. Sets no watches.
-   * 
+   *
    * @param tableName
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zookeeper exception
    */
   public void setDeletedTable(final String tableName) throws KeeperException {
@@ -287,9 +286,9 @@ public class ZKTable {
   /**
    * Sets the ENABLED state in the cache and creates or force updates a node to
    * ENABLED state for the specified table
-   * 
+   *
    * @param tableName
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public void setEnabledTable(final String tableName) throws KeeperException {
     setTableState(tableName, ZooKeeperProtos.Table.State.ENABLED);
@@ -297,7 +296,7 @@ public class ZKTable {
 
   /**
    * check if table is present .
-   * 
+   *
    * @param tableName
    * @return true if the table is present
    */
@@ -310,7 +309,7 @@ public class ZKTable {
 
   /**
    * Gets a list of all the tables set as disabled in zookeeper.
-   * 
+   *
    * @return Set of disabled tables, empty Set if none
    */
   public Set<String> getDisabledTables() {
@@ -327,9 +326,9 @@ public class ZKTable {
 
   /**
    * Gets a list of all the tables set as disabled in zookeeper.
-   * 
+   *
    * @return Set of disabled tables, empty Set if none
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static Set<String> getDisabledTables(ZooKeeperWatcher zkw)
       throws KeeperException {
@@ -338,9 +337,9 @@ public class ZKTable {
 
   /**
    * Gets a list of all the tables set as disabling in zookeeper.
-   * 
+   *
    * @return Set of disabling tables, empty Set if none
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static Set<String> getDisablingTables(ZooKeeperWatcher zkw)
       throws KeeperException {
@@ -349,9 +348,9 @@ public class ZKTable {
 
   /**
    * Gets a list of all the tables set as enabling in zookeeper.
-   * 
+   *
    * @return Set of enabling tables, empty Set if none
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static Set<String> getEnablingTables(ZooKeeperWatcher zkw)
       throws KeeperException {
@@ -360,9 +359,9 @@ public class ZKTable {
 
   /**
    * Gets a list of all the tables set as disabled in zookeeper.
-   * 
+   *
    * @return Set of disabled tables, empty Set if none
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static Set<String> getDisabledOrDisablingTables(ZooKeeperWatcher zkw)
       throws KeeperException {
@@ -372,9 +371,9 @@ public class ZKTable {
 
   /**
    * Gets a list of all the tables of specified states in zookeeper.
-   * 
+   *
    * @return Set of tables of specified states, empty Set if none
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   static Set<String> getAllTables(final ZooKeeperWatcher zkw,
       final ZooKeeperProtos.Table.State... states) throws KeeperException {

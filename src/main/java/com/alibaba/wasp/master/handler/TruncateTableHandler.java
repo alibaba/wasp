@@ -17,16 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import com.alibaba.wasp.master.AssignmentManager;import com.alibaba.wasp.meta.Index;import com.alibaba.wasp.meta.StorageTableNameBuilder;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.TableLockedException;
 import com.alibaba.wasp.TableNotDisabledException;
@@ -41,9 +31,18 @@ import com.alibaba.wasp.meta.FMetaServices;
 import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.meta.Index;
 import com.alibaba.wasp.meta.StorageTableNameBuilder;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 
-import com.google.protobuf.ServiceException;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Handler to truncate a table.

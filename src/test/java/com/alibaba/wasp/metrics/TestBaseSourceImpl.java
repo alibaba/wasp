@@ -18,12 +18,14 @@
  */
 package com.alibaba.wasp.metrics;
 
-import static org.junit.Assert.*;
-
 import org.apache.hadoop.metrics2.lib.MetricMutableCounterLong;
 import org.apache.hadoop.metrics2.lib.MetricMutableGaugeLong;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Test of the default BaseSource implementation

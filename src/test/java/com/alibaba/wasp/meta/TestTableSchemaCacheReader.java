@@ -17,17 +17,16 @@
  */
 package com.alibaba.wasp.meta;
 
-import java.util.Set;
-
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.MetaException;
 import com.alibaba.wasp.conf.WaspConfiguration;
+import com.google.protobuf.ServiceException;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.protobuf.ServiceException;
+import java.util.Set;
 
 public class TestTableSchemaCacheReader {
 

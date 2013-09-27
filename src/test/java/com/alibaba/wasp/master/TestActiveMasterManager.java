@@ -18,17 +18,6 @@
  */
 package com.alibaba.wasp.master;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.util.concurrent.Semaphore;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HConstants;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.ServerName;
@@ -39,11 +28,22 @@ import com.alibaba.wasp.zookeeper.MasterAddressTracker;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperListener;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.zookeeper.KeeperException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+import java.util.concurrent.Semaphore;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestActiveMasterManager {
   private final static Log LOG = LogFactory
@@ -192,8 +192,8 @@ public class TestActiveMasterManager {
    * Assert there is an active master and that it has the specified address.
    * @param zk
    * @param thisMasterAddress
-   * @throws KeeperException
-   * @throws IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    */
   private void assertMaster(ZooKeeperWatcher zk, ServerName expectedAddress)
       throws KeeperException, IOException {

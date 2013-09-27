@@ -17,18 +17,18 @@
  */
 package com.alibaba.wasp;
 
-import java.io.Closeable;
-import java.io.IOException;
-
+import com.alibaba.wasp.client.ClientProtocol;
+import com.alibaba.wasp.fserver.AdminProtocol;
+import com.alibaba.wasp.master.FMasterAdminProtocol;
+import com.alibaba.wasp.master.FMasterMonitorProtocol;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.util.Threads;
-import com.alibaba.wasp.client.ClientProtocol;
-import com.alibaba.wasp.fserver.AdminProtocol;
-import com.alibaba.wasp.master.FMasterAdminProtocol;
-import com.alibaba.wasp.master.FMasterMonitorProtocol;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * This class defines methods that can help with managing Wasp clusters from
@@ -92,12 +92,12 @@ public abstract class WaspCluster implements Closeable, Configurable {
   }
 
   /**
-   * Returns an {@link FMasterAdminProtocol} to the active master
+   * Returns an {@link com.alibaba.wasp.master.FMasterAdminProtocol} to the active master
    */
   public abstract FMasterAdminProtocol getMasterAdmin() throws IOException;
 
   /**
-   * Returns an {@link FMasterMonitorProtocol} to the active master
+   * Returns an {@link com.alibaba.wasp.master.FMasterMonitorProtocol} to the active master
    */
   public abstract FMasterMonitorProtocol getMasterMonitor() throws IOException;
 
@@ -116,10 +116,10 @@ public abstract class WaspCluster implements Closeable, Configurable {
   /**
    * Starts a new fserver on the given hostname or if this is a mini/local
    * cluster, starts a fserver locally.
-   * 
+   *
    * @param hostname
    *          the hostname to start the fserver on
-   * @throws IOException
+   * @throws java.io.IOException
    *           if something goes wrong
    */
   public abstract void startFServer(String hostname) throws IOException;
@@ -127,26 +127,26 @@ public abstract class WaspCluster implements Closeable, Configurable {
   /**
    * Kills the fserver process if this is a distributed cluster, otherwise this
    * causes the fserver to exit doing basic clean up only.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    *           if something goes wrong
    */
   public abstract void killFServer(ServerName serverName) throws IOException;
 
   /**
    * Stops the given fserver, by attempting a gradual stop.
-   * 
+   *
    * @return whether the operation finished with success
-   * @throws IOException
+   * @throws java.io.IOException
    *           if something goes wrong
    */
   public abstract void stopFServer(ServerName serverName) throws IOException;
 
   /**
    * Wait for the specified fserver to join the cluster
-   * 
+   *
    * @return whether the operation finished with success
-   * @throws IOException
+   * @throws java.io.IOException
    *           if something goes wrong or timeout occurs
    */
   public void waitForFServerToStart(String hostname, long timeout)
@@ -166,9 +166,9 @@ public abstract class WaspCluster implements Closeable, Configurable {
 
   /**
    * Wait for the specified fserver to stop the thread / process.
-   * 
+   *
    * @return whether the operation finished with success
-   * @throws IOException
+   * @throws java.io.IOException
    *           if something goes wrong or timeout occurs
    */
   public abstract void waitForFServerToStop(ServerName serverName, long timeout)
@@ -177,11 +177,11 @@ public abstract class WaspCluster implements Closeable, Configurable {
   /**
    * Starts a new master on the given hostname or if this is a mini/local
    * cluster, starts a master locally.
-   * 
+   *
    * @param hostname
    *          the hostname to start the master on
    * @return whether the operation finished with success
-   * @throws IOException
+   * @throws java.io.IOException
    *           if something goes wrong
    */
   public abstract void startMaster(String hostname) throws IOException;
@@ -189,24 +189,24 @@ public abstract class WaspCluster implements Closeable, Configurable {
   /**
    * Kills the master process if this is a distributed cluster, otherwise, this
    * causes master to exit doing basic clean up only.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    *           if something goes wrong
    */
   public abstract void killMaster(ServerName serverName) throws IOException;
 
   /**
    * Stops the given master, by attempting a gradual stop.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    *           if something goes wrong
    */
   public abstract void stopMaster(ServerName serverName) throws IOException;
 
   /**
    * Wait for the specified master to stop the thread / process.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    *           if something goes wrong or timeout occurs
    */
   public abstract void waitForMasterToStop(ServerName serverName, long timeout)
@@ -215,10 +215,10 @@ public abstract class WaspCluster implements Closeable, Configurable {
   /**
    * Blocks until there is an active master and that master has completed
    * initialization.
-   * 
+   *
    * @return true if an active master becomes available. false if there are no
    *         masters left.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if something goes wrong or timeout occurs
    */
   public boolean waitForActiveAndReadyMaster() throws IOException {

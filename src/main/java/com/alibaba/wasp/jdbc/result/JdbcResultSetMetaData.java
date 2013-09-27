@@ -18,11 +18,11 @@
  */
 package com.alibaba.wasp.jdbc.result;
 
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-
 import com.alibaba.wasp.jdbc.JdbcException;
 import com.alibaba.wasp.util.MathUtils;
+
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /**
  * Represents the meta data for a ResultSet.

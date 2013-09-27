@@ -17,10 +17,6 @@
  */
 package com.alibaba.wasp.protobuf;
 
-import com.alibaba.wasp.protobuf.generated.ClientProtos;import com.alibaba.wasp.protobuf.generated.MasterAdminProtos;import com.google.protobuf.RpcController;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.util.StringUtils;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.ServerName;
@@ -28,16 +24,8 @@ import com.alibaba.wasp.fserver.OperationStatus;
 import com.alibaba.wasp.ipc.ServerRpcController;
 import com.alibaba.wasp.plan.action.ColumnStruct;
 import com.alibaba.wasp.protobuf.generated.ClientProtos;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResultProto;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResultProto.ResultType;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.GetResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.InsertResponse;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ScanResponse;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateResponse;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.StatusCode;
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEntityGroupResponse;
@@ -46,12 +34,13 @@ import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetServerInfoRespo
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupResponse;
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.ServerInfo;
 import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.SplitEntityGroupResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateIndexResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateTableResponse;
+import com.alibaba.wasp.protobuf.generated.MasterAdminProtos;
 import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.DeleteTableResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.DropIndexResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.ModifyTableResponse;
 import com.alibaba.wasp.protobuf.generated.MetaProtos;
+import com.google.protobuf.RpcController;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Pair;
+import org.apache.hadoop.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -189,7 +178,7 @@ public final class ResponseConverter {
           .toQeuryResultProto(result);
       builder.setResult(queryResultProto);
       builder.setExists(true);
-      List<ClientProtos.StringDataTypePair> StringDataTypePairs = buildStringDataTypePairs(columns);
+      List<StringDataTypePair> StringDataTypePairs = buildStringDataTypePairs(columns);
       for (ClientProtos.StringDataTypePair StringDataTypePair : StringDataTypePairs) {
         builder.addMeta(StringDataTypePair);
       }
@@ -209,7 +198,7 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a InsertResponse.
-   * 
+   *
    * @param status
    * @return
    */
@@ -222,7 +211,7 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a UpdateResponse.
-   * 
+   *
    * @param status
    * @return
    */
@@ -235,7 +224,7 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a DeleteResponse.
-   * 
+   *
    * @param status
    * @return
    */
@@ -247,14 +236,27 @@ public final class ResponseConverter {
   }
 
   /**
+   * A utility to build a TransactionResponse.
+   *
+   * @param status
+   * @return
+   */
+  public static ClientProtos.TransactionResponse buildTransactionResponse(OperationStatus status) {
+    ClientProtos.TransactionResponse.Builder builder = ClientProtos.TransactionResponse.newBuilder();
+    ClientProtos.WriteResultProto writeResultProto = ProtobufUtil.toWriteResultProto(status);
+    builder.setResult(writeResultProto);
+    return builder.build();
+  }
+
+  /**
    * A utility to build a ExecuteResponse.
-   * 
+   *
    * @param queryResults
    * @return
    */
   public static ClientProtos.ExecuteResponse buildExecuteResponse(boolean lastSacn,
       String sessionName,
-      Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>> queryResults) {
+      Pair<List<QueryResultProto>, List<StringDataTypePair>> queryResults) {
     ClientProtos.ExecuteResponse.Builder executeResponseBuilder = ClientProtos.ExecuteResponse
         .newBuilder();
     executeResponseBuilder.setSessionId(sessionName);
@@ -272,12 +274,12 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a ExecuteResponse.
-   * 
+   *
    * @param writeResults
    * @return
    */
   public static ClientProtos.ExecuteResponse buildExecuteResponse(
-      List<ClientProtos.WriteResultProto> writeResults) {
+      List<WriteResultProto> writeResults) {
     ClientProtos.ExecuteResponse.Builder executeResponseBuilder = ClientProtos.ExecuteResponse
         .newBuilder();
     for (ClientProtos.WriteResultProto writeResultProto : writeResults) {
@@ -292,7 +294,7 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a ExecuteResponse.
-   * 
+   *
    * @param response
    * @return
    */
@@ -303,7 +305,7 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a ExecuteResponse.
-   * 
+   *
    * @param response
    * @return
    */
@@ -314,7 +316,7 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a ExecuteResponse.
-   * 
+   *
    * @param response
    * @return
    */
@@ -324,12 +326,12 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a ExecuteResponse.It is same to buildExecuteResponse.
-   * 
+   *
    * @param responses
    * @return
    */
   public static ClientProtos.ExecuteResponse buildListExecuteResponse(
-      List<MasterAdminProtos.DeleteTableResponse> responses) {
+      List<DeleteTableResponse> responses) {
     ClientProtos.ExecuteResponse.Builder executeResponseBuilder = ClientProtos.ExecuteResponse
         .newBuilder();
     ClientProtos.ExecuteResultProto.Builder executeResultProtoBuilder = ClientProtos.ExecuteResultProto
@@ -348,7 +350,7 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a ExecuteResponse.
-   * 
+   *
    * @param response
    * @return
    */
@@ -359,7 +361,7 @@ public final class ResponseConverter {
 
   /**
    * A utility to build a ExecuteResponse.
-   * 
+   *
    * @param response
    * @return
    */
@@ -382,9 +384,23 @@ public final class ResponseConverter {
     return executeResponseBuilder.build();
   }
 
+  public static ClientProtos.ExecuteResponse buildNotExecuteResponse() {
+    ClientProtos.ExecuteResponse.Builder executeResponseBuilder = ClientProtos.ExecuteResponse
+        .newBuilder();
+    ClientProtos.ExecuteResultProto.Builder executeResultProtoBuilder = ClientProtos.ExecuteResultProto
+        .newBuilder();
+    ClientProtos.WriteResultProto.Builder writeResultProtoBuilder = ClientProtos.WriteResultProto
+        .newBuilder();
+    writeResultProtoBuilder.setCode(StatusCode.FAILURE);
+    executeResultProtoBuilder.setType(ClientProtos.ExecuteResultProto.ResultType.WRITE);
+    executeResultProtoBuilder.setWriteResult(writeResultProtoBuilder.build());
+    executeResponseBuilder.addResult(executeResultProtoBuilder.build());
+    return executeResponseBuilder.build();
+  }
+
   /**
    * A utility to build a SplitEntityGroupResponse.
-   * 
+   *
    * @return
    */
   public static SplitEntityGroupResponse buildSplitEntityGroupResponse() {
@@ -395,16 +411,16 @@ public final class ResponseConverter {
 
   public static ClientProtos.ScanResponse buildScanResponse(ClientProtos.ScanResponse.Builder builder,
       List<ColumnStruct> columns) {
-    List<ClientProtos.StringDataTypePair> stringDataTypePairs = buildStringDataTypePairs(columns);
+    List<StringDataTypePair> stringDataTypePairs = buildStringDataTypePairs(columns);
     for (ClientProtos.StringDataTypePair StringDataTypePair : stringDataTypePairs) {
       builder.addMeta(StringDataTypePair);
     }
     return builder.build();
   }
 
-  private static List<ClientProtos.StringDataTypePair> buildStringDataTypePairs(
+  private static List<StringDataTypePair> buildStringDataTypePairs(
       List<ColumnStruct> columns) {
-    List<ClientProtos.StringDataTypePair> stringDataTypePairs = new ArrayList<ClientProtos.StringDataTypePair>();
+    List<StringDataTypePair> stringDataTypePairs = new ArrayList<StringDataTypePair>();
     if (columns == null || columns.size() == 0) {
       return stringDataTypePairs;
     }

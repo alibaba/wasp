@@ -17,18 +17,6 @@
  */
 package com.alibaba.wasp;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Threads;
 import com.alibaba.wasp.client.ClientProtocol;
 import com.alibaba.wasp.client.FConnectionManager;
 import com.alibaba.wasp.conf.WaspConfiguration;
@@ -40,6 +28,17 @@ import com.alibaba.wasp.master.FMasterAdminProtocol;
 import com.alibaba.wasp.master.FMasterMonitorProtocol;
 import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.FServerStartupResponse;
 import com.alibaba.wasp.util.JVMClusterUtil;
+import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Threads;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * MiniWaspCluster for test unit. This class creates a single process Wasp
@@ -58,7 +57,7 @@ public class MiniWaspCluster extends WaspCluster {
    *          Configuration to be used for cluster
    * @param numFServers
    *          initial number of fservers to start.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public MiniWaspCluster(Configuration conf, int numFServers)
       throws IOException, InterruptedException {
@@ -67,14 +66,14 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Start a MiniWaspCluster.
-   * 
+   *
    * @param conf
    *          Configuration to be used for cluster
    * @param numMasters
    *          initial number of masters to start.
    * @param numFServers
    *          initial number of entityGroup servers to start.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public MiniWaspCluster(Configuration conf, int numMasters, int numFServers)
       throws IOException, InterruptedException {
@@ -83,7 +82,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   public MiniWaspCluster(Configuration conf, int numMasters, int numFServers,
       Class<? extends FMaster> masterClass,
-      Class<? extends MiniWaspCluster.MiniWaspClusterFServer> fserverClass)
+      Class<? extends MiniWaspClusterFServer> fserverClass)
       throws IOException, InterruptedException {
     super(conf);
     conf.set(FConstants.MASTER_PORT, "0");
@@ -108,13 +107,13 @@ public class MiniWaspCluster extends WaspCluster {
 
     /*
      * @param c
-     * 
+     *
      * @param currentfs We return this if we did not make a new one.
-     * 
+     *
      * @param uniqueName Same name used to help identify the created fs.
-     * 
+     *
      * @return A new fs instance if we are up on DistributeFileSystem.
-     * 
+     *
      * @throws IOException
      */
 
@@ -153,7 +152,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   private void init(final int nMasterNodes, final int nEntityGroupNodes,
       Class<? extends FMaster> masterClass,
-      Class<? extends MiniWaspCluster.MiniWaspClusterFServer> fserverClass)
+      Class<? extends MiniWaspClusterFServer> fserverClass)
       throws IOException, InterruptedException {
     try {
       if (masterClass == null) {
@@ -236,8 +235,8 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Starts a entityGroup server thread running
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    * @return New FServerThread
    */
   public JVMClusterUtil.FServerThread startFServer() throws IOException {
@@ -253,7 +252,7 @@ public class MiniWaspCluster extends WaspCluster {
   /**
    * Cause a entityGroup server to exit doing basic clean up only on its way
    * out.
-   * 
+   *
    * @param serverNumber
    *          Used as index into a list.
    */
@@ -266,7 +265,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Shut down the specified entityGroup server cleanly
-   * 
+   *
    * @param serverNumber
    *          Used as index into a list.
    * @return the entityGroups server that was stopped
@@ -282,7 +281,7 @@ public class MiniWaspCluster extends WaspCluster {
   /**
    * Wait for the specified entityGroup server to stop. Removes this thread from
    * list of running threads.
-   * 
+   *
    * @param serverNumber
    * @return Name of entityGroup server that just went down.
    */
@@ -292,8 +291,8 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Starts a master thread running
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    * @return New FServerThread
    */
   public JVMClusterUtil.MasterThread startMaster() throws IOException {
@@ -317,7 +316,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Returns the current active master, if available.
-   * 
+   *
    * @return the active HMaster, null if none is active.
    */
   public FMaster getMaster() {
@@ -326,7 +325,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Returns the master at the specified index, if available.
-   * 
+   *
    * @return the active HMaster, null if none is active.
    */
   public FMaster getMaster(final int serverNumber) {
@@ -335,7 +334,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Cause a master to exit without shutting down entire cluster.
-   * 
+   *
    * @param serverNumber
    *          Used as index into a list.
    */
@@ -348,7 +347,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Shut down the specified master cleanly
-   * 
+   *
    * @param serverNumber
    *          Used as index into a list.
    * @return the entityGroup server that was stopped
@@ -359,7 +358,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Shut down the specified master cleanly
-   * 
+   *
    * @param serverNumber
    *          Used as index into a list.
    * @param shutdownFS
@@ -381,7 +380,7 @@ public class MiniWaspCluster extends WaspCluster {
   /**
    * Wait for the specified master to stop. Removes this thread from list of
    * running threads.
-   * 
+   *
    * @param serverNumber
    * @return Name of master that just went down.
    */
@@ -392,7 +391,7 @@ public class MiniWaspCluster extends WaspCluster {
   /**
    * Blocks until there is an active master and that master has completed
    * initialization.
-   * 
+   *
    * @return true if an active master becomes available. false if there are no
    *         masters left.
    * @throws InterruptedException
@@ -436,8 +435,8 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Shut down the mini HBase cluster
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public void shutdown() throws IOException {
     if (this.waspCluster != null) {
@@ -473,7 +472,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Grab a numbered entityGroup server of your choice.
-   * 
+   *
    * @param serverNumber
    * @return entityGroup server
    */
@@ -503,7 +502,7 @@ public class MiniWaspCluster extends WaspCluster {
 
   /**
    * Get the location of the specified entityGroup
-   * 
+   *
    * @param entityGroupName
    *          Name of the entityGroup in bytes
    * @return Index into List of {@link MiniWaspCluster#getFServerThreads()} of

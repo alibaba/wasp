@@ -18,18 +18,6 @@
  */
 package com.alibaba.wasp.master;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import com.alibaba.wasp.MasterNotRunningException;import com.alibaba.wasp.ZNodeClearer;import com.alibaba.wasp.ZooKeeperConnectionException;import com.alibaba.wasp.client.WaspAdmin;import com.alibaba.wasp.util.JVMClusterUtil;import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.zookeeper.MiniZooKeeperCluster;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.LocalWaspCluster;
 import com.alibaba.wasp.MasterNotRunningException;
@@ -39,7 +27,19 @@ import com.alibaba.wasp.client.WaspAdmin;
 import com.alibaba.wasp.fserver.FServer;
 import com.alibaba.wasp.util.JVMClusterUtil;
 import com.alibaba.wasp.util.ServerCommandLine;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.zookeeper.MiniZooKeeperCluster;
 import org.apache.zookeeper.KeeperException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class FMasterCommandLine extends ServerCommandLine {
   private static final Log LOG = LogFactory.getLog(FMasterCommandLine.class);

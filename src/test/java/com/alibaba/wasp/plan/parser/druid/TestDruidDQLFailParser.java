@@ -17,12 +17,12 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
-import com.alibaba.wasp.ZooKeeperConnectionException;import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.meta.MemFMetaStore;import com.alibaba.wasp.meta.TableSchemaCacheReader;import com.alibaba.wasp.plan.parser.ParseContext;import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.meta.MemFMetaStore;
 import com.alibaba.wasp.meta.TableSchemaCacheReader;
 import com.alibaba.wasp.plan.parser.ParseContext;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;

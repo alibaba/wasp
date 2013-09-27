@@ -17,9 +17,9 @@
  */
 package com.alibaba.wasp.messagequeue;
 
-import java.io.IOException;
-
 import com.alibaba.wasp.EntityGroupInfo;
+
+import java.io.IOException;
 
 public interface Broker {
   /**

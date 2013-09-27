@@ -18,26 +18,23 @@
  */
 package com.alibaba.wasp.master;
 
-import static org.junit.Assert.fail;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.WaspTestingUtility;
+import com.alibaba.wasp.ipc.WaspRPC;
+import com.alibaba.wasp.protobuf.ProtobufUtil;
+import com.alibaba.wasp.protobuf.generated.MasterProtos;
+import com.google.protobuf.ServiceException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.ipc.RemoteException;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 
-import com.alibaba.wasp.FConstants;import com.alibaba.wasp.ServerName;import com.alibaba.wasp.WaspTestingUtility;import com.alibaba.wasp.ipc.WaspRPC;import com.alibaba.wasp.protobuf.generated.MasterProtos;import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.ipc.RemoteException;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.WaspTestingUtility;
-import com.alibaba.wasp.ipc.WaspRPC;
-import com.alibaba.wasp.master.FMaster;
-import com.alibaba.wasp.master.FMasterMonitorProtocol;
-import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.MasterProtos.IsMasterRunningRequest;
-import org.junit.Test;
-
-import com.google.protobuf.ServiceException;
+import static org.junit.Assert.fail;
 
 public class TestWaspRPCException {
 

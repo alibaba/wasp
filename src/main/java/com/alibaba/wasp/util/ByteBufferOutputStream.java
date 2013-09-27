@@ -21,13 +21,12 @@ package com.alibaba.wasp.util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Utility to collect data written to an {@link OutputStream} in
- * {@link ByteBuffer}s. Copied from avro.
+ * Utility to collect data written to an {@link java.io.OutputStream} in
+ * {@link java.nio.ByteBuffer}s. Copied from avro.
  */
 public class ByteBufferOutputStream extends OutputStream {
   public static final int BUFFER_SIZE = 8192;

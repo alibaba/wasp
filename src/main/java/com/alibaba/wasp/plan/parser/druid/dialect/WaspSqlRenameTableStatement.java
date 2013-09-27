@@ -17,10 +17,10 @@
  */
 package com.alibaba.wasp.plan.parser.druid.dialect;
 
+import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlStatementImpl;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlStatementImpl;
 
 /**
  *

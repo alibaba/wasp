@@ -18,16 +18,6 @@
  */
 package com.alibaba.wasp.fserver.handler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.hbase.util.Bytes;
-
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupTransaction;
 import com.alibaba.wasp.FConstants;
@@ -43,12 +33,21 @@ import com.alibaba.wasp.util.MockServer;
 import com.alibaba.wasp.zookeeper.ZKAssign;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test of the {@link OpenEntityGroupHandler}.
@@ -94,10 +93,10 @@ public class TestOpenEntityGroupHandler {
   /**
    * Test the open entityGroup handler can deal with its znode being yanked out
    * from under it.
-   * 
-   * @throws IOException
-   * @throws NodeExistsException
-   * @throws KeeperException
+   *
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException
+   * @throws org.apache.zookeeper.KeeperException
    */
   @Test
   public void testYankingEntityGroupFromUnderIt() throws IOException,

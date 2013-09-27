@@ -20,8 +20,8 @@
 
 package com.alibaba.wasp.plan.action;
 
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DataType;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,4 +67,10 @@ public class ActionTestUtil {
         TestPrimayKey, makeTestColumnActions());
   }
 
+  public static TransactionAction makeTestTransactionAction() {
+    List<DMLAction> dmlActions = new ArrayList<DMLAction>();
+    dmlActions.add(makeTestInsertAction());
+    dmlActions.add(makeTestInsertAction());
+    return new TransactionAction(TestTableName[0], dmlActions);
+  }
 }

@@ -18,13 +18,6 @@
  */
 package com.alibaba.wasp.zookeeper;
 
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -38,6 +31,13 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
+
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * A zookeeper that can handle 'recoverable' errors. To handle recoverable

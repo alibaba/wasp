@@ -64,6 +64,8 @@ message ExecuteRequest {
   optional string sessionId = 3;
   optional bool closeSession = 4;
   optional uint32 fetchSize = 5;
+  optional bool isTransaction = 6;
+  repeated string transactionSql = 7;
 }
 
 message ExecuteResponse {
@@ -127,6 +129,15 @@ message DeleteResponse {
   required WriteResultProto result = 1;
 }
 
+message TransactionRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+  required TransactionActionProto transactionAction = 2;
+}
+
+message TransactionResponse {
+  required WriteResultProto result = 1;
+}
+
 service ClientService {
   rpc execute(ExecuteRequest)
   	returns(ExecuteResponse);
@@ -145,4 +156,7 @@ service ClientService {
     
   rpc delete(DeleteRequest)
     returns(DeleteResponse);
+
+  rpc transaction(TransactionRequest)
+    returns(TransactionResponse);
 }

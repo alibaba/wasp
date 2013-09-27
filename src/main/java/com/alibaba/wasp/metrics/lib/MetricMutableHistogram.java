@@ -18,14 +18,13 @@
  */
 package com.alibaba.wasp.metrics.lib;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.hadoop.metrics2.MetricsRecordBuilder;
-import org.apache.hadoop.metrics2.lib.MetricMutable;
-
 import com.yammer.metrics.stats.ExponentiallyDecayingSample;
 import com.yammer.metrics.stats.Sample;
 import com.yammer.metrics.stats.Snapshot;
+import org.apache.hadoop.metrics2.MetricsRecordBuilder;
+import org.apache.hadoop.metrics2.lib.MetricMutable;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Watches a stream of long values, maintaining online estimates of specific

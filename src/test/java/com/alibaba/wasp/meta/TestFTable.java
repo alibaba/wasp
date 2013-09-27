@@ -17,12 +17,11 @@
  */
 package com.alibaba.wasp.meta;
 
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos;import com.alibaba.wasp.protobuf.RequestConverter;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateTableRequest;
+import com.alibaba.wasp.protobuf.RequestConverter;
+import com.alibaba.wasp.protobuf.generated.MasterAdminProtos;
+import com.google.protobuf.ServiceException;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.google.protobuf.ServiceException;
 
 public class TestFTable {
 

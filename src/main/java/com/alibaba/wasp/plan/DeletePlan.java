@@ -21,7 +21,7 @@ package com.alibaba.wasp.plan;
 
 import java.util.List;
 
-import com.alibaba.wasp.plan.action.DeleteAction;import com.alibaba.wasp.plan.action.DeleteAction;
+import com.alibaba.wasp.plan.action.DeleteAction;
 
 /**
  * Driver parses sql to plan which includes Delete normal is
@@ -36,6 +36,7 @@ public class DeletePlan extends DMLPlan {
     this.actions = actions;
   }
 
+  @Override
   public List<DeleteAction> getActions() {
     return actions;
   }
@@ -45,7 +46,7 @@ public class DeletePlan extends DMLPlan {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

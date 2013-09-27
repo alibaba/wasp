@@ -19,10 +19,10 @@
  */
 package com.alibaba.wasp;
 
+import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Abortable;
 import org.apache.hadoop.hbase.Stoppable;
-import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
 
 /**
  * Defines the set of shared functions implemented by wasp servers (Masters

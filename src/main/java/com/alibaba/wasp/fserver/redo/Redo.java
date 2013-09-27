@@ -19,12 +19,12 @@
  */
 package com.alibaba.wasp.fserver.redo;
 
-import java.io.Closeable;
-import java.io.IOException;
-
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.plan.action.Primary;
+import org.apache.hadoop.conf.Configuration;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 public abstract class Redo implements Closeable {
 
@@ -40,7 +40,7 @@ public abstract class Redo implements Closeable {
    * @param conf
    *          passed by entityGroup.
    * 
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public Redo(EntityGroupInfo egi, Configuration conf) {
     this.conf = conf;
@@ -49,57 +49,57 @@ public abstract class Redo implements Closeable {
 
   /**
    * initlize
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   abstract public void initlize() throws IOException;
 
   /**
    * Append transaction.
-   * 
+   *
    * @param t
-   * @throws IOException
+   * @throws java.io.IOException
    */
   abstract public void append(Primary action, Transaction t) throws IOException;
 
   /**
    * return the last commited transaction.
-   * 
+   *
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   abstract public WALEdit lastCommitedTransaction() throws IOException;
 
   /**
    * Return the last transaction.
-   * 
+   *
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   abstract public WALEdit lastUnCommitedTransaction()
       throws InterruptedException, NotInitlizedRedoException,
       RedoLogNotServingException;
 
   /**
-   * 
-   * 
+   *
+   *
    * @return
    */
   abstract public WALEdit peekLastUnCommitedTransaction() throws IOException;
 
   /**
    * Commit the transaction.
-   * 
+   *
    * @param t
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   abstract public boolean commit(WALEdit edit) throws IOException;
 
   /**
    * redo
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   abstract public void redo() throws IOException;
 

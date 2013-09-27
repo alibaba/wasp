@@ -19,21 +19,13 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
+import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
+import com.alibaba.druid.sql.ast.statement.SQLInsertStatement.ValuesClause;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
+import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
 import com.alibaba.wasp.EntityGroupLocation;
 import com.alibaba.wasp.NotMatchPrimaryKeyException;
 import com.alibaba.wasp.ZooKeeperConnectionException;
@@ -54,14 +46,21 @@ import com.alibaba.wasp.plan.parser.ParseContext;
 import com.alibaba.wasp.plan.parser.UnsupportedException;
 import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlInsertStatement;
 import com.alibaba.wasp.util.ParserUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.statement.SQLDeleteStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement.ValuesClause;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateSetItem;
-import com.alibaba.druid.sql.ast.statement.SQLUpdateStatement;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Use Druid (https://github.com/AlibabaTech/druid) to parse the sql and
@@ -75,7 +74,7 @@ public class DruidDMLParser extends DruidParser {
 
   /**
    * @param conf
-   * @throws ZooKeeperConnectionException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
    */
   public DruidDMLParser(Configuration conf) throws ZooKeeperConnectionException {
     this(conf, FConnectionManager.getConnection(conf));
@@ -107,7 +106,9 @@ public class DruidDMLParser extends DruidParser {
     } else if (stmt instanceof SQLDeleteStatement) {
       // This is a Delete SQL
       getDeletePlan(context, (SQLDeleteStatement) stmt, metaEventOperation);
-    } else {
+    }
+
+    else {
       throw new UnsupportedException("Unsupported SQLStatement " + stmt);
     }
   }
@@ -143,6 +144,9 @@ public class DruidDMLParser extends DruidParser {
       // rows. see http://dev.mysql.com/doc/refman/5.5/en/insert.html
       List<ValuesClause> valuesList = ((WaspSqlInsertStatement) sqlInsertStatement)
           .getValuesList();
+      if (valuesList.size() > 1) {
+        throw new UnsupportedException("Insert multi value unsupported now");
+      }
       LOG.debug("INSERT SQL Insert Values List " + valuesList);
       for (ValuesClause values : valuesList) {
         actions.add(genInsertAction(metaEventOperation, table, insertColumns,
@@ -199,7 +203,7 @@ public class DruidDMLParser extends DruidParser {
     SQLExpr where = sqlDeleteStatement.getWhere();
     LOG.debug("UPDATE SQL where " + where);
     LinkedHashMap<String, Condition> eqConditions = new LinkedHashMap<String, Condition>();
-    List<Condition> ranges = new ArrayList<Condition>(5);
+    LinkedHashMap<String, Condition> ranges = new LinkedHashMap<String, Condition>();
     ParserUtils.parse(where, eqConditions, ranges);
     if (ranges.size() > 0) {
       throw new UnsupportedException("RANGE is not supported!");
@@ -253,7 +257,7 @@ public class DruidDMLParser extends DruidParser {
     LOG.debug("UPDATE SQL where " + where);
 
     LinkedHashMap<String, Condition> conditions = new LinkedHashMap<String, Condition>();
-    List<Condition> ranges = new ArrayList<Condition>(5);
+    LinkedHashMap<String, Condition> ranges = new LinkedHashMap<String, Condition>();
     ParserUtils.parse(where, conditions, ranges);
     if (ranges.size() > 0) {
       throw new UnsupportedException(
@@ -282,6 +286,8 @@ public class DruidDMLParser extends DruidParser {
       // check this FTable has the column and not pk
       metaEventOperation.checkFieldNotInPrimaryKeys(table, columnName);
       Field field = table.getColumn(columnName);
+      // Check the input is the same as DataType
+      checkType(field, updateItem.getValue());
       byte[] value = convert(field, updateItem.getValue());
       String familyName = metaEventOperation.getColumnFamily(fTableName,
           columnName);
@@ -298,6 +304,7 @@ public class DruidDMLParser extends DruidParser {
                   entityGroupKeyCondition.getValue()));
       action.setEntityGroupLocation(entityGroupLocation);
     }
+    action.setSessionId(context.getSessionId());
     List<UpdateAction> actions = new ArrayList<UpdateAction>();
     actions.add(action);
     UpdatePlan plan = new UpdatePlan(actions);

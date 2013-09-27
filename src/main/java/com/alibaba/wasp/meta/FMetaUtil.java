@@ -17,18 +17,18 @@
  */
 package com.alibaba.wasp.meta;
 
-import java.io.IOException;
-
-import com.alibaba.wasp.FConstants;import com.alibaba.wasp.MasterNotRunningException;import com.alibaba.wasp.MetaException;import com.alibaba.wasp.ZooKeeperConnectionException;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.MasterNotRunningException;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.ZooKeeperConnectionException;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.MasterNotRunningException;
-import com.alibaba.wasp.MetaException;
-import com.alibaba.wasp.ZooKeeperConnectionException;
+
+import java.io.IOException;
 
 /**
  * 

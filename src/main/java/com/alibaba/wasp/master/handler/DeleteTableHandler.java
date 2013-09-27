@@ -17,10 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Threads;
 import com.alibaba.wasp.ChildrenExistException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.ServerName;
@@ -35,11 +31,16 @@ import com.alibaba.wasp.master.TableLockManager;
 import com.alibaba.wasp.meta.FMetaEditor;
 import com.alibaba.wasp.meta.FMetaReader;
 import com.alibaba.wasp.meta.FTable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Threads;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Handler to delete a table.
  */
@@ -101,7 +102,7 @@ public class DeleteTableHandler extends EventHandler {
     List<EntityGroupInfo> egis = null;
     if (ftable.isRootTable()) {
       egis = FMetaReader.getTableEntityGroups(
-        server.getConfiguration(), Bytes.toBytes(tableNameStr));
+          server.getConfiguration(), Bytes.toBytes(tableNameStr));
     } else {
       egis = new ArrayList<EntityGroupInfo>();
     }

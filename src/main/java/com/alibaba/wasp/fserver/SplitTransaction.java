@@ -19,18 +19,6 @@
  */
 package com.alibaba.wasp.fserver;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.CancelableProgressable;
-import org.apache.hadoop.hbase.util.HasThread;
-import org.apache.hadoop.hbase.util.PairOfSameType;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupTransaction;
 import com.alibaba.wasp.Server;
@@ -40,17 +28,29 @@ import com.alibaba.wasp.meta.FMetaEditor;
 import com.alibaba.wasp.zookeeper.ZKAssign;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.CancelableProgressable;
+import org.apache.hadoop.hbase.util.HasThread;
+import org.apache.hadoop.hbase.util.PairOfSameType;
 import org.apache.zookeeper.KeeperException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Executes entityGroup split as a "transaction". Call {@link #prepare()} to
- * setup the transaction, {@link #execute(Server, FServerServices)} to run the
- * transaction and {@link #rollback(Server, FServerServices)} to cleanup if
+ * setup the transaction, {@link #execute(com.alibaba.wasp.Server, FServerServices)} to run the
+ * transaction and {@link #rollback(com.alibaba.wasp.Server, FServerServices)} to cleanup if
  * execute fails.
- * 
+ *
  * <p>
  * Here is an example of how you would use this class:
- * 
+ *
  * <pre>
  *  SplitTransaction st = new SplitTransaction(this.conf, parent, midKey)
  *  if (!st.prepare()) return;
@@ -134,12 +134,12 @@ public class SplitTransaction {
 
   /**
    * Constructor
-   * 
+   *
    * @param eg
    *          EntityGroup to split
    * @param splitrow
    *          Row to split around
-   * @throws IOException
+   * @throws java.io.IOException
    */
   // public SplitTransaction(final Configuration conf, final EntityGroup eg,
   // final byte[] splitrow)
@@ -155,7 +155,7 @@ public class SplitTransaction {
 
   /**
    * Does checks on split inputs.
-   * 
+   *
    * @return <code>true</code> if the entityGroup is splittable else
    *         <code>false</code> if it is not (e.g. its already closed, etc.).
    */
@@ -188,9 +188,9 @@ public class SplitTransaction {
 
   /**
    * Calculate daughter entityGroupId to use.
-   * 
+   *
    * @param egi
-   *          Parent {@link EntityGroupInfo}
+   *          Parent {@link com.alibaba.wasp.EntityGroupInfo}
    * @return Daughter entityGroup id (timestamp) to use.
    */
   private static long getDaughterEntityGroupIdTimestamp(
@@ -246,11 +246,11 @@ public class SplitTransaction {
 
   /**
    * Open daughter entityGroups, add them to online list and update meta.
-   * 
+   *
    * @param server
    * @param daughter
-   * @throws IOException
-   * @throws KeeperException
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public EntityGroup openDaughterEntityGroup(final Server server,
       final EntityGroup daughter) throws IOException, KeeperException {
@@ -281,18 +281,18 @@ public class SplitTransaction {
 
   /**
    * Run the transaction.
-   * 
+   *
    * @param server
    *          Hosting server instance. Can be null when testing (won't try and
    *          update in zk if a null server)
    * @param services
    *          Used to online/offline entityGroups.
-   * @throws IOException
+   * @throws java.io.IOException
    *           If thrown, transaction failed. Call
-   *           {@link #rollback(Server, FServerServices)}
+   *           {@link #rollback(com.alibaba.wasp.Server, FServerServices)}
    * @return EntityGroups created
-   * @throws IOException
-   * @see #rollback(Server, FServerServices)
+   * @throws java.io.IOException
+   * @see #rollback(com.alibaba.wasp.Server, FServerServices)
    */
   public PairOfSameType<EntityGroup> execute(final Server server,
       final FServerServices services) throws IOException {
@@ -306,15 +306,15 @@ public class SplitTransaction {
 
   /**
    * Prepare the entityGroups.
-   * 
+   *
    * @param server
    *          Hosting server instance. Can be null when testing (won't try and
    *          update in zk if a null server)
    * @param services
    *          Used to online/offline entityGroups.
-   * @throws IOException
+   * @throws java.io.IOException
    *           If thrown, transaction failed. Call
-   *           {@link #rollback(Server, FServerServices)}
+   *           {@link #rollback(com.alibaba.wasp.Server, FServerServices)}
    * @return EntityGroups created
    */
   PairOfSameType<EntityGroup> createDaughters(final Server server,
@@ -420,7 +420,7 @@ public class SplitTransaction {
    * @param egi
    *          Spec. for daughter entityGroup to open.
    * @return Created daughter EntityGroup.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   EntityGroup createDaughterEntityGroup(final EntityGroupInfo egi,
       final FServerServices rsServices) throws IOException {
@@ -434,7 +434,7 @@ public class SplitTransaction {
 
   /**
    * Perform time consuming opening of the daughter entityGroups.
-   * 
+   *
    * @param server
    *          Hosting server instance. Can be null when testing (won't try and
    *          update in zk if a null server)
@@ -444,9 +444,9 @@ public class SplitTransaction {
    *          first daughter entityGroup
    * @param a
    *          second daughter entityGroup
-   * @throws IOException
+   * @throws java.io.IOException
    *           If thrown, transaction failed. Call
-   *           {@link #rollback(Server, FServerServices)}
+   *           {@link #rollback(com.alibaba.wasp.Server, FServerServices)}
    */
   void openDaughters(final Server server, final FServerServices services,
       EntityGroup a, EntityGroup b) throws IOException {
@@ -492,13 +492,13 @@ public class SplitTransaction {
   /**
    * Creates a new ephemeral node in the SPLITTING state for the specified
    * entityGroup. Create it ephemeral in case entityGroupserver dies mid-split.
-   * 
+   *
    * <p>
    * Does not transition nodes from other states. If a node already exists for
    * this entityGroup, a
    * {@link org.apache.zookeeper.KeeperException.NodeExistsException} will be
    * thrown.
-   * 
+   *
    * @param zkw
    *          zk reference
    * @param entityGroup
@@ -506,8 +506,8 @@ public class SplitTransaction {
    * @param serverName
    *          server event originates from
    * @return Version of znode created.
-   * @throws KeeperException
-   * @throws IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    */
   int createNodeSplitting(final ZooKeeperWatcher zkw,
       final EntityGroupInfo entityGroup, final ServerName serverName)
@@ -529,7 +529,7 @@ public class SplitTransaction {
 
   /**
    * Finish off split transaction, transition the zknode
-   * 
+   *
    * @param server
    *          Hosting server instance. Can be null when testing (won't try and
    *          update in zk if a null server)
@@ -539,9 +539,9 @@ public class SplitTransaction {
    *          first daughter entityGroup
    * @param a
    *          second daughter entityGroup
-   * @throws IOException
+   * @throws java.io.IOException
    *           If thrown, transaction failed. Call
-   *           {@link #rollback(Server, FServerServices)}
+   *           {@link #rollback(com.alibaba.wasp.Server, FServerServices)}
    */
   /* package */void transitionZKNode(final Server server,
       final FServerServices services, EntityGroup a, EntityGroup b)
@@ -587,7 +587,7 @@ public class SplitTransaction {
    * @param server
    *          Hosting server instance (May be null when testing).
    * @param services
-   * @throws IOException
+   * @throws java.io.IOException
    *           If thrown, rollback failed. Take drastic action.
    * @return True if we successfully rolled back, false if we got to the point
    *         of no return and so now need to abort the server to minimize
@@ -676,12 +676,12 @@ public class SplitTransaction {
    * currently in the SPLITTING state to be in the SPLIT state. Converts the
    * ephemeral SPLITTING znode to an ephemeral SPLIT node. Master cleans up
    * SPLIT znode when it reads it (or if we crash, zk will clean it up).
-   * 
+   *
    * <p>
    * Does not transition nodes from other states. If for some reason the node
    * could not be transitioned, the method returns -1. If the transition is
    * successful, the version of the node after transition is returned.
-   * 
+   *
    * <p>
    * This method can fail and return false for three different reasons:
    * <ul>
@@ -692,14 +692,14 @@ public class SplitTransaction {
    * following a transition to SPLITTING. if two RS are conflicting, one would
    * fail the original transition to SPLITTING and not this transition)</li>
    * </ul>
-   * 
+   *
    * <p>
    * Does not set any watches.
-   * 
+   *
    * <p>
    * This method should only be used by a FServer when completing the open of a
    * entityGroup.
-   * 
+   *
    * @param zkw
    *          zk reference
    * @param parent
@@ -711,9 +711,9 @@ public class SplitTransaction {
    * @param serverName
    *          server event originates from
    * @return version of node after transition, -1 if unsuccessful transition
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    *           if unexpected zookeeper exception
-   * @throws IOException
+   * @throws java.io.IOException
    */
   private static int transitionNodeSplit(ZooKeeperWatcher zkw,
       EntityGroupInfo parent, EntityGroupInfo a, EntityGroupInfo b,
@@ -735,7 +735,7 @@ public class SplitTransaction {
   }
 
   /**
-   * 
+   *
    * @param zkw
    *          zk reference
    * @param parent
@@ -745,8 +745,8 @@ public class SplitTransaction {
    * @param version
    *          znode version
    * @return version of node after transition, -1 if unsuccessful transition
-   * @throws KeeperException
-   * @throws IOException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    */
   int transitionNodeSplitting(final ZooKeeperWatcher zkw,
       final EntityGroupInfo parent, final ServerName serverName,

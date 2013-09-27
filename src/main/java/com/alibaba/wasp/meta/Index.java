@@ -17,6 +17,11 @@
  */
 package com.alibaba.wasp.meta;
 
+import com.alibaba.wasp.DeserializationException;
+import com.alibaba.wasp.protobuf.ProtobufUtil;
+import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnSchema;
+import com.alibaba.wasp.protobuf.generated.MetaProtos.IndexSchema;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,11 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import com.alibaba.wasp.DeserializationException;
-import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnSchema;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.IndexSchema;
 
 /**
  * Index schema.
@@ -198,7 +198,7 @@ public class Index {
    * @param bytes
    *          A pb TableSchema serialized with a pb magic prefix.
    * @return A deserialized {@link FTable}
-   * @throws DeserializationException
+   * @throws com.alibaba.wasp.DeserializationException
    * @see {@link #toByteArray()}
    */
   public static Index parseIndexFrom(final byte[] bytes)

@@ -19,7 +19,7 @@
  */
 package com.alibaba.wasp.jdbc.value;
 
-import com.alibaba.wasp.util.MathUtils;import com.alibaba.wasp.util.Utils;import com.alibaba.wasp.util.MathUtils;
+import com.alibaba.wasp.util.MathUtils;
 import com.alibaba.wasp.util.StringUtils;
 import com.alibaba.wasp.util.Utils;
 

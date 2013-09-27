@@ -23,6 +23,7 @@ import com.alibaba.wasp.jdbc.command.CommandInterface;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A local or remote session. A session represents a database connection.
@@ -41,8 +42,16 @@ public interface SessionInterface extends Closeable {
    */
   public boolean isClosed();
 
-  CommandInterface prepareCommand(FClient fClient, String sql, int fetchSize, ReadModel readModel);
+  CommandInterface prepareCommand(FClient fClient, String sql, int fetchSize,
+                                  ReadModel readModel, boolean autoCommit, ExecuteSession statementSession);
+
+  CommandInterface prepareCommand(FClient fClient, List<String> sqls, boolean autoCommit,
+                                  ExecuteSession statementSession);
 
   public void afterWriting();
+
+  public String getSessionId();
+
+  public void setSessionId(String sessionId);
 
 }

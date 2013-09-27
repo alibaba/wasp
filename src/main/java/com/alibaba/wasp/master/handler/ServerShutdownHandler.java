@@ -17,18 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.PairOfSameType;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.Server;
@@ -44,7 +32,19 @@ import com.alibaba.wasp.meta.FMetaReader;
 import com.alibaba.wasp.meta.FMetaScanner;
 import com.alibaba.wasp.meta.FMetaVisitor;
 import com.alibaba.wasp.zookeeper.ZKAssign;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.PairOfSameType;
 import org.apache.zookeeper.KeeperException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
 
 /**
  * Process server shutdown. Server-to-handle must be already in the deadservers
@@ -205,7 +205,7 @@ public class ServerShutdownHandler extends EventHandler {
    * @param server
    * @return Returns true if specified EntityGroup should be assigned, false if
    *         not.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public boolean processDeadEntityGroup(EntityGroupInfo egi, Result result,
       AssignmentManager assignmentManager, Server server) throws IOException {
@@ -247,11 +247,11 @@ public class ServerShutdownHandler extends EventHandler {
 
   /**
    * Check that daughter entityGroups are up in .FMETA. and if not, add them.
-   * 
+   *
    * @param result
    *          The contents of the parent row in .META.
    * @return the number of daughters missing and fixed
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static int fixupDaughters(final Result result,
       final AssignmentManager assignmentManager, final Configuration conf)
@@ -267,11 +267,11 @@ public class ServerShutdownHandler extends EventHandler {
 
   /**
    * Check individual daughter is up in .FMETA.; fixup if its not.
-   * 
+   *
    * @param result
    *          The contents of the parent row in .FMETA.
    * @return 1 if the daughter is missing and fixed. Otherwise 0
-   * @throws IOException
+   * @throws java.io.IOException
    */
   static int fixupDaughter(final Result result, EntityGroupInfo daughter,
       final AssignmentManager assignmentManager, final Configuration conf)
@@ -297,10 +297,10 @@ public class ServerShutdownHandler extends EventHandler {
    * Look for presence of the daughter OR of a split of the daughter in .FMETA.
    * Daughter could have been split over on fserver before a run of the
    * catalogJanitor had chance to clear reference from parent.
-   * 
+   *
    * @param daughter
    *          Daughter entityGroup to search for.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   private static boolean isDaughterMissing(final Configuration conf,
       final EntityGroupInfo daughter)

@@ -17,13 +17,13 @@
  */
 package com.alibaba.wasp.plan.parser.druid.dialect;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.statement.SQLExprTableSource;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlCreateTableStatement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *

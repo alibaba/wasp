@@ -19,23 +19,8 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.TableExistsException;import com.alibaba.wasp.meta.Index;import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.FieldKeyWord;
-import com.alibaba.wasp.TableExistsException;
 import com.alibaba.wasp.TableNotFoundException;
 import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.meta.Field;
@@ -46,6 +31,20 @@ import com.alibaba.wasp.plan.parser.Condition;
 import com.alibaba.wasp.plan.parser.QueryInfo;
 import com.alibaba.wasp.plan.parser.UnsupportedException;
 import com.alibaba.wasp.util.ParserUtils;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Wasp meta operation.
@@ -64,7 +63,7 @@ public class FMetaEventOperation implements MetaEventOperation {
    * 
    * @param tableName
    * @return the table
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public FTable checkAndGetTable(String tableName, boolean fetch)
@@ -83,7 +82,7 @@ public class FMetaEventOperation implements MetaEventOperation {
   }
 
   @Override
-  public void checkTableNotExists(String tableName, boolean fetch)
+  public boolean checkTableNotExists(String tableName, boolean fetch)
       throws IOException {
     FTable table = reader.getSchema(tableName);
     if (table == null) {
@@ -92,19 +91,17 @@ public class FMetaEventOperation implements MetaEventOperation {
             tableName);
       }
     }
-    if (table != null) {
-      throw new TableExistsException(tableName + " is already exists!");
-    }
+    return table == null;
   }
 
   /**
    * Get fields as the field names under the specified table, throw exception if
    * one does not exist
-   * 
+   *
    * @param table
    * @param fields
    * @return a list of fields
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public LinkedHashMap<String, Field> checkAndGetFields(FTable table,
@@ -124,10 +121,10 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * check whether the given field is primary key, throw exception if not
-   * 
+   *
    * @param table
    * @param field
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkIsPrimaryKey(FTable table, String field) throws IOException {
@@ -142,10 +139,10 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * check whether the given fields are primary key, throw exception if not
-   * 
+   *
    * @param table
    * @param fields
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkIsPrimaryKey(FTable table, Set<String> fields)
@@ -169,10 +166,10 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Check whether the given field is exist, throw exception if it is not exist
-   * 
+   *
    * @param table
    * @param field
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkFieldExists(FTable table, String field) throws IOException {
@@ -185,10 +182,10 @@ public class FMetaEventOperation implements MetaEventOperation {
   /**
    * Check whether the given field is not a primary key, throw exception if it
    * is
-   * 
+   *
    * @param table
    * @param field
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkFieldNotInPrimaryKeys(FTable table, String field)
@@ -201,11 +198,11 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Check whether the given fields are primary keys under the specified table
-   * 
+   *
    * @param table
    * @param fields
    * @return true if they are primary keys
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public boolean arePrimaryKeys(FTable table, List<String> fields) {
@@ -226,14 +223,34 @@ public class FMetaEventOperation implements MetaEventOperation {
     return columns.containsKey(field);
   }
 
+  public boolean inSet(List<String> fields, String field) {
+    return fields.contains(field);
+  }
+
+  @Override
+  public boolean containPrimaryKeys(FTable table, List<String> fields) {
+    LinkedHashMap<String, Field> primaryKeys = table.getPrimaryKeys();
+    if (primaryKeys.size() <= fields.size()) {
+      Iterator<Entry<String, Field>> iter = primaryKeys.entrySet().iterator();
+      while (iter.hasNext()) {
+        if (!inSet(fields, iter.next().getKey())) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Check whether the given column not belong to a index, if it is, throw
    * Exception, for example alter table change column, the changed column should
    * not be in a index.
-   * 
+   *
    * @param table
    * @param field
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkColumnNotInIndex(FTable table, String field)
@@ -251,11 +268,11 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Get the index, throw exception if not exist
-   * 
+   *
    * @param table
    * @param fields
    * @return the index if exists
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public Index checkAndGetIndex(FTable table, List<String> fields)
@@ -277,6 +294,23 @@ public class FMetaEventOperation implements MetaEventOperation {
           negkb.toString());
     }
 
+//    if(indexs == null) {
+//      boolean isIndexLeftMatch = true;//TODO add config
+//      if(isIndexLeftMatch) {
+//        indexs = reader.leftMatchIndexsByComposite(table.getTableName(), negkb.toString());
+//      }
+//    }
+    if(indexs == null) {
+      boolean isEnableNotOnlyIndex = true;//TODO add config
+      if(isEnableNotOnlyIndex) {
+        for(int i = 1; i < fields.size() && indexs == null ; i++) {
+          List<String> newField = fields.subList(0, fields.size() - i);
+          indexs = reader.getIndexsByComposite(table.getTableName(),
+              getCompositeName(newField));
+        }
+      }
+    }
+
     // Not supported no-index query!
     if (indexs == null) {
       throw new UnsupportedException("Don't get a Index!");
@@ -287,6 +321,14 @@ public class FMetaEventOperation implements MetaEventOperation {
     } else {
       return null;
     }
+  }
+
+  private String getCompositeName(List<String> newFields) {
+    StringBuilder egkb = new StringBuilder();
+    for (String filed : newFields) {
+      egkb.append(filed);
+    }
+    return egkb.toString();
   }
 
   private Index optimizationIndex(List<Index> indexs, List<String> fields) {
@@ -301,11 +343,11 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Get the start key and end key of the given query
-   * 
+   *
    * @param index
    * @param queryInfo
    * @return a pair of start key and end key
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public Pair<byte[], byte[]> getStartkeyAndEndkey(Index index,
@@ -315,10 +357,10 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * check whether all required fields(include primary keys) have shown up
-   * 
+   *
    * @param table
    * @param fields
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkRequiredFields(FTable table, LinkedHashSet<String> fields)
@@ -354,11 +396,11 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Get the column's familyName in FTable
-   * 
-   * @param wtableName
+   *
+   * @param fTableName
    * @param columnName
    * @return column family name
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public String getColumnFamily(String fTableName, String columnName)
@@ -377,11 +419,11 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Get the column's Field in FTable
-   * 
-   * @param ftable
+   *
+   * @param fTable
    * @param columnName
    * @return Field
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public Field getColumnInfo(FTable fTable, String columnName)
@@ -399,10 +441,10 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Check whether the index exists, throw exception if not exist
-   * 
+   *
    * @param table
    * @param indexName
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkIndexExists(FTable table, String indexName)
@@ -421,10 +463,10 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Check whether the index not exist, throw exception if exist
-   * 
+   *
    * @param table
    * @param indexName
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkIndexNotExists(FTable table, String indexName)
@@ -437,10 +479,10 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Check whether two indexs have same fields
-   * 
+   *
    * @param table
    * @param index
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkTwoIndexWithSameColumn(FTable table, Index index)
@@ -477,10 +519,10 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Check whether the given columns are primary keys
-   * 
+   *
    * @param table
    * @param columns
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void checkIsPrimaryKeyOrIndex(FTable table, List<String> columns)
@@ -497,15 +539,15 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Get primary keys
-   * 
+   *
    * @param table
-   * @param condition
+   * @param conditions
    * @return a list of pair of pk and its value
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public List<Pair<String, byte[]>> getPrimaryKeyPairList(FTable table,
-      LinkedHashMap<String, Condition> conditions, Condition rangeCondition)
+      LinkedHashMap<String, Condition> conditions,  LinkedHashMap<String, Condition> rangeConditions)
       throws IOException {
     List<Pair<String, byte[]>> primaryKeys = new ArrayList<Pair<String, byte[]>>();
     for (Field primaryKey : table.getPrimaryKeys().values()) {
@@ -525,9 +567,9 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Check whether the given table name is legal, throw exception if not legal
-   * 
+   *
    * @param tableName
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void isLegalTableName(String tableName) throws IOException {
@@ -540,9 +582,9 @@ public class FMetaEventOperation implements MetaEventOperation {
 
   /**
    * Check whether the given index name is legal, throw exception if not
-   * 
+   *
    * @param indexName
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void isLegalIndexName(String indexName) throws IOException {
@@ -552,10 +594,10 @@ public class FMetaEventOperation implements MetaEventOperation {
   /**
    * Check whether the table has duplicate column name after adding the new
    * columns
-   * 
+   *
    * @param existedColumns
-   * @param addColumns
-   * @throws IOException
+   * @param newColumns
+   * @throws java.io.IOException
    */
   @Override
   public void areLegalTableColumns(Collection<Field> existedColumns,
@@ -575,11 +617,28 @@ public class FMetaEventOperation implements MetaEventOperation {
     }
   }
 
+  @Override
+  public void checkColumnFamilyName(Collection<Field> existedColumns, Collection<Field> newColumns)
+      throws IOException {
+    HashSet<String> existedColumnFamilys = new HashSet<String>();
+    if (existedColumns != null && !existedColumns.isEmpty()) {
+      for (Field existedColumn : existedColumns) {
+        existedColumnFamilys.add(existedColumn.getFamily());
+      }
+    }
+    for (Field newColumn : newColumns) {
+      if (!existedColumnFamilys.contains(newColumn.getFamily())) {
+        throw new UnsupportedException("ColumnFamily '" + newColumn.getFamily()
+            + "' not exists and do not support add columnfamily dynamic now.");
+      }
+    }
+  }
+
   /**
    * check whether the column family name is legal, throw exception if not
-   * 
+   *
    * @param columnFamily
-   * @throws IOException
+   * @throws java.io.IOException
    */
   @Override
   public void isLegalFamilyName(String columnFamily) throws IOException {

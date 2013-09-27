@@ -17,17 +17,17 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-
-import com.alibaba.wasp.EntityGroupLocation;import com.alibaba.wasp.meta.Index;import com.alibaba.wasp.meta.StorageTableNameBuilder;import com.alibaba.wasp.plan.GlobalQueryPlan;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
+import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.expr.SQLAggregateExpr;
+import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
+import com.alibaba.druid.sql.ast.expr.SQLBinaryOperator;
+import com.alibaba.druid.sql.ast.statement.SQLSelect;
+import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
+import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
+import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
+import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
+import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.wasp.EntityGroupLocation;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.ZooKeeperConnectionException;
@@ -38,6 +38,7 @@ import com.alibaba.wasp.meta.Field;
 import com.alibaba.wasp.meta.Index;
 import com.alibaba.wasp.meta.RowBuilder;
 import com.alibaba.wasp.meta.StorageTableNameBuilder;
+import com.alibaba.wasp.plan.AggregateQueryPlan;
 import com.alibaba.wasp.plan.DQLPlan;
 import com.alibaba.wasp.plan.GlobalQueryPlan;
 import com.alibaba.wasp.plan.LocalQueryPlan;
@@ -45,22 +46,25 @@ import com.alibaba.wasp.plan.action.Action;
 import com.alibaba.wasp.plan.action.ColumnStruct;
 import com.alibaba.wasp.plan.action.GetAction;
 import com.alibaba.wasp.plan.action.ScanAction;
+import com.alibaba.wasp.plan.parser.AggregateInfo;
 import com.alibaba.wasp.plan.parser.Condition;
 import com.alibaba.wasp.plan.parser.Condition.ConditionType;
 import com.alibaba.wasp.plan.parser.ParseContext;
 import com.alibaba.wasp.plan.parser.QueryInfo;
 import com.alibaba.wasp.plan.parser.UnsupportedException;
 import com.alibaba.wasp.util.ParserUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 
-import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * Use Druid (https://github.com/AlibabaTech/druid) to parse the sql and
@@ -75,7 +79,7 @@ public class DruidDQLParser extends DruidParser {
 
   /**
    * @param conf
-   * @throws ZooKeeperConnectionException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
    */
   public DruidDQLParser(Configuration conf) throws ZooKeeperConnectionException {
     this(conf, FConnectionManager.getConnection(conf));
@@ -91,7 +95,7 @@ public class DruidDQLParser extends DruidParser {
   }
 
   /**
-   * @see com.alibaba.wasp.plan.parser.Parser#genPlan(com.alibaba.wasp.plan.parser.ParseContext)
+   * @see com.alibaba.wasp.plan.parser.Parser#generatePlan(com.alibaba.wasp.plan.parser.ParseContext)
    */
   @Override
   public void generatePlan(ParseContext context) throws IOException {
@@ -108,7 +112,7 @@ public class DruidDQLParser extends DruidParser {
 
   /**
    * Process select Statement and generate QueryPlan
-   * 
+   *
    */
   private void getSelectPlan(ParseContext context,
       SQLSelectStatement sqlSelectStatement,
@@ -128,13 +132,24 @@ public class DruidDQLParser extends DruidParser {
       FTable table = metaEventOperation.checkAndGetTable(fTableName, false);
 
       LinkedHashSet<String> selectItem = null;
-      // Parse The SELECT clause
-      if (sqlSelectQueryBlock.getSelectList().size() == 1
-          && sqlSelectQueryBlock.getSelectList().get(0).getExpr() instanceof SQLAllColumnExpr) {
-        // This is SELECT * clause
-        selectItem = parseFTable(table);
+      AggregateInfo aggregateInfo = parseAggregateClause(sqlSelectQueryBlock.getSelectList(), table);
+      if(aggregateInfo == null) {
+        // Parse The SELECT clause
+        if (sqlSelectQueryBlock.getSelectList().size() == 1
+            && sqlSelectQueryBlock.getSelectList().get(0).getExpr() instanceof SQLAllColumnExpr) {
+          // This is SELECT * clause
+          selectItem = parseFTable(table);
+        } else {
+          selectItem = parseSelectClause(sqlSelectQueryBlock.getSelectList());
+        }
       } else {
-        selectItem = parseSelectClause(sqlSelectQueryBlock.getSelectList());
+        selectItem = new LinkedHashSet<String>();
+        if(aggregateInfo.getField() == null) {
+          //TODO
+        }
+        if(!aggregateInfo.getField().getName().equals("*")) {
+          selectItem.add(aggregateInfo.getField().getName());
+        }
       }
       LOG.debug("SELECT SQL:Select columns "
           + sqlSelectQueryBlock.getSelectList());
@@ -144,11 +159,11 @@ public class DruidDQLParser extends DruidParser {
       // Parse The WHERE clause
       SQLExpr where = sqlSelectQueryBlock.getWhere();
       LOG.debug("SELECT SQL:where " + where);
-      QueryInfo actionInfo = parseWhereClause(table, metaEventOperation, where);
+      QueryInfo actionInfo = parseWhereClause(table, metaEventOperation, where, sqlSelectQueryBlock.isForUpdate());
       LOG.debug("ActionInfo " + actionInfo.toString());
 
       // Parse The Limit clause
-      SQLExpr rowCount = null; 
+      SQLExpr rowCount = null;
       if (sqlSelectQueryBlock.getLimit() != null) {
         rowCount = sqlSelectQueryBlock.getLimit().getRowCount();
       }
@@ -156,23 +171,48 @@ public class DruidDQLParser extends DruidParser {
       if (rowCount != null) {
         limit = convertToInt(rowCount);
       }
+
       // Convert to QueryPlan
-      convertToQueryPlan(table, context, actionInfo, metaEventOperation,
-          selectItem, limit);
+      if(aggregateInfo == null) {
+        convertToQueryPlan(table, context, actionInfo, metaEventOperation,
+            selectItem, limit);
+      } else {
+        actionInfo.setType(QueryInfo.QueryType.AGGREGATE);
+        actionInfo.setAggregateInfo(aggregateInfo);
+        convertToQueryPlan(table, context, actionInfo, metaEventOperation);
+      }
     } else if (sqlSelectQuery instanceof SQLUnionQuery) {
       throw new UnsupportedException("Union clause Unsupported");
     }
   }
 
+  private void convertToQueryPlan(FTable table, ParseContext context, QueryInfo queryInfo,
+                                  MetaEventOperation metaEventOperation) throws IOException {
+    // should check the fields in where clause
+    List<String> conditionFields = queryInfo.getAllConditionFieldName();
+    // check if table has this columns
+    metaEventOperation.checkAndGetFields(table, conditionFields);
+
+    List<ColumnStruct> conditionColumns = buildAllConditionColumns(table, queryInfo);
+    ScanAction scanAction = new ScanAction(table.getTableName());
+    scanAction.setNotIndexConditionColumns(conditionColumns);
+
+    DQLPlan qp = new AggregateQueryPlan(scanAction, table);
+    qp.setQueryInfo(queryInfo);
+    LOG.debug("QueryPlan " + qp);
+    context.setPlan(qp);
+
+  }
+
   /**
    * Convert to QueryPlan
-   * 
+   *
    * @param table
    * @param context
    * @param queryInfo
    * @param metaEventOperation
    * @param selectItem
-   * @throws IOException
+   * @throws java.io.IOException
    */
   private void convertToQueryPlan(FTable table, ParseContext context,
       QueryInfo queryInfo, MetaEventOperation metaEventOperation,
@@ -184,10 +224,9 @@ public class DruidDQLParser extends DruidParser {
 
     List<Pair<String, byte[]>> primaryKeyPairs = metaEventOperation
         .getPrimaryKeyPairList(table, queryInfo.getEqConditions(),
-            queryInfo.getRangeCondition());
+            queryInfo.getRangeConditions());
 
-    if ((queryInfo.getEqConditions().size() + (queryInfo.getRangeCondition() != null ? 1
-        : 0)) == 0) {
+    if ((queryInfo.getEqConditions().size() + queryInfo.getRangeConditions().size()) == 0) {
       throw new UnsupportedException("Unsupported null condition.");
     }
 
@@ -213,6 +252,7 @@ public class DruidDQLParser extends DruidParser {
       action = new GetAction(context.getReadModel(), table.getTableName(),
           primaryKey, this.buildEntityColumnsForGet(table, metaEventOperation,
               selectItem));
+      ((GetAction)action).setForUpdate(queryInfo.isForUpdate());
       if (context.isGenWholePlan()) {
         // get entityGroupLocation according to entity group key.
         EntityGroupLocation entityGroupLocation = this.connection
@@ -232,14 +272,17 @@ public class DruidDQLParser extends DruidParser {
       if (index == null) {
         throw new UnsupportedException("Don't get a Index!");
       }
-      Pair<byte[], byte[]> startKeyAndEndKey = metaEventOperation
-          .getStartkeyAndEndkey(index, queryInfo);
+
+      boolean isJustUseIndex = index.getIndexKeys().size() >= queryInfo.getAllConditionFieldName().size();
+      Pair<byte[], byte[]> startKeyAndEndKey = metaEventOperation.getStartkeyAndEndkey(index, queryInfo);
 
       Pair<List<ColumnStruct>, List<ColumnStruct>> columnActionPair = this
           .buildEntityColumnsForScan(table, index, metaEventOperation,
               selectItem);
       List<ColumnStruct> selectEntityColumns = columnActionPair.getFirst();
       List<ColumnStruct> selectStoringColumns = columnActionPair.getSecond();
+      List<ColumnStruct> conditionNotInIndex = isJustUseIndex ? Collections.<ColumnStruct>emptyList()
+          : buildColumnsNotInIndex(table, index, queryInfo);
 
       // instance scan action.
       action = new ScanAction(context.getReadModel(),
@@ -248,6 +291,7 @@ public class DruidDQLParser extends DruidParser {
           startKeyAndEndKey.getSecond(), selectEntityColumns);
       ((ScanAction) action).setStoringColumns(selectStoringColumns);
       ((ScanAction) action).setLimit(limit);
+      ((ScanAction) action).setNotIndexConditionColumns(conditionNotInIndex);
 
       if (entityGroupKeyCondition != null
           && entityGroupKeyCondition.getType() == ConditionType.EQUAL) {
@@ -270,6 +314,51 @@ public class DruidDQLParser extends DruidParser {
     qp.setQueryInfo(queryInfo);
     LOG.debug("QueryPlan " + qp);
     context.setPlan(qp);
+  }
+
+  private List<ColumnStruct> buildColumnsNotInIndex(FTable table, Index index, QueryInfo queryInfo) throws UnsupportedException {
+    List<ColumnStruct> columns = new ArrayList<ColumnStruct>();
+    LinkedHashMap<String, Field> fields = table.getColumns();
+    for (String fieldname : queryInfo.getAllConditionFieldName()) {
+      if(!index.getIndexKeys().containsKey(fieldname)) {
+        Field field = fields.get(fieldname);
+        if(field != null) {
+          ColumnStruct column = buildColumnStruct(table, queryInfo, field);
+          columns.add(column);
+        }
+      }
+    }
+    return columns;
+  }
+
+  private List<ColumnStruct> buildAllConditionColumns(FTable table, QueryInfo queryInfo) throws UnsupportedException {
+    List<ColumnStruct> columns = new ArrayList<ColumnStruct>();
+    LinkedHashMap<String, Field> fields = table.getColumns();
+    for (String fieldname : queryInfo.getAllConditionFieldName()) {
+      Field field = fields.get(fieldname);
+      if(field != null) {
+        ColumnStruct column = buildColumnStruct(table, queryInfo, field);
+        columns.add(column);
+      }
+    }
+    return columns;
+  }
+
+  private ColumnStruct buildColumnStruct(FTable table, QueryInfo queryInfo, Field field) throws UnsupportedException {
+    Condition condition = queryInfo.getField(field.getName());
+    ColumnStruct column = null;
+    if(condition.getType() == ConditionType.EQUAL) {
+      column = new ColumnStruct(table.getTableName(), field.getFamily(), field.getName(), field.getType(),
+          DruidParser.convert(field, condition.getValue()),
+          ParserUtils.parseSQLBinaryOperatorToIntValue(SQLBinaryOperator.Equality));
+    } else {
+      SQLBinaryOperator leftOperator = condition.getLeftOperator();
+      SQLBinaryOperator rightOperator = condition.getRightOperator();
+      column = new ColumnStruct(table.getTableName(), field.getFamily(), field.getName(), field.getType(),
+          DruidParser.convert(field, leftOperator != null ? condition.getLeft() : condition.getRight()),
+          ParserUtils.parseSQLBinaryOperatorToIntValue(leftOperator != null ? leftOperator : rightOperator));
+    }
+    return column;
   }
 
   /**
@@ -334,11 +423,12 @@ public class DruidDQLParser extends DruidParser {
    * 
    */
   QueryInfo parseWhereClause(FTable table,
-      MetaEventOperation metaEventOperation, SQLExpr where) throws IOException {
+      MetaEventOperation metaEventOperation, SQLExpr where, boolean forUpdate) throws IOException {
     LinkedHashMap<String, Condition> conditions = new LinkedHashMap<String, Condition>();
-    List<Condition> ranges = new ArrayList<Condition>(5);
+    LinkedHashMap<String, Condition> ranges = new LinkedHashMap<String, Condition>();
+    //List<Condition> ranges = new ArrayList<Condition>(5);
     ParserUtils.parse(where, conditions, ranges);
-    return new QueryInfo(null, conditions, ranges);
+    return new QueryInfo(null, conditions, ranges, forUpdate);
   }
 
   /**
@@ -350,12 +440,37 @@ public class DruidDQLParser extends DruidParser {
     LinkedHashSet<String> selectItem = new LinkedHashSet<String>(select.size());
     for (SQLSelectItem item : select) {
       SQLExpr expr = item.getExpr();
+      if(expr instanceof SQLAggregateExpr) {
+
+      }
       String columnName = parseColumn(expr);
       selectItem.add(columnName);
       LOG.debug(" SQLSelectItem " + columnName);
     }
     return selectItem;
   }
+
+  private AggregateInfo parseAggregateClause(List<SQLSelectItem> select, FTable table) throws UnsupportedException {
+    for (SQLSelectItem item : select) {
+      SQLExpr expr = item.getExpr();
+      if(expr instanceof SQLAggregateExpr) {
+        SQLAggregateExpr aggregateExpr = (SQLAggregateExpr) expr;
+        String method = aggregateExpr.getMethodName();
+        String columnName = parseColumn(aggregateExpr.getArguments().get(0));
+        LOG.debug(" SQLAggregatetItem column: " + columnName + " method: " + method);
+        Field field = table.getColumns().get(columnName);
+        if(method.equalsIgnoreCase("count")
+            //&& (columnName.equals("*") || columnName.equals("1"))
+            ) {
+          field = table.getEntityGroupKey();
+        }
+        return new AggregateInfo(AggregateInfo.getAggregateTypeByMethod(method), field);
+      }
+    }
+    return null;
+  }
+
+
 
   private LinkedHashSet<String> parseFTable(FTable ftable)
       throws UnsupportedException {

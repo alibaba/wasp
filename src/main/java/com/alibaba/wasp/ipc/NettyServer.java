@@ -18,6 +18,27 @@
 
 package com.alibaba.wasp.ipc;
 
+import com.alibaba.wasp.ipc.NettyTransportCodec.NettyDataPack;
+import com.alibaba.wasp.ipc.NettyTransportCodec.NettyFrameDecoder;
+import com.alibaba.wasp.ipc.NettyTransportCodec.NettyFrameEncoder;
+import com.alibaba.wasp.protobuf.generated.RPCProtos.*;
+import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcResponseHeader.Status;
+import com.alibaba.wasp.util.ByteBufferInputStream;
+import com.alibaba.wasp.util.ByteBufferOutputStream;
+import com.google.protobuf.Message;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.util.StringUtils;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.ChannelGroupFuture;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.execution.MemoryAwareThreadPoolExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -29,42 +50,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.util.StringUtils;
-import com.alibaba.wasp.ipc.NettyTransportCodec.NettyDataPack;
-import com.alibaba.wasp.ipc.NettyTransportCodec.NettyFrameDecoder;
-import com.alibaba.wasp.ipc.NettyTransportCodec.NettyFrameEncoder;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.ConnectionHeader;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcException;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcRequestBody;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcRequestHeader;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcResponseHeader;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcResponseHeader.Status;
-import com.alibaba.wasp.util.ByteBufferInputStream;
-import com.alibaba.wasp.util.ByteBufferOutputStream;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelEvent;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.jboss.netty.handler.execution.MemoryAwareThreadPoolExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.protobuf.Message;
 
 /**
  * A Netty-based RPC implementation.

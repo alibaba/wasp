@@ -20,11 +20,6 @@
 
 package com.alibaba.wasp.plan.parser.druid;
 
-import java.io.IOException;
-
-import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.meta.FMetaTestUtil;import com.alibaba.wasp.meta.Index;import com.alibaba.wasp.meta.MemFMetaStore;import com.alibaba.wasp.plan.CreateIndexPlan;import com.alibaba.wasp.plan.CreateTablePlan;import com.alibaba.wasp.plan.Plan;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.meta.FMetaTestUtil;
 import com.alibaba.wasp.meta.FTable;
@@ -36,12 +31,17 @@ import com.alibaba.wasp.plan.CreateTablePlan;
 import com.alibaba.wasp.plan.Plan;
 import com.alibaba.wasp.plan.parser.ParseContext;
 import com.alibaba.wasp.plan.parser.WaspParser;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
 
 public class TestDruidParser {
   private static final Log LOG = LogFactory.getLog(TestDruidParser.class);

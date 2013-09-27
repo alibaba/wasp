@@ -17,22 +17,16 @@
  */
 package com.alibaba.wasp.meta;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
-
-import com.alibaba.wasp.DeserializationException;import com.alibaba.wasp.EntityGroupLocation;import com.alibaba.wasp.storage.StorageActionManager;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.DeserializationException;
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.EntityGroupLocation;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.TableNotFoundException;
+import com.alibaba.wasp.storage.StorageActionManager;
+import com.alibaba.wasp.storage.StorageTableNotFoundException;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -51,17 +45,21 @@ import org.apache.hadoop.hbase.io.hfile.Compression.Algorithm;
 import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.DeserializationException;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupLocation;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.MetaException;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.TableNotFoundException;
-import com.alibaba.wasp.meta.FMetaScanner.MetaScannerVisitor;
-import com.alibaba.wasp.meta.FMetaScanner.MetaScannerVisitorBase;
-import com.alibaba.wasp.storage.StorageActionManager;
-import com.alibaba.wasp.storage.StorageTableNotFoundException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 /**
  * implement FMetaServices, we use many scan to get TableInfo and EGinfo Without
@@ -926,7 +924,7 @@ public class FMetaServicesImplWithoutRetry extends FMetaServices {
   /**
    * @param tableName
    * @return Return list of EntityGroupInfos and server addresses.
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws InterruptedException
    */
   @Override
@@ -979,17 +977,17 @@ public class FMetaServicesImplWithoutRetry extends FMetaServices {
    * Adds a (single) META row for the specified new entityGroup and its
    * daughters. Note that this does not add its daughter's as different rows,
    * but adds information about the daughters in the same row as the parent. Use
-   * {@link #offlineParentInMeta(EntityGroupInfo, EntityGroupInfo, EntityGroupInfo)}
-   * and {@link #addDaughter(EntityGroupInfo, ServerName)} if you want to do
+   * {@link #offlineParentInMeta(com.alibaba.wasp.EntityGroupInfo, com.alibaba.wasp.EntityGroupInfo, com.alibaba.wasp.EntityGroupInfo)}
+   * and {@link #addDaughter(com.alibaba.wasp.EntityGroupInfo, com.alibaba.wasp.ServerName)} if you want to do
    * that.
-   * 
+   *
    * @param entityGroupInfo
    *          EntityGroupInfo information
    * @param splitA
    *          first split daughter of the parent EntityGroupInfo
    * @param splitB
    *          second split daughter of the parent EntityGroupInfo
-   * @throws IOException
+   * @throws java.io.IOException
    *           if problem connecting or updating meta
    */
   public void addEntityGroupToMeta(EntityGroupInfo entityGroupInfo,
@@ -1006,7 +1004,7 @@ public class FMetaServicesImplWithoutRetry extends FMetaServices {
   /**
    * @param entityGroupInfo
    * @param sn
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   @Override
   public void addDaughter(final EntityGroupInfo entityGroupInfo,
@@ -1040,10 +1038,10 @@ public class FMetaServicesImplWithoutRetry extends FMetaServices {
 
   /**
    * Deletes daughters references in offlined split parent.
-   * 
+   *
    * @param parent
    *          Parent row we're to remove daughter reference from
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public void deleteDaughtersReferencesInParent(final EntityGroupInfo parent)
       throws MetaException {

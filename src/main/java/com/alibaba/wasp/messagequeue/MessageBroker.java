@@ -17,16 +17,6 @@
  */
 package com.alibaba.wasp.messagequeue;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.FConstants;import com.alibaba.wasp.fserver.EntityGroup;import com.alibaba.wasp.fserver.LeaseException;import com.alibaba.wasp.fserver.LeaseListener;import com.alibaba.wasp.fserver.OnlineEntityGroups;import com.alibaba.wasp.storage.StorageTableNotFoundException;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.fserver.EntityGroup;
@@ -36,6 +26,20 @@ import com.alibaba.wasp.fserver.Leases;
 import com.alibaba.wasp.fserver.Leases.LeaseStillHeldException;
 import com.alibaba.wasp.fserver.OnlineEntityGroups;
 import com.alibaba.wasp.storage.StorageTableNotFoundException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.io.hfile.Compression;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Message broker, it receives message from message queue and send message to
@@ -57,6 +61,8 @@ public class MessageBroker extends Thread implements Closeable, Broker {
   private final int subscriberLeaseTimeoutPeriod;
   private final RenewRunnable renew;
 
+  private final Configuration conf;
+
   /**
    * @param service
    *          entityGroup server instance
@@ -65,6 +71,7 @@ public class MessageBroker extends Thread implements Closeable, Broker {
    */
   public MessageBroker(OnlineEntityGroups service, Configuration conf) {
     this.service = service;
+    this.conf = conf;
     this.leases = new Leases(conf.getInt(FConstants.THREAD_WAKE_FREQUENCY,
         10 * 1000));
     this.subscriberLeaseTimeoutPeriod = conf.getInt(
@@ -72,6 +79,18 @@ public class MessageBroker extends Thread implements Closeable, Broker {
         FConstants.DEFAULT_WASP_FSEVER_SUBSCRIBER_TIMEOUT_PERIOD);
     this.renew = new RenewRunnable();
     this.renew.start();
+  }
+
+  public void initlize() throws IOException {
+    HBaseAdmin admin = new HBaseAdmin(this.conf);
+    if (!admin.tableExists(FConstants.MESSAGEQUEUE_TABLENAME)) {
+      HColumnDescriptor family = new HColumnDescriptor(FConstants.MESSAGEQUEUE_FAMILIY);
+      family.setCompressionType(Compression.Algorithm.GZ);
+      HTableDescriptor tableDes = new HTableDescriptor(FConstants.MESSAGEQUEUE_TABLENAME);
+      tableDes.addFamily(family);
+      admin.createTable(tableDes);
+    }
+    admin.close();
   }
 
   private class SubscriberListener implements LeaseListener {
@@ -172,7 +191,7 @@ public class MessageBroker extends Thread implements Closeable, Broker {
   }
 
   /**
-   * @see java.lang.Thread#run()
+   * @see Thread#run()
    */
   @Override
   public void run() {
@@ -197,9 +216,9 @@ public class MessageBroker extends Thread implements Closeable, Broker {
 
   /**
    * Fetch messages which were subscribed.
-   * 
+   *
    * @throws HBaseTableNotFoundException
-   * @throws IOException
+   * @throws java.io.IOException
    */
   private void selectCurrentMessages() throws StorageTableNotFoundException,
       IOException {

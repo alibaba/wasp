@@ -17,6 +17,10 @@
  */
 package com.alibaba.wasp.plan;
 
+import com.alibaba.wasp.plan.action.DMLAction;
+
+import java.util.List;
+
 /**
  * DML's basic plan used to distinguish between DDL.
  */
@@ -27,4 +31,6 @@ public abstract class DMLPlan extends Plan {
    */
   public DMLPlan() {
   }
+
+  public abstract List<? extends DMLAction> getActions();
 }

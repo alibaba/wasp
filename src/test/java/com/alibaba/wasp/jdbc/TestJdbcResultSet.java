@@ -17,15 +17,21 @@
  */
 package com.alibaba.wasp.jdbc;
 
-import com.alibaba.wasp.WaspTestingUtility;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
+import com.alibaba.wasp.ClusterStatus;
+import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.SQLErrorCode;
+import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.WaspTestingUtility;
+import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.client.FClient;
+import com.alibaba.wasp.client.WaspAdmin;
+import com.alibaba.wasp.plan.parser.druid.DruidParserTestUtil;
 import com.alibaba.wasp.util.ResultInHBasePrinter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +46,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 public class TestJdbcResultSet extends TestJdbcBase {
@@ -53,7 +61,9 @@ public class TestJdbcResultSet extends TestJdbcBase {
   private final static WaspTestingUtility TEST_UTIL = new WaspTestingUtility();
   private static FClient client;
   public static final String TABLE_NAME = "test";
+  public static final String CHILD_TABLE_NAME = "test_child";
   public static final byte[] TABLE = Bytes.toBytes(TABLE_NAME);
+  public static final byte[] CHILD_TABLE = Bytes.toBytes(CHILD_TABLE_NAME);
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -64,8 +74,7 @@ public class TestJdbcResultSet extends TestJdbcBase {
     client = new FClient(TEST_UTIL.getConfiguration());
     client.execute("create index test_index on " + TABLE_NAME + "(column3);");
     TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
-    client.execute("create index test_index2 on " + TABLE_NAME
-        + "(column2);");
+    client.execute("create index test_index2 on " + TABLE_NAME + "(column2);");
     TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
     client.execute("create index test_index3 on " + TABLE_NAME
         + "(column1,column3);");
@@ -73,6 +82,10 @@ public class TestJdbcResultSet extends TestJdbcBase {
     client.execute("create index test_index4 on " + TABLE_NAME + "(column1,column3,column4,column5);");
     TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
     client.execute("create index test_index5 on " + TABLE_NAME + "(column4) storing (column4);");
+    TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
+    client.execute("create index test_index6 on " + TABLE_NAME + "(column1,column2,column3);");
+    TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
+    client.execute("create index " + TABLE_NAME  + " on " + TABLE_NAME + "(column4, column5)");
     TEST_UTIL.getWaspAdmin().waitTableNotLocked(TABLE);
     TEST_UTIL.getWaspAdmin().enableTable(TABLE);
 
@@ -105,15 +118,15 @@ public class TestJdbcResultSet extends TestJdbcBase {
     stat.close();
   }
 
-  //@Test
+  // @Test
   public void testBeforeFirstAfterLast() throws SQLException {
     // stat.executeUpdate("create table test(id int)");
     stat = conn.createStatement();
     stat.execute("insert into test (column1,column2,column3) values(1,21,'binlijin2')");
     assertTrue(stat.getUpdateCount() == 1);
     // With a result
-    ResultSet rs = stat
-        .executeQuery("select column1,column2,column3 from " + TABLE_NAME + " where column1=1 and column3='binlijin2'");
+    ResultSet rs = stat.executeQuery("select column1,column2,column3 from "
+        + TABLE_NAME + " where column1=1 and column3='binlijin2'");
     assertTrue(rs.isBeforeFirst());
     assertFalse(rs.isAfterLast());
     rs.next();
@@ -217,7 +230,7 @@ public class TestJdbcResultSet extends TestJdbcBase {
     stat.execute("DROP TABLE test");
   }
 
- // @Test
+  // @Test
   public void testFindColumn() throws SQLException {
     trace("testFindColumn");
     stat = conn.createStatement();
@@ -225,12 +238,12 @@ public class TestJdbcResultSet extends TestJdbcBase {
         + "(column1,column2,column3) values (3031,11,'binlijin3031');");
     ResultSet rs = stat
         .executeQuery("SELECT column1,column2,column3 FROM test where column1=3031 and column3='binlijin3031'");
-//    assertEquals(1, rs.findColumn("COLUMN1"));
-//    assertEquals(2, rs.findColumn("COLUMN2"));
+    // assertEquals(1, rs.findColumn("COLUMN1"));
+    // assertEquals(2, rs.findColumn("COLUMN2"));
     assertEquals(1, rs.findColumn("column1"));
     assertEquals(2, rs.findColumn("column2"));
-//    assertEquals(1, rs.findColumn("Column1"));
-//    assertEquals(2, rs.findColumn("Column2"));
+    // assertEquals(1, rs.findColumn("Column1"));
+    // assertEquals(2, rs.findColumn("Column2"));
   }
 
   @Test
@@ -587,7 +600,7 @@ public class TestJdbcResultSet extends TestJdbcBase {
     rs.next();
     java.sql.Date date;
     java.sql.Time time;
-    java.sql.Timestamp ts;
+    Timestamp ts;
     date = rs.getDate(2);
     assertTrue(!rs.wasNull());
     time = rs.getTime(2);
@@ -599,16 +612,16 @@ public class TestJdbcResultSet extends TestJdbcBase {
     trace("Date ms: " + date.getTime() + " Time ms:" + time.getTime()
         + " Timestamp ms:" + ts.getTime());
     trace("1970 ms: "
-        + java.sql.Timestamp.valueOf("1970-01-01 00:00:00.0").getTime());
-    assertEquals(java.sql.Timestamp.valueOf("2011-11-11 00:00:00.0").getTime(),
+        + Timestamp.valueOf("1970-01-01 00:00:00.0").getTime());
+    assertEquals(Timestamp.valueOf("2011-11-11 00:00:00.0").getTime(),
         date.getTime());
-    assertEquals(java.sql.Timestamp.valueOf("1970-01-01 00:00:00.0").getTime(),
+    assertEquals(Timestamp.valueOf("1970-01-01 00:00:00.0").getTime(),
         time.getTime());
-    assertEquals(java.sql.Timestamp.valueOf("2011-11-11 00:00:00.0").getTime(),
+    assertEquals(Timestamp.valueOf("2011-11-11 00:00:00.0").getTime(),
         ts.getTime());
     assertTrue(date.equals(java.sql.Date.valueOf("2011-11-11")));
     assertTrue(time.equals(java.sql.Time.valueOf("00:00:00")));
-    assertTrue(ts.equals(java.sql.Timestamp.valueOf("2011-11-11 00:00:00.0")));
+    assertTrue(ts.equals(Timestamp.valueOf("2011-11-11 00:00:00.0")));
     assertFalse(rs.wasNull());
     o = rs.getObject(2);
     trace(o.getClass().getName());
@@ -638,6 +651,26 @@ public class TestJdbcResultSet extends TestJdbcBase {
     // assertTrue(!rs.next());
   }
 
+  //@Test
+  public void testInAndNotIn() throws SQLException, IOException {
+    trace("testInAndNotIn");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 81001, 'testInAndNotIn')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 81002, 'testInAndNotIn')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 81003, 'testInAndNotIn')");
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 81004, 'testInAndNotIn')");
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column2 in (81002,81004)");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 81002);
+
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 81004);
+
+  }
+
   @Test
   public void testGreatEqAndLessEq() throws SQLException, IOException {
     trace("testGreatEqAndLessEq");
@@ -651,15 +684,15 @@ public class TestJdbcResultSet extends TestJdbcBase {
     rs = stat
         .executeQuery("SELECT column1,column2 FROM test where column2 > 1001");
     while (rs.next()) {
-      assertTrue(rs.getLong("column2") > 1001 );
+      assertTrue(rs.getLong("column2") > 1001);
     }
 
     rs = stat
         .executeQuery("SELECT column1,column2 FROM test where column2 >= 1001");
     boolean hasEq = false;
     while (rs.next()) {
-      hasEq =  rs.getLong("column2") == 1001;
-      if(hasEq)
+      hasEq = rs.getLong("column2") == 1001;
+      if (hasEq)
         break;
     }
     assertTrue(hasEq);
@@ -667,23 +700,23 @@ public class TestJdbcResultSet extends TestJdbcBase {
     rs = stat
         .executeQuery("SELECT column1,column2 FROM test where column2 < 1004");
     while (rs.next()) {
-      assertTrue(rs.getLong("column2") < 1004 );
+      assertTrue(rs.getLong("column2") < 1004);
     }
 
     rs = stat
         .executeQuery("SELECT column1,column2 FROM test where column2 <= 1004");
     hasEq = false;
     while (rs.next()) {
-      hasEq =  rs.getLong("column2") == 1004;
-      if(hasEq)
+      hasEq = rs.getLong("column2") == 1004;
+      if (hasEq)
         break;
     }
     assertTrue(hasEq);
   }
 
   @Test
-   public void testLessNegativeValue() throws SQLException, IOException {
-      trace("testLessNegativeValue");
+  public void testLessNegativeValue() throws SQLException, IOException {
+    trace("testLessNegativeValue");
     ResultSet rs;
     stat = conn.createStatement();
     stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, -2001, 'testLessNegativeValue')");
@@ -692,21 +725,183 @@ public class TestJdbcResultSet extends TestJdbcBase {
     rs = stat
         .executeQuery("SELECT column1,column2 FROM test where column2 < 3001");
     assertTrue(rs.next());
-    assertTrue(rs.getLong("column2") == -2001 );
+    assertTrue(rs.getLong("column2") == -2001);
     assertTrue(rs.next());
-    assertTrue(rs.getLong("column2") == 2001 );
+    assertTrue(rs.getLong("column2") == 2001);
 
     rs = stat
         .executeQuery("SELECT column1,column2 FROM test where column2 = -2001");
     assertTrue(rs.next());
-    assertTrue(rs.getLong("column2") == -2001 );
+    assertTrue(rs.getLong("column2") == -2001);
 
     rs = stat
         .executeQuery("SELECT column1,column2 FROM test where column2 = 2001");
     assertTrue(rs.next());
-    assertTrue(rs.getLong("column2") == 2001 );
+    assertTrue(rs.getLong("column2") == 2001);
 
-   }
+  }
+
+  @Test
+  public void testSelectForUpdateLock() throws SQLException, InterruptedException {
+    Statement stat = conn.createStatement();
+    conn.setAutoCommit(false);
+    final Statement stat1 = conn.createStatement();
+    final Statement stat2 = conn.createStatement();
+
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 30001, 'testSelectForUpdateLock')");
+
+    ResultSet rs = stat1
+        .executeQuery("SELECT * FROM test WHERE column1=1 and column2=30001 for update");
+    assertTrue(rs.next());
+    assertTrue(rs.getString("column3").equals("testSelectForUpdateLock"));
+
+    Thread thread = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          stat2.executeUpdate("UPDATE test SET column3='testSelectForUpdateLock00' WHERE column1=1 and column2=30001");
+          assertTrue(false);
+          return;
+        } catch (Exception e) {
+          assertTrue(e.getMessage().contains("Timed out on getting lock for"));
+          return;
+        }
+      }
+    });
+    thread.start();
+
+    //Thread.currentThread().sleep(3000);
+
+    stat1.executeUpdate("UPDATE test SET column3='testSelectForUpdateLock2' WHERE column1=1 and column2=30001");
+
+    rs = stat1
+        .executeQuery("SELECT * FROM test WHERE column1=1 and column2=30001");
+    assertTrue(rs.next());
+    assertTrue(rs.getString("column3").equals("testSelectForUpdateLock2"));
+
+    stat2.executeUpdate("UPDATE test SET column3='testSelectForUpdateLock00' WHERE column1=1 and column2=30001");
+
+    rs = stat2
+        .executeQuery("SELECT * FROM test WHERE column1=1 and column2=30001");
+    assertTrue(rs.next());
+    assertTrue(rs.getString("column3").equals("testSelectForUpdateLock00"));
+
+  }
+
+  @Test
+  public void testTransaction() throws SQLException, IOException, ZooKeeperConnectionException, InterruptedException {
+    stat.execute(DruidParserTestUtil.SEED[0]);
+    TEST_UTIL.waitTableAvailable(Bytes.toBytes("User"));
+    stat.execute(DruidParserTestUtil.SEED[1]);
+    TEST_UTIL.waitTableAvailable(Bytes.toBytes("Photo"));
+
+    conn.setAutoCommit(false);
+    Statement stat = conn.createStatement();
+    stat.addBatch("Insert into User(user_id,name) values(1,'testTransaction');");
+    stat.addBatch("Insert into Photo(user_id,photo_id,tag) values(1,1,'tag');");
+    int[] ret = stat.executeBatch();
+    conn.commit();
+    int successNum = 0;
+    for (int i : ret) {
+      if(i == 1) successNum++;
+    }
+    assertTrue(successNum == 2);
+
+    ResultSet rs = stat.executeQuery("SELECT * FROM User WHERE user_id=1");
+    assertTrue(rs.next());
+    assertTrue(rs.getString("name").equals("testTransaction"));
+
+    rs = stat.executeQuery("SELECT * FROM Photo WHERE user_id=1 and photo_id=1");
+    assertTrue(rs.next());
+    assertTrue(rs.getString("tag").equals("tag"));
+
+  }
+
+  @Test
+  public void testSelectNotOnlyIndex() throws SQLException, IOException {
+    trace("testSelectNotOnlyIndex");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3,column4) VALUES (1, 68001, 'testSelectNotOnlyIndex', 1)");
+    stat.execute("INSERT INTO test (column1,column2,column3,column4) VALUES (1, 68002, 'testSelectNotOnlyIndex', 2)");
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column1=1 and column3 = 'testSelectNotOnlyIndex'");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 68001);
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 68002);
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column1=1 and column3 = 'testSelectNotOnlyIndex' and column4=1");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 68001);
+    assertFalse(rs.next());
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column1=1 and column3 = 'testSelectNotOnlyIndex' and column4=2");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 68002);
+    assertFalse(rs.next());
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column1=1 and column3 = 'testSelectNotOnlyIndex' and column4>1");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 68002);
+    assertFalse(rs.next());
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column1=1 and column3 = 'testSelectNotOnlyIndex' and column4<=2");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 68001);
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 68002);
+  }
+
+  @Test
+  public void testIndexLeftMatch() throws SQLException, IOException {
+    trace("testSelectNotOnlyIndex");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 69001, 'testIndexLeftMatch', 1,1)");
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 69002, 'testIndexLeftMatch', 1,2)");
+
+    rs = stat
+        .executeQuery("SELECT column1,column2 FROM test where column1=1 and column3 = 'testIndexLeftMatch' and column4=1");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 69001);
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 69002);
+  }
+
+  @Test
+  public void testAggregateCountQuery() throws SQLException, IOException {
+    trace("testAggregateCountQuery");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 70001, 'testAggregateCountQuery', 1,1)");
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 70002, 'testAggregateCountQuery', 1,2)");
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 70003, 'testAggregateCountQuery', 1,3)");
+    rs = stat
+        .executeQuery("SELECT count(column1) FROM test where column1=1 and column3 = 'testAggregateQuery'");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("COUNT") == 3);
+  }
+
+  @Test
+  public void testAggregateSumQuery() throws SQLException, IOException {
+    trace("testAggregateSumQuery");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 71001, 'testAggregateSumQuery', 1,1)");
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 71002, 'testAggregateSumQuery', 1,2)");
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 71003, 'testAggregateSumQuery', 1,3)");
+    rs = stat
+        .executeQuery("SELECT sum(column5) FROM test where column1=1 and column3 = 'testAggregateSumQuery'");
+    assertTrue(rs.next());
+//    assertTrue(rs.getLong("SUM") == 213006);
+    assertTrue(rs.getDouble("SUM") == 6);
+  }
 
   @Test
   public void testStoringQuery() throws SQLException, IOException {
@@ -735,6 +930,106 @@ public class TestJdbcResultSet extends TestJdbcBase {
     assertTrue(!rs.next());
   }
 
+  @Test
+  public void testCreateIfNotExits() throws SQLException {
+    trace("testCreateIfNotExits");
+    stat = conn.createStatement();
+    int ret = stat.executeUpdate("CREATE TABLE if not exists " + TABLE_NAME + " {REQUIRED INT64 user_id ; OPTIONAL STRING name; } " +
+        "PRIMARY KEY(user_id), ENTITY GROUP ROOT, ENTITY GROUP KEY(user_id);");
+    assertTrue(ret == 0);
+  }
+
+  @Test
+  public void testIndexNameSameWithTableName() throws SQLException {
+
+     trace("testIndexNameSameWithTableName");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3,column4,column5) VALUES (1, 74001, 'testIndexNameSameWithTableName', 1,1)");
+    rs = stat
+        .executeQuery("SELECT column2 FROM test where column4=1 and column5=1");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 74001);
+
+  }
+
+  @Test
+  public void testIndexContainPrimaryKey() throws SQLException {
+    trace("testIndexContainPrimaryKey");
+    ResultSet rs;
+    stat = conn.createStatement();
+    stat.execute("INSERT INTO test (column1,column2,column3) VALUES (1, 75001, 'testIndexContainPrimaryKey')");
+    rs = stat
+        .executeQuery("SELECT column2 FROM test where column1=1 and column2=75001 and column3='testIndexContainPrimaryKey'");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("column2") == 75001);
+
+  }
+
+  @Test
+  public void testRenameTable() throws IOException, SQLException {
+
+    TEST_UTIL.createTable("testRenameTable");
+    TEST_UTIL.deleteTable(Bytes.toBytes("testRenameTable"));
+
+    stat = conn.createStatement();
+    stat.executeUpdate("ALTER TABLE testRenameTable RENAME testRenameTable1");
+  }
+
+
+  @Test
+  public void testSplitOrMoveAffectClient() throws SQLException, IOException, InterruptedException {
+
+    WaspAdmin admin = TEST_UTIL.getWaspAdmin();
+
+    String createTableSql = "CREATE TABLE user123{REQUIRED INT64 user_id;" +
+        "REQUIRED INT64 photo_id;}" +
+        "PRIMARY KEY(user_id)," +
+        "ENTITY GROUP ROOT," +
+        "ENTITY GROUP KEY(user_id)," +
+        "PARTITION BY RANGE('A', 'Z', 4);";
+    stat = conn.createStatement();
+    stat.executeUpdate(createTableSql);
+
+    admin.waitTableNotLocked("user123");
+    admin.disableTable("user123");
+    admin.waitTableDisabled("user123", 3000);
+    stat.executeUpdate("create index test_index on " + "user123" + "(photo_id);");
+    admin.waitTableNotLocked("user123");
+    admin.enableTable("user123");
+    admin.waitTableEnabled("user123", 3000);
+    stat.execute("INSERT INTO user123 (user_id, photo_id) VALUES (1, 1)");
+    stat.execute("INSERT INTO user123 (user_id, photo_id) VALUES (2, 2)");
+    stat.execute("INSERT INTO user123 (user_id, photo_id) VALUES (3, 3)");
+    stat.execute("INSERT INTO user123 (user_id, photo_id) VALUES (4, 4)");
+
+    List<EntityGroupInfo> egis =  admin.getTableEntityGroups(Bytes.toBytes("user123"));
+
+    admin.split(egis.get(0).getEntityGroupName(), Bytes.toBytes("H"));
+
+
+    stat.execute("INSERT INTO user123 (user_id, photo_id) VALUES (5, 5)");
+
+    ResultSet rs;
+    rs = stat.executeQuery("select * from user123 where photo_id=5");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("user_id") == 5);
+
+    egis =  admin.getTableEntityGroups(Bytes.toBytes("user123"));
+
+    ClusterStatus status = admin.getClusterStatus();
+    List<ServerName> serverNames = new ArrayList<ServerName>(status.getServers());
+
+    egis = admin.getOnlineEntityGroups(serverNames.get(0));
+
+    admin.move(egis.get(0).getEncodedNameAsBytes(), Bytes.toBytes(serverNames.get(1).getServerName()));
+
+    stat.execute("INSERT INTO user123 (user_id, photo_id) VALUES (6, 6)");
+    rs = stat.executeQuery("select * from user123 where photo_id=6");
+    assertTrue(rs.next());
+    assertTrue(rs.getLong("user_id") == 6);
+
+  }
 
   // @Test do not needed now
   public void testDatetimeWithCalendar() throws SQLException {
@@ -783,21 +1078,21 @@ public class TestJdbcResultSet extends TestJdbcBase {
     prep.setDate(2, java.sql.Date.valueOf("2001-02-03"), regular);
     prep.setTime(3, java.sql.Time.valueOf("04:05:06"), regular);
     prep.setTimestamp(4,
-        java.sql.Timestamp.valueOf("2007-08-09 10:11:12.131415"), regular);
+        Timestamp.valueOf("2007-08-09 10:11:12.131415"), regular);
     prep.execute();
 
     prep.setInt(1, 3);
     prep.setDate(2, java.sql.Date.valueOf("2101-02-03"), other);
     prep.setTime(3, java.sql.Time.valueOf("14:05:06"), other);
     prep.setTimestamp(4,
-        java.sql.Timestamp.valueOf("2107-08-09 10:11:12.131415"), other);
+        Timestamp.valueOf("2107-08-09 10:11:12.131415"), other);
     prep.execute();
 
     prep.setInt(1, 4);
     prep.setDate(2, java.sql.Date.valueOf("2101-02-03"));
     prep.setTime(3, java.sql.Time.valueOf("14:05:06"));
     prep.setTimestamp(4,
-        java.sql.Timestamp.valueOf("2107-08-09 10:11:12.131415"));
+        Timestamp.valueOf("2107-08-09 10:11:12.131415"));
     prep.execute();
 
     rs = stat.executeQuery("SELECT * FROM test ORDER BY ID");

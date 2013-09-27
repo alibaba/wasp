@@ -17,10 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import com.alibaba.wasp.master.AssignmentManager;import com.alibaba.wasp.master.BulkAssigner;import com.alibaba.wasp.master.EntityGroupPlan;import com.alibaba.wasp.master.FServerManager;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.ServerName;
@@ -38,6 +34,10 @@ import com.alibaba.wasp.master.FServerManager;
 import com.alibaba.wasp.master.TableLockManager;
 import com.alibaba.wasp.meta.FMetaReader;
 import com.alibaba.wasp.meta.FTable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 import org.apache.zookeeper.KeeperException;
 import org.cloudera.htrace.Trace;
 
@@ -194,7 +194,7 @@ public class EnableTableHandler extends EventHandler {
   /**
    * @param entityGroupsInMeta
    * @return List of entityGroups neither in transition nor assigned.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   private List<EntityGroupInfo> entityGroupsToAssignWithServerName(
       final List<Pair<EntityGroupInfo, ServerName>> entityGroupsInMeta)

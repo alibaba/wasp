@@ -18,18 +18,20 @@
  */
 package com.alibaba.wasp.fserver;
 
-import org.apache.hadoop.metrics2.MetricsBuilder;
-import org.apache.hadoop.metrics2.MetricsRecordBuilder;
-import org.apache.hadoop.metrics2.lib.MetricMutableCounterLong;
 import com.alibaba.wasp.fserver.metrics.MetricsFServerSource;
 import com.alibaba.wasp.fserver.metrics.MetricsFServerWrapper;
 import com.alibaba.wasp.metrics.BaseSourceImpl;
 import com.alibaba.wasp.metrics.lib.MetricHistogram;
+import org.apache.hadoop.metrics2.MetricsBuilder;
+import org.apache.hadoop.metrics2.MetricsRecordBuilder;
+import org.apache.hadoop.metrics2.lib.MetricMutableCounterLong;
 
 public class MetricsFServerSourceImpl extends BaseSourceImpl implements
     MetricsFServerSource {
 
   final MetricsFServerWrapper fsWrap;
+  private final MetricHistogram transactionHisto;
+  private final MetricMutableCounterLong slowTransaction;
   private final MetricHistogram insertHisto;
   private final MetricMutableCounterLong slowInsert;
   private final MetricHistogram updateHisto;
@@ -44,6 +46,10 @@ public class MetricsFServerSourceImpl extends BaseSourceImpl implements
   private final MetricMutableCounterLong slowGenPlan;
   private final MetricHistogram sqlExecuteHisto;
   private final MetricMutableCounterLong slowSqlExecute;
+  private final MetricHistogram countHisto;
+  private final MetricMutableCounterLong slowCount;
+  private final MetricHistogram sumHisto;
+  private final MetricMutableCounterLong slowSum;
 
   public MetricsFServerSourceImpl(MetricsFServerWrapper fsWrap) {
     this(METRICS_NAME, METRICS_DESCRIPTION, METRICS_CONTEXT,
@@ -56,6 +62,9 @@ public class MetricsFServerSourceImpl extends BaseSourceImpl implements
     super(metricsName, metricsDescription, metricsContext, metricsJmxContext);
     this.fsWrap = fsWrap;
 
+    transactionHisto = getMetricsRegistry().newHistogram(TRANSACTION_KEY);
+    slowTransaction = getMetricsRegistry().newCounter(SLOW_TRANSACTION_KEY,
+        SLOW_TRANSACTION_DESC, 0l);
     insertHisto = getMetricsRegistry().newHistogram(INSERT_KEY);
     slowInsert = getMetricsRegistry().newCounter(SLOW_INSERT_KEY,
         SLOW_INSERT_DESC, 0l);
@@ -76,6 +85,10 @@ public class MetricsFServerSourceImpl extends BaseSourceImpl implements
     sqlExecuteHisto = getMetricsRegistry().newHistogram(SQLEXECUTE_KEY);
     slowSqlExecute = getMetricsRegistry().newCounter(SLOW_SQLEXECUTE_KEY,
         SLOW_SQLEXECUTE_DESC, 0l);
+    countHisto = getMetricsRegistry().newHistogram(COUNT_KEY);
+    slowCount = getMetricsRegistry().newCounter(SLOW_COUNT_KEY, SLOW_COUNT_DESC, 0l);
+    sumHisto = getMetricsRegistry().newHistogram(SUM_KEY);
+    slowSum = getMetricsRegistry().newCounter(SLOW_SUM_KEY, SLOW_SUM_DESC, 0l);
   }
 
   @Override
@@ -86,6 +99,16 @@ public class MetricsFServerSourceImpl extends BaseSourceImpl implements
   @Override
   public void incrSlowInsert() {
     slowInsert.incr();
+  }
+
+  @Override
+  public void updateTransaction(long t) {
+    transactionHisto.add(t);
+  }
+
+  @Override
+  public void incrSlowTransaction() {
+    slowTransaction.incr();
   }
 
   @Override
@@ -126,6 +149,26 @@ public class MetricsFServerSourceImpl extends BaseSourceImpl implements
   @Override
   public void incrSlowScan() {
     slowScan.incr();
+  }
+
+  @Override
+  public void updateCount(long t) {
+    countHisto.add(t);
+  }
+
+  @Override
+  public void incrSlowCount() {
+    slowCount.incr();
+  }
+
+  @Override
+  public void updateSum(long t) {
+    sumHisto.add(t);
+  }
+
+  @Override
+  public void incrSlowSum() {
+    slowSum.incr();
   }
 
   @Override

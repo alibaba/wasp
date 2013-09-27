@@ -18,14 +18,14 @@
 package com.alibaba.wasp.session;
 
 import com.alibaba.wasp.ReadModel;
-import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.client.FClient;
 import com.alibaba.wasp.jdbc.command.CommandInterface;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class QuerySession implements SessionInterface {
+public class ExecuteSession implements SessionInterface {
 
   private String sessionId;
 
@@ -61,9 +61,14 @@ public class QuerySession implements SessionInterface {
 
   @Override
   public CommandInterface prepareCommand(FClient fClient, String sql,
-      int fetchSize, ReadModel readModel) {
+      int fetchSize, ReadModel readModel, boolean autoCommit, ExecuteSession statementSession) {
     return null; // To change body of implemented methods use File | Settings |
                  // File Templates.
+  }
+
+  @Override
+  public CommandInterface prepareCommand(FClient fClient, List<String> sqls, boolean autoCommit, ExecuteSession statementSession) {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
@@ -73,6 +78,5 @@ public class QuerySession implements SessionInterface {
   }
 
   public void checkClosed() {
-    // OK
   }
 }

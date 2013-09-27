@@ -19,15 +19,18 @@
  */
 package com.alibaba.wasp.fserver;
 
-import com.alibaba.wasp.meta.FTable;import org.apache.hadoop.hbase.SmallTests;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.MD5Hash;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.meta.FTable;
+import org.apache.hadoop.hbase.SmallTests;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.MD5Hash;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @Category(SmallTests.class)
 public class TestEntityGroupInfo {

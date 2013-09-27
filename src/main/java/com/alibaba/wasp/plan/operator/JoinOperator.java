@@ -20,7 +20,7 @@
 package com.alibaba.wasp.plan.operator;
 
 
-public class JoinOperator extends Operator{
+public class JoinOperator extends Operator {
 
   @Override
   public String getName() {

@@ -25,12 +25,16 @@ import java.io.IOException;
  */
 public abstract class Parser {
 
+  public enum SQLType {
+    DQL, DML, DDL
+  }
+
   /**
    * Parse sql to Statement,and set it into ParseContext.
    * 
    * @param context
    *          ParseContext
-   * @throws IOException
+   * @throws java.io.IOException
    */
   protected abstract void parseSqlToStatement(ParseContext context)
       throws IOException;
@@ -38,9 +42,11 @@ public abstract class Parser {
   /**
    * Generate plan(insert plan,update plan,delete plan,query plan) in the parse
    * context
-   * 
+   *
    * @param context
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public abstract void generatePlan(ParseContext context) throws IOException;
+
+  public abstract SQLType getSQLType(ParseContext context) throws IOException;
 }

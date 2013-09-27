@@ -17,28 +17,25 @@
  */
 package com.alibaba.wasp.ipc;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import org.apache.hadoop.conf.Configuration;
 
 import javax.net.SocketFactory;
-
-import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.ipc.VersionedProtocol;
-import com.alibaba.wasp.ipc.RpcServer;
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /** An RPC implementation. */
 public interface RpcEngine {
 
   /** Construct a client-side proxy object. */
   VersionedProtocol getProxy(Class<? extends VersionedProtocol> protocol,
-      long clientVersion, InetSocketAddress addr, Configuration conf,
-      SocketFactory factory, int rpcTimeout) throws IOException;
+                             long clientVersion, InetSocketAddress addr, Configuration conf,
+                             SocketFactory factory, int rpcTimeout) throws IOException;
 
   /** Stop this proxy. */
   void stopProxy(VersionedProtocol proxy);
 
   /** Construct a server for a protocol implementation instance. */
   RpcServer getServer(Class<? extends VersionedProtocol> protocol,
-      Object instance, Class<?>[] ifaces, String bindAddress, int port,
-      Configuration conf) throws IOException;
+                      Object instance, Class<?>[] ifaces, String bindAddress, int port,
+                      Configuration conf) throws IOException;
 }

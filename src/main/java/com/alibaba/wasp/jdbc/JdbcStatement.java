@@ -18,19 +18,18 @@
  */
 package com.alibaba.wasp.jdbc;
 
-import com.alibaba.wasp.FConstants;import com.alibaba.wasp.SQLErrorCode;import com.alibaba.wasp.jdbc.command.CommandInterface;import com.alibaba.wasp.jdbc.result.JdbcResultSet;import com.alibaba.wasp.jdbc.result.ResultInterface;import com.alibaba.wasp.session.SessionFactory;import com.alibaba.wasp.session.SessionInterface;import com.alibaba.wasp.util.New;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.jdbc.command.CommandInterface;
 import com.alibaba.wasp.jdbc.result.JdbcResultSet;
 import com.alibaba.wasp.jdbc.result.ResultInterface;
+import com.alibaba.wasp.session.ExecuteSession;
 import com.alibaba.wasp.session.SessionFactory;
-import com.alibaba.wasp.session.SessionInterface;
 import com.alibaba.wasp.util.New;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -46,7 +45,7 @@ public class JdbcStatement implements Statement {
 
   private Log log = LogFactory.getLog(JdbcStatement.class);
   protected JdbcConnection conn;
-  protected SessionInterface session;
+  protected ExecuteSession session;
   protected JdbcResultSet resultSet;
   protected int maxRows;
   protected int fetchSize;
@@ -57,15 +56,21 @@ public class JdbcStatement implements Statement {
   private int lastExecutedCommandType;
   private ArrayList<String> batchCommands;
   private Configuration conf;
+  private boolean autoCommit;
 
   JdbcStatement(JdbcConnection conn, int resultSetType,
-      int resultSetConcurrency, boolean closeWithResultSet) {
+      int resultSetConcurrency, boolean closeWithResultSet)  {
     this.conn = conn;
-    this.session = SessionFactory.createQuerySession();
+    this.session = SessionFactory.createExecuteSession();
     this.resultSetType = resultSetType;
     this.resultSetConcurrency = resultSetConcurrency;
     this.closedByResultSet = closeWithResultSet;
     this.conf = conn.getConf();
+    try {
+      this.autoCommit = conn.getAutoCommit();
+    } catch (SQLException e) {
+      //TODO
+    }
     this.fetchSize = conf.getInt(FConstants.WASP_JDBC_FETCHSIZE,
         FConstants.DEFAULT_WASP_JDBC_FETCHSIZE);
   }
@@ -84,11 +89,12 @@ public class JdbcStatement implements Statement {
     synchronized (session) {
       checkClosed();
       closeOldResultSet();
-      CommandInterface command = conn.prepareCommand(sql, fetchSize);
+      CommandInterface command = conn.prepareCommand(sql, fetchSize, session);
       ResultInterface result = null;
       setExecutingStatement(command);
       try {
         result = command.executeQuery(maxRows);
+        session.setSessionId(result.getSessionId());
       } finally {
         setExecutingStatement(null);
       }
@@ -548,27 +554,33 @@ public class JdbcStatement implements Statement {
         int size = batchCommands.size();
         int[] result = new int[size];
 
-        SQLException next = null;
-        for (int i = 0; i < size; i++) {
-          String sql = batchCommands.get(i);
+        if(autoCommit) {
+          throw new SQLException("batch only support without autoCommit mode");
+        }
+
+        closeOldResultSet();
+        CommandInterface command = conn.prepareCommand(batchCommands, session);
+        synchronized (session) {
+          setExecutingStatement(command);
           try {
-            result[i] = executeUpdateInternal(sql);
-          } catch (Exception re) {
-            SQLException e = Logger.logAndConvert(log, re);
-            if (next == null) {
-              next = e;
-            } else {
-              e.setNextException(next);
-              next = e;
-            }
-            result[i] = Statement.EXECUTE_FAILED;
+            updateCount = command.executeTransaction();
+          } finally {
+            setExecutingStatement(null);
           }
         }
+        command.close();
         batchCommands = null;
+        //wasp ensures all success or all failure
+        for (int i = 0; i < result.length; i++) {
+          result[i] = (updateCount == size) ? 1 : 0;
+        }
         return result;
       } finally {
         afterWriting();
       }
+
+
+
     } catch (Exception e) {
       throw Logger.logAndConvert(log, e);
     }
@@ -716,7 +728,7 @@ public class JdbcStatement implements Statement {
     checkClosedForWrite();
     try {
       closeOldResultSet();
-      CommandInterface command = conn.prepareCommand(sql, fetchSize);
+      CommandInterface command = conn.prepareCommand(sql, fetchSize, session);
       synchronized (session) {
         setExecutingStatement(command);
         try {
@@ -760,7 +772,7 @@ public class JdbcStatement implements Statement {
     checkClosedForWrite();
     try {
       closeOldResultSet();
-      CommandInterface command = conn.prepareCommand(sql, fetchSize);
+      CommandInterface command = conn.prepareCommand(sql, fetchSize, session);
       boolean returnsResultSet;
       synchronized (session) {
         setExecutingStatement(command);
@@ -861,7 +873,7 @@ public class JdbcStatement implements Statement {
   /**
    * Check if this connection is closed. The next operation may be a write
    * request.
-   * 
+   *
    * @return true if the session was re-connected
    * @throws JdbcException
    *           if the connection or session is closed
@@ -872,24 +884,20 @@ public class JdbcStatement implements Statement {
 
   /**
    * INTERNAL. Check if the statement is closed.
-   * 
+   *
    * @param write
    *          if the next operation is possibly writing
    * @return true if a reconnect was required
    * @throws JdbcException
    *           if it is closed
    */
-  protected boolean checkClosed(boolean write) {
+  protected boolean checkClosed(boolean write)  {
     if (conn == null) {
       throw JdbcException.get(SQLErrorCode.OBJECT_CLOSED);
     }
+    session.checkClosed();
     conn.checkClosed(write);
-    SessionInterface s = conn.getSession();
-    if (s != session) {
-      session = s;
-      return true;
-    }
-    return false;
+    return session.isClosed();
   }
 
   /**

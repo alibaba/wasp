@@ -1,14 +1,5 @@
 package com.alibaba.wasp.meta;
 
-import com.alibaba.wasp.WaspTestingUtility;import com.alibaba.wasp.plan.CreateIndexPlan;import com.alibaba.wasp.plan.CreateTablePlan;import com.alibaba.wasp.plan.Plan;import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;import junit.framework.Assert;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseTestingUtility;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
 import com.alibaba.wasp.WaspTestingUtility;
 import com.alibaba.wasp.plan.CreateIndexPlan;
 import com.alibaba.wasp.plan.CreateTablePlan;
@@ -19,6 +10,14 @@ import com.alibaba.wasp.plan.parser.druid.DruidDDLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDMLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidParserTestUtil;
+import junit.framework.Assert;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseTestingUtility;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

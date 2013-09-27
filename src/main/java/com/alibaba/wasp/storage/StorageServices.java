@@ -18,15 +18,15 @@
  */
 package com.alibaba.wasp.storage;
 
-import java.io.IOException;
-
+import com.alibaba.wasp.plan.action.DeleteAction;
+import com.alibaba.wasp.plan.action.InsertAction;
+import com.alibaba.wasp.plan.action.UpdateAction;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
-import com.alibaba.wasp.plan.action.DeleteAction;
-import com.alibaba.wasp.plan.action.InsertAction;
-import com.alibaba.wasp.plan.action.UpdateAction;
+
+import java.io.IOException;
 
 /**
  * Storage Services
@@ -38,7 +38,7 @@ public interface StorageServices {
       StorageTableNotFoundException;
 
   public Result getRowBeforeDelete(DeleteAction delete, String entityTableName,
-      Get get) throws IOException, StorageTableNotFoundException;
+                                   Get get) throws IOException, StorageTableNotFoundException;
 
   public void putRow(String entityTableName, Put put) throws IOException,
       StorageTableNotFoundException;
@@ -48,11 +48,11 @@ public interface StorageServices {
 
   // Before insert, check if the row exists
   public void checkRowExistsBeforeInsert(InsertAction insert,
-      String entityTableName, Put entityPut) throws IOException,
+                                         String entityTableName, Put entityPut) throws IOException,
       StorageTableNotFoundException;
 
   // Before update, get the row
   public Result getRowBeforeUpdate(UpdateAction update, String entityTableName,
-      Get get) throws IOException, StorageTableNotFoundException;
+                                   Get get) throws IOException, StorageTableNotFoundException;
 
 }

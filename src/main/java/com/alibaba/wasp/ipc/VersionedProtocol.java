@@ -34,7 +34,7 @@ public interface VersionedProtocol {
    * @param clientVersion
    *          The version of the protocol that the client speaks
    * @return the version that the server will speak
-   * @throws IOException
+   * @throws java.io.IOException
    *           if any IO error occurs
    */
   public long getProtocolVersion(String protocol, long clientVersion)

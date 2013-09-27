@@ -17,9 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import com.alibaba.wasp.Server;import com.alibaba.wasp.TableLockedException;import com.alibaba.wasp.meta.FMetaEditor;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.TableLockedException;
@@ -27,6 +24,9 @@ import com.alibaba.wasp.master.FMasterServices;
 import com.alibaba.wasp.master.TableLockManager;
 import com.alibaba.wasp.meta.FMetaEditor;
 import com.alibaba.wasp.meta.FMetaReader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class DeleteIndexHandler extends TableEventHandler {
    * @param server
    * @param fMasterServices
    * @param eventType
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public DeleteIndexHandler(byte[] tableName, String indexName, Server server,
       FMasterServices fMasterServices, EventType eventType) throws IOException {

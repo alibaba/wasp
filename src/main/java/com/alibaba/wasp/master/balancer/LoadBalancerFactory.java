@@ -17,10 +17,10 @@
  */
 package com.alibaba.wasp.master.balancer;
 
-import com.alibaba.wasp.master.LoadBalancer;import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.util.ReflectionUtils;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.master.LoadBalancer;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.util.ReflectionUtils;
 
 /**
  * The class that creates a load balancer from a conf.

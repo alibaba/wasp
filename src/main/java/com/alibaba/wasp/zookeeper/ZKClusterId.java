@@ -18,9 +18,9 @@
  */
 package com.alibaba.wasp.zookeeper;
 
-import com.alibaba.wasp.DeserializationException;import org.apache.hadoop.hbase.Abortable;
 import com.alibaba.wasp.ClusterId;
 import com.alibaba.wasp.DeserializationException;
+import org.apache.hadoop.hbase.Abortable;
 import org.apache.zookeeper.KeeperException;
 
 /**

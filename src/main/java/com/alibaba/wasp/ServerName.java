@@ -18,14 +18,13 @@
  */
 package com.alibaba.wasp;
 
-import java.util.Collection;
-import java.util.regex.Pattern;
-
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Addressing;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import com.google.protobuf.InvalidProtocolBufferException;
+import java.util.Collection;
+import java.util.regex.Pattern;
 
 /**
  * Instance of an Wasp ServerName. A server name is used uniquely identifying a
@@ -177,7 +176,7 @@ public class ServerName implements Comparable<ServerName> {
 
   /**
    * @return Hostname and port formatted as described at
-   *         {@link Addressing#createHostAndPortStr(String, int)}
+   *         {@link org.apache.hadoop.hbase.util.Addressing#createHostAndPortStr(String, int)}
    */
   public String getHostAndPort() {
     return Addressing.createHostAndPortStr(this.hostname, this.port);
@@ -195,7 +194,7 @@ public class ServerName implements Comparable<ServerName> {
 
   /**
    * Utility method to excise the start code from a server name
-   * 
+   *
    * @param inServerName
    *          full server name
    * @return server name less its start code
@@ -288,7 +287,7 @@ public class ServerName implements Comparable<ServerName> {
 
   /**
    * Get a ServerName from the passed in data bytes.
-   * 
+   *
    * @param data
    *          Data with a serialize server name in it; can handle the old style
    *          servername where servername was host and port. Works too with data
@@ -319,7 +318,7 @@ public class ServerName implements Comparable<ServerName> {
   }
 
   /**
-   * 
+   *
    * @param serverName
    * @return
    */
@@ -340,7 +339,7 @@ public class ServerName implements Comparable<ServerName> {
   }
 
   /**
-   * 
+   *
    * @param data
    * @return
    * @throws DeserializationException

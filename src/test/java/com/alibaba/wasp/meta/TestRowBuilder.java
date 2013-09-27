@@ -19,18 +19,18 @@
  */
 package com.alibaba.wasp.meta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.plan.parser.QueryInfo;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.NavigableMap;
 
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.plan.parser.QueryInfo;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestRowBuilder {
 
@@ -92,8 +92,8 @@ public class TestRowBuilder {
   public void testGetIndexFields() {
     List<IndexField> indexFieldsList = RowBuilder.getIndexFields(index, values);
 
-    assertTrue(indexFieldsList.size() == (queryInfo.getEqConditions().size() + (queryInfo
-        .getRangeCondition() == null ? 0 : 1)));
+    assertTrue(indexFieldsList.size() == (queryInfo.getEqConditions().size() + queryInfo
+        .getRangeConditions().size()));
 
     for (IndexField field : indexFieldsList) {
       assertEquals("cf", field.getFamily());

@@ -17,145 +17,60 @@
  */
 package com.alibaba.wasp.fserver;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.net.BindException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import javax.management.ObjectName;
-
-import com.alibaba.wasp.DaemonThreadFactory;import com.alibaba.wasp.RemoteExceptionHandler;import com.alibaba.wasp.ServerName;import com.alibaba.wasp.UnknownScannerException;import com.alibaba.wasp.YouAreDeadException;import com.alibaba.wasp.ZNodeClearer;import com.alibaba.wasp.client.FConnectionManager;import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.executor.ExecutorService;import com.alibaba.wasp.fserver.handler.CloseEntityGroupHandler;import com.alibaba.wasp.fserver.metrics.MetricsFServer;import com.alibaba.wasp.fserver.metrics.MetricsFServerWrapper;import com.alibaba.wasp.ipc.RpcServer;import com.alibaba.wasp.ipc.ServerNotRunningYetException;import com.alibaba.wasp.ipc.WaspRPC;import com.alibaba.wasp.ipc.WaspRPCErrorHandler;import com.alibaba.wasp.master.FServerStatusProtocol;import com.alibaba.wasp.meta.FMetaEditor;import com.alibaba.wasp.meta.FMetaScanner;import com.alibaba.wasp.meta.FTable;import com.alibaba.wasp.plan.BaseDriver;
-import com.alibaba.wasp.plan.action.ColumnStruct;
-import com.alibaba.wasp.plan.action.DeleteAction;import com.alibaba.wasp.plan.action.GetAction;import com.alibaba.wasp.plan.action.ScanAction;import com.alibaba.wasp.plan.action.UpdateAction;import com.alibaba.wasp.protobuf.ResponseConverter;import com.alibaba.wasp.protobuf.generated.ClientProtos;import com.alibaba.wasp.protobuf.generated.FServerAdminProtos;import com.alibaba.wasp.protobuf.generated.MetaProtos;import com.alibaba.wasp.protobuf.generated.WaspProtos;import com.alibaba.wasp.storage.StorageActionManager;import com.alibaba.wasp.util.InfoServer;import com.alibaba.wasp.zookeeper.ClusterStatusTracker;import com.alibaba.wasp.zookeeper.MasterAddressTracker;import com.alibaba.wasp.zookeeper.ZKClusterId;import com.alibaba.wasp.zookeeper.ZooKeeperNodeTracker;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.client.HTableInterface;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.EnvironmentEdgeManager;
-import org.apache.hadoop.hbase.util.Pair;
-import org.apache.hadoop.hbase.util.Sleeper;
-import org.apache.hadoop.hbase.util.Strings;
-import org.apache.hadoop.hbase.util.Threads;
-import org.apache.hadoop.ipc.RemoteException;
-import org.apache.hadoop.metrics2.util.MBeans;
-import org.apache.hadoop.net.DNS;
-import org.apache.hadoop.util.StringUtils;
-import com.alibaba.wasp.ClockOutOfSyncException;
-import com.alibaba.wasp.DaemonThreadFactory;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupLoad;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.NotServingEntityGroupException;
-import com.alibaba.wasp.RemoteExceptionHandler;
-import com.alibaba.wasp.ServerName;
-import com.alibaba.wasp.UnknownScannerException;
-import com.alibaba.wasp.YouAreDeadException;
-import com.alibaba.wasp.ZNodeClearer;
+import com.alibaba.wasp.*;
 import com.alibaba.wasp.client.ClientProtocol;
 import com.alibaba.wasp.client.FConnection;
 import com.alibaba.wasp.client.FConnectionManager;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.executor.EventHandler;
 import com.alibaba.wasp.executor.ExecutorService;
-import com.alibaba.wasp.executor.ExecutorService.ExecutorType;
 import com.alibaba.wasp.fserver.handler.CloseEntityGroupHandler;
 import com.alibaba.wasp.fserver.handler.OpenEntityGroupHandler;
 import com.alibaba.wasp.fserver.metrics.MetricsFServer;
 import com.alibaba.wasp.fserver.metrics.MetricsFServerWrapper;
-import com.alibaba.wasp.ipc.NettyServer;
-import com.alibaba.wasp.ipc.RpcServer;
-import com.alibaba.wasp.ipc.ServerNotRunningYetException;
-import com.alibaba.wasp.ipc.WaspRPC;
-import com.alibaba.wasp.ipc.WaspRPCErrorHandler;
+import com.alibaba.wasp.ipc.*;
 import com.alibaba.wasp.master.FServerStatusProtocol;
-import com.alibaba.wasp.meta.FMetaEditor;
-import com.alibaba.wasp.meta.FMetaReader;
-import com.alibaba.wasp.meta.FMetaScanner;
-import com.alibaba.wasp.meta.FTable;
-import com.alibaba.wasp.meta.TableSchemaCacheReader;
+import com.alibaba.wasp.messagequeue.MessageBroker;
+import com.alibaba.wasp.meta.*;
 import com.alibaba.wasp.plan.BaseDriver;
-import com.alibaba.wasp.plan.action.DeleteAction;
-import com.alibaba.wasp.plan.action.GetAction;
-import com.alibaba.wasp.plan.action.InsertAction;
-import com.alibaba.wasp.plan.action.ScanAction;
-import com.alibaba.wasp.plan.action.UpdateAction;
+import com.alibaba.wasp.plan.action.*;
 import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.protobuf.RequestConverter;
 import com.alibaba.wasp.protobuf.ResponseConverter;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.GetRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.GetResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.InsertRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.InsertResponse;
+import com.alibaba.wasp.protobuf.generated.ClientProtos;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ScanRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ScanResponse;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateRequest;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEncodedEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEncodedEntityGroupResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEntityGroupResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.DisableTableRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.DisableTableResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.EnableTableRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.EnableTableResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetEntityGroupInfoRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetEntityGroupInfoResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetOnlineEntityGroupsRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetOnlineEntityGroupsResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetServerInfoRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetServerInfoResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupsRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupsResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.SplitEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.SplitEntityGroupResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.StopServerRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.StopServerResponse;
+import com.alibaba.wasp.protobuf.generated.FServerAdminProtos;
 import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.FServerStartupRequest;
 import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.FServerStartupResponse;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ReadModelProto;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
 import com.alibaba.wasp.protobuf.generated.WaspProtos;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupInfoProtos;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupLoadProtos;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupOpeningState;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.StringStringPair;
 import com.alibaba.wasp.storage.StorageActionManager;
 import com.alibaba.wasp.util.InfoServer;
-import com.alibaba.wasp.zookeeper.ClusterStatusTracker;
-import com.alibaba.wasp.zookeeper.MasterAddressTracker;
-import com.alibaba.wasp.zookeeper.ZKClusterId;
-import com.alibaba.wasp.zookeeper.ZKUtil;
-import com.alibaba.wasp.zookeeper.ZooKeeperNodeTracker;
-import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
-import org.apache.zookeeper.KeeperException;
-
+import com.alibaba.wasp.zookeeper.*;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.*;
+import org.apache.hadoop.ipc.RemoteException;
+import org.apache.hadoop.metrics2.util.MBeans;
+import org.apache.hadoop.net.DNS;
+import org.apache.hadoop.util.StringUtils;
+import org.apache.zookeeper.KeeperException;
+
+import javax.management.ObjectName;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.net.BindException;
+import java.net.InetSocketAddress;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * FServer makes a set of EntityGroups available to clients. It checks in with
@@ -301,11 +216,15 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   private volatile boolean killed = false;
 
+  private MessageBroker broker;
+
+  private final boolean brokerOpen = false;
+
   /**
    * Starts a FServer at the default location
    * 
    * @param conf
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws InterruptedException
    */
   public FServer(Configuration conf) throws IOException, InterruptedException {
@@ -341,11 +260,11 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
       throw new IllegalArgumentException("Failed resolve of " + initialIsa);
     }
 
-    this.rpcServer = WaspRPC.getServer(FServer.class, this, new Class<?>[] {
+    this.rpcServer = WaspRPC.getServer(FServer.class, this, new Class<?>[]{
         ClientProtocol.class, AdminProtocol.class, WaspRPCErrorHandler.class,
-        OnlineEntityGroups.class }, initialIsa.getHostName(), // BindAddress is
-                                                              // IP we got for
-                                                              // this server.
+        OnlineEntityGroups.class}, initialIsa.getHostName(), // BindAddress is
+        // IP we got for
+        // this server.
         initialIsa.getPort(), conf);
     // Set our address.
     this.isa = this.rpcServer.getListenerAddress();
@@ -376,12 +295,30 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   }
 
   /**
+   * All initialization needed before we go register with Master.
+   *
+   * @throws java.io.IOException
+   * @throws InterruptedException
+   */
+  private void preRegistrationInitialization(){
+    try {
+      initializeZooKeeper();
+      initializeThreads();
+    } catch (Throwable t) {
+      // Call stop if error or process will stick around for ever since server
+      // puts up non-daemon threads.
+      this.rpcServer.stop();
+      abort("Initialization of RS failed.  Hence aborting RS.", t);
+    }
+  }
+
+  /**
    * Bring up connection to zk ensemble and then wait until a master for this
    * cluster and then after that, wait until cluster 'up' flag has been set.
    * This is the order in which master does things. Finally put up a catalog
    * tracker.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    * @throws InterruptedException
    */
   private void initializeZooKeeper() throws IOException, InterruptedException {
@@ -437,13 +374,19 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
     this.rpcServer.start();
     this.rpcServer.openServer();
+
+    //start 2PC broker
+    if(brokerOpen) {
+      this.broker.initlize();
+      this.broker.start();
+    }
   }
 
   /**
    * Puts up the webui.
-   * 
+   *
    * @return Returns final port -- maybe different from what we started with.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   private int putUpWebUI() throws IOException {
 
@@ -523,13 +466,25 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
     return tableEntityGroups;
   }
 
+  private void initializeThreads() throws IOException {
+    if(brokerOpen) {
+      this.broker = new MessageBroker(this, conf);
+    }
+  }
+
   @Override
   public void run() {
+//    try {
+//      preRegistrationInitialization();
+//    } catch (Exception e) {
+//      this.rpcServer.stop();
+//      abort("Fatal exception during initialization", e);
+//    }
     try {
       initializeZooKeeper();
     } catch (Exception t) {
       this.rpcServer.stop();
-      abort("Initialization of RS failed.  Hence aborting RS.", t);
+      abort("Initialization of FS failed.  Hence aborting FS.", t);
     }
     try {
       while (keepLooping()) {
@@ -629,6 +584,14 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
         infoServer.stop();
       } catch (Exception e) {
         LOG.warn("Failed stop infoServer", e);
+      }
+    }
+
+    if(this.broker != null) {
+      try {
+        this.broker.close();
+      } catch (IOException e) {
+        LOG.warn("Failed close broker", e);
       }
     }
 
@@ -738,7 +701,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * For tests and web ui. This method will only work if FServer is in the same
    * JVM as client; EntityGroup cannot be serialized to cross an rpc.
-   * 
+   *
    * @see #getOnlineEntityGroups()
    */
   public Collection<EntityGroup> getOnlineEntityGroupsLocalContext() {
@@ -758,11 +721,11 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * Let the master know we're here Run initialization using parameters passed
    * us by the master.
-   * 
+   *
    * @return A Map of key/value configurations we got from the Master else null
    *         if we failed to register.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   private FServerStartupResponse reportForDuty() throws IOException {
     FServerStartupResponse result = null;
@@ -796,7 +759,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /*
    * Run init. Sets up hlog and starts up all server threads.
-   * 
+   *
    * @param c Extra configuration.
    */
   protected void handleReportForDutyResponse(final FServerStartupResponse c)
@@ -873,7 +836,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * Cause the server to exit without closing the entityGroups it is serving,
    * the log it is using and without notifying the master. OOME.
-   * 
+   *
    * @param reason
    *          the reason we are aborting
    * @param cause
@@ -926,7 +889,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * Checks to see if the storage system is still accessible. If not, sets
    * abortRequested and stopRequested
-   * 
+   *
    * @return false if storage system is not available
    */
   public boolean checkStorageSystem() {
@@ -1018,7 +981,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
    * <p/>
    * Method will block until a master is available. You can break from this
    * block by requesting the server stop.
-   * 
+   *
    * @return master + port, or null if server has been stopped
    */
   public ServerName getMaster() {
@@ -1089,7 +1052,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
    * Schedule closes on all user entityGroups. Should be safe calling multiple
    * times because it wont' close entityGroups that are already closed or that
    * are closing.
-   * 
+   *
    * @param abort
    *          Whether we're running an abort.
    */
@@ -1133,7 +1096,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * Protected utility method for safely obtaining an EntityGroup handle.
-   * 
+   *
    * @param entityGroupName
    *          Name of online {@link EntityGroup} to return
    * @return {@link EntityGroup} for <code>entityGroupName</code>
@@ -1172,8 +1135,8 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * Called to verify that this server is up and running.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   protected void checkOpen() throws IOException {
     if (this.stopped || this.abortRequested) {
@@ -1190,9 +1153,13 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   public ClientProtos.ExecuteResponse execute(RpcController controller,
       ClientProtos.ExecuteRequest request) throws ServiceException {
     MetaProtos.ReadModelProto readModel = request.getReadModel();
-    return driver.execute(request.getSql(), request.getSessionId(),
-        ProtobufUtil.toReadModel(readModel), request.getCloseSession(),
-        request.getFetchSize());
+    if(request.getIsTransaction()) {
+      return driver.execute(request.getTransactionSqlList(), request.getIsTransaction(), request.getSessionId());
+    } else {
+      return driver.execute(request.getSql(), request.getSessionId(),
+          ProtobufUtil.toReadModel(readModel), request.getCloseSession(),
+          request.getFetchSize());
+    }
   }
 
   /**
@@ -1207,13 +1174,13 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   }
 
   /**
-   * 
+   *
    * @param entityGroupName
    *          eg name
    * @param getAction
    *          action true or false
    * @return
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public ClientProtos.GetResponse get(byte[] entityGroupName, GetAction getAction)
       throws ServiceException {
@@ -1250,7 +1217,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   }
 
   /**
-   * 
+   *
    * @param entityGroupName
    *          eg name
    * @param scanAction
@@ -1262,7 +1229,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
    * @param closeScanner
    *          close this scanner
    * @return
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public ClientProtos.ScanResponse scan(byte[] entityGroupName, ScanAction scanAction,
       boolean hasScannerId, long scannerId, boolean closeScanner)
@@ -1272,7 +1239,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   }
 
   /**
-   * 
+   *
    * @param entityGroupName
    *          eg name
    * @param scanAction
@@ -1287,7 +1254,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
    *          true or false
    * @param tableDesc
    * @return
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public ClientProtos.ScanResponse scan(byte[] entityGroupName, ScanAction scanAction,
       boolean hasScannerId, long scannerId, boolean closeScanner,
@@ -1352,7 +1319,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
             // case
             // where processing of request takes > lease expiration time.
             lease = leases.removeLease(scannerName);
-            List<ClientProtos.QueryResultProto> results = new ArrayList<ClientProtos.QueryResultProto>(
+            List<QueryResultProto> results = new ArrayList<QueryResultProto>(
                 scanner.getCaching());
 
             // Collect values to be returned here
@@ -1403,10 +1370,10 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * Cleanup after Throwable caught invoking method. Converts <code>t</code> to
    * IOE if it isn't already.
-   * 
+   *
    * @param t
    *          Throwable
-   * 
+   *
    * @return Throwable converted to an IOE; methods can only let out IOEs.
    */
   protected Throwable cleanup(final Throwable t) {
@@ -1416,13 +1383,13 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * Cleanup after Throwable caught invoking method. Converts <code>t</code> to
    * IOE if it isn't already.
-   * 
+   *
    * @param t
    *          Throwable
-   * 
+   *
    * @param msg
    *          Message to log in error. Can be null.
-   * 
+   *
    * @return Throwable converted to an IOE; methods can only let out IOEs.
    */
   protected Throwable cleanup(final Throwable t, final String msg) {
@@ -1444,7 +1411,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * @param t
-   * 
+   *
    * @return Make <code>t</code> an IOE if it isn't already.
    */
   protected IOException convertThrowableToIOE(final Throwable t) {
@@ -1453,10 +1420,10 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * @param t
-   * 
+   *
    * @param msg
    *          Message to put in new IOE if passed <code>t</code> is not an IOE
-   * 
+   *
    * @return Make <code>t</code> an IOE if it isn't already.
    */
   protected IOException convertThrowableToIOE(final Throwable t,
@@ -1468,9 +1435,9 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * Check if an OOME and, if so, abort immediately to avoid creating more
    * objects.
-   * 
+   *
    * @param e
-   * 
+   *
    * @return True if we OOME'd and are aborting.
    */
   public boolean checkOOME(final Throwable e) {
@@ -1493,7 +1460,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * Add scanner to lease manager,so scanner will be reused by scanID.
-   * 
+   *
    * @param scanner
    * @throws Leases.LeaseStillHeldException
    */
@@ -1548,6 +1515,25 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
           .getUpdateAction());
       return this.update(request.getEntityGroup().getValue().toByteArray(),
           updateAction);
+    } catch (IOException ie) {
+      this.checkStorageSystem();
+      throw new ServiceException(ie);
+    }
+  }
+
+  /**
+   * @see com.alibaba.wasp.client.ClientProtocol#update(com.google.protobuf.RpcController,
+   *      com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateRequest )
+   */
+  @Override
+  public ClientProtos.TransactionResponse transaction(RpcController controller, ClientProtos.TransactionRequest request)
+      throws ServiceException {
+    try {
+      requestCount.incrementAndGet();
+      TransactionAction transactionAction = ProtobufUtil.toTransactionAction(request
+          .getTransactionAction());
+      return this.transaction(request.getEntityGroup().getValue().toByteArray(),
+          transactionAction);
     } catch (IOException ie) {
       this.checkStorageSystem();
       throw new ServiceException(ie);
@@ -2062,7 +2048,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * Utility for constructing an instance of the passed FServer class.
-   * 
+   *
    * @param fserverClass
    * @param conf
    * @return FServer instance.
@@ -2082,7 +2068,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * @param fs
    * @return Thread the FServer is running in correctly named.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static Thread startFServer(final FServer fs) throws IOException {
     return startFServer(fs, "fserver" + fs.isa.getPort());
@@ -2092,7 +2078,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
    * @param fs
    * @param name
    * @return Thread the FServer is running in correctly named.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static Thread startFServer(final FServer fs, final String name)
       throws IOException {
@@ -2103,7 +2089,7 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   }
 
   /**
-   * 
+   *
    * @param entityGroup
    * @return
    */
@@ -2169,11 +2155,11 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * Public method for update.
-   * 
+   *
    * @param entityGroupName
    * @param updateAction
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public ClientProtos.UpdateResponse update(byte[] entityGroupName, UpdateAction updateAction)
       throws IOException {
@@ -2188,11 +2174,11 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * Public method for delete.
-   * 
+   *
    * @param entityGroupName
    * @param deleteAction
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public ClientProtos.DeleteResponse delete(byte[] entityGroupName, DeleteAction deleteAction)
       throws IOException {
@@ -2207,11 +2193,11 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
 
   /**
    * Public method for insert.
-   * 
+   *
    * @param entityGroupName
    * @param insertAction
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public ClientProtos.InsertResponse insert(byte[] entityGroupName, InsertAction insertAction)
       throws IOException {
@@ -2222,6 +2208,17 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
     this.metricsFServer.updateInsert(EnvironmentEdgeManager.currentTimeMillis()
         - before);
     return ResponseConverter.buildInsertResponse(status);
+  }
+
+  public ClientProtos.TransactionResponse transaction(byte[] entityGroupName, TransactionAction transactionAction)
+      throws IOException {
+    long before = EnvironmentEdgeManager.currentTimeMillis();
+    EntityGroup entityGroup = getEntityGroup(entityGroupName);
+    transactionAction.setConf(conf);
+    OperationStatus status = entityGroup.transaction(transactionAction);
+    this.metricsFServer.updateTransaction(EnvironmentEdgeManager.currentTimeMillis()
+        - before);
+    return ResponseConverter.buildTransactionResponse(status);
   }
 
   /**
@@ -2301,10 +2298,10 @@ public class FServer implements ClientProtocol, AdminProtocol, Runnable,
   /**
    * Utilty method to wait indefinitely on a znode availability while checking
    * if the fserver is shut down
-   * 
+   *
    * @param tracker
    *          znode tracker to use
-   * @throws IOException
+   * @throws java.io.IOException
    *           any IO exception, plus if the RS is stopped
    * @throws InterruptedException
    */

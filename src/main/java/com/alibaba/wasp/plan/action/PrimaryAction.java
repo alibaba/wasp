@@ -17,7 +17,7 @@
  */
 package com.alibaba.wasp.plan.action;
 
-public abstract class PrimaryAction extends ColumnAction implements Primary{
+public abstract class PrimaryAction extends ColumnAction implements Primary {
 
   /** combined Primary Key's value **/
   protected byte[] combinedPrimaryKey;

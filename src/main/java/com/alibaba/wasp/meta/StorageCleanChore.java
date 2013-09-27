@@ -17,19 +17,19 @@
  */
 package com.alibaba.wasp.meta;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.FConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Chore;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.Stoppable;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.FConstants;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The Class StorageCleanChore for running FMETA checker regularly. Find which

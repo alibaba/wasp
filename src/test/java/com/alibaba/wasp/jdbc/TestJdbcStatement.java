@@ -17,24 +17,24 @@
  */
 package com.alibaba.wasp.jdbc;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.WaspTestingUtility;
 import com.alibaba.wasp.client.WaspAdmin;
 import com.alibaba.wasp.util.ResultInHBasePrinter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class TestJdbcStatement extends TestJdbcBase {
 

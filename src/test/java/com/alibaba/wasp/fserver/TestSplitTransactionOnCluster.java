@@ -19,17 +19,6 @@
  */
 package com.alibaba.wasp.fserver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupTransaction;
@@ -49,6 +38,10 @@ import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.zookeeper.ZKAssign;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import com.google.protobuf.ServiceException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.data.Stat;
@@ -56,7 +49,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.protobuf.ServiceException;
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Like {@link TestSplitTransaction} in that we're testing
@@ -117,12 +116,12 @@ public class TestSplitTransactionOnCluster {
    * message. Tests that the fserver split ephemeral node gets cleaned up if it
    * crashes and that after we process server shutdown, the daughters are up on
    * line.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    * @throws InterruptedException
-   * @throws NodeExistsException
-   * @throws KeeperException
-   * @throws DeserializationException
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws com.alibaba.wasp.DeserializationException
    */
   @Test
   public void testFSSplitEphemeralsDisappearButDaughtersAreOnlinedAfterShutdownHandling()

@@ -20,13 +20,13 @@
 
 package com.alibaba.wasp;
 
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Strings;
 import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupLoadProtos;
 import com.alibaba.wasp.protobuf.generated.WaspProtos.ServerLoadProtos;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Strings;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * This class is used for exporting current state of load on a FServer.
@@ -124,7 +124,7 @@ public class ServerLoad {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

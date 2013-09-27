@@ -17,12 +17,6 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.UnknownSessionException;
@@ -31,7 +25,13 @@ import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResponse;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResultProto;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Pair;
 import org.apache.zookeeper.KeeperException;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Wasp Client. Used to communicate with wasp cluster.
@@ -63,7 +63,7 @@ public class FClient implements FClientInterface {
    * 
    * @param conf
    *          configuration instance
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public FClient(Configuration conf) throws IOException {
     if (conf == null) {
@@ -88,8 +88,8 @@ public class FClient implements FClientInterface {
 
   /**
    * @throws RuntimeException
-   * @throws IOException
-   * @see com.alibaba.wasp.client.FClientInterface#execute(java.lang.String,
+   * @throws java.io.IOException
+   * @see com.alibaba.wasp.client.FClientInterface#execute(String,
    *      com.alibaba.wasp.ReadModel, int)
    */
   @Override
@@ -98,6 +98,19 @@ public class FClient implements FClientInterface {
       throws IOException {
     FClientCallable callable = new FClientCallable(connection, fserverTracker,
         sql, model, fetchSize);
+    return execute(callable);
+  }
+
+  @Override
+  public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(String sql,
+      ReadModel model, int fetchSize, String sessionId) throws IOException {
+    FClientCallable callable = new FClientCallable(connection, fserverTracker,
+        sql, model, fetchSize, sessionId);
+    return execute(callable);
+  }
+
+  private Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(
+      FClientCallable callable) throws IOException {
     ExecuteResponse response = null;
 
     try {
@@ -110,7 +123,7 @@ public class FClient implements FClientInterface {
       return new Pair<String, Pair<Boolean, List<ExecuteResult>>>(
           response.getSessionId(), new Pair<Boolean, List<ExecuteResult>>(
               response.getLastScan(), ProtobufUtil.toExecuteResult(results,
-                  metaDatas)));
+          metaDatas)));
     } catch (Exception e) {
       if (response != null) {
         callables.remove(response.getSessionId());
@@ -120,13 +133,28 @@ public class FClient implements FClientInterface {
       }
       throw new IOException(e);
     }
+
   }
 
   @Override
   public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(String sql)
       throws IOException {
-    return execute(sql, ReadModel.SNAPSHOT, configuration.getInt(
+    return execute(sql, ReadModel.INCONSISTENT, configuration.getInt(
         FConstants.WASP_JDBC_FETCHSIZE, FConstants.DEFAULT_WASP_JDBC_FETCHSIZE));
+  }
+
+  @Override
+  public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(String sql,
+      String sessionId) throws IOException {
+    return execute(sql, ReadModel.INCONSISTENT, configuration.getInt(
+        FConstants.WASP_JDBC_FETCHSIZE, FConstants.DEFAULT_WASP_JDBC_FETCHSIZE), sessionId);
+  }
+
+  @Override
+  public Pair<String, Pair<Boolean, List<ExecuteResult>>> execute(List<String> sqls, String sessionId) throws IOException {
+    FClientCallable callable = new FClientCallable(connection, fserverTracker,
+        sqls, true, sessionId);
+    return execute(callable);
   }
 
   @Override
@@ -144,7 +172,7 @@ public class FClient implements FClientInterface {
       return new Pair<String, Pair<Boolean, List<ExecuteResult>>>(
           response.getSessionId(), new Pair<Boolean, List<ExecuteResult>>(
               response.getLastScan(), ProtobufUtil.toExecuteResult(results,
-                  metaDatas)));
+          metaDatas)));
     } catch (Exception e) {
       if (response != null) {
         callables.remove(response.getSessionId());
@@ -195,4 +223,5 @@ public class FClient implements FClientInterface {
     return false; // To change body of implemented methods use File | Settings |
                   // File Templates.
   }
+
 }

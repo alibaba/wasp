@@ -18,15 +18,15 @@
  */
 package com.alibaba.wasp.metrics;
 
-import com.alibaba.wasp.metrics.lib.MetricMutableHistogram;import com.alibaba.wasp.metrics.lib.MetricMutableQuantiles;import org.apache.hadoop.metrics2.MetricsBuilder;
+import com.alibaba.wasp.metrics.lib.MetricMutableHistogram;
+import com.alibaba.wasp.metrics.lib.MetricMutableQuantiles;
+import org.apache.hadoop.metrics2.MetricsBuilder;
 import org.apache.hadoop.metrics2.MetricsRecordBuilder;
 import org.apache.hadoop.metrics2.MetricsSource;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 import org.apache.hadoop.metrics2.lib.MetricMutableCounterLong;
 import org.apache.hadoop.metrics2.lib.MetricMutableGaugeLong;
 import org.apache.hadoop.metrics2.source.JvmMetricsSource;
-import com.alibaba.wasp.metrics.lib.MetricMutableHistogram;
-import com.alibaba.wasp.metrics.lib.MetricMutableQuantiles;
 
 
 public class BaseSourceImpl implements BaseSource, MetricsSource {

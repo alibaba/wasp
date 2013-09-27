@@ -17,18 +17,6 @@
  */
 package com.alibaba.wasp.master;
 
-import static org.junit.Assert.assertNotSame;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.alibaba.wasp.DeserializationException;import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.FConstants;import com.alibaba.wasp.Server;import com.alibaba.wasp.ServerName;import com.alibaba.wasp.ZooKeeperConnectionException;import com.alibaba.wasp.executor.EventHandler;import com.alibaba.wasp.executor.ExecutorService;import com.alibaba.wasp.fserver.EntityGroupOpeningState;import com.alibaba.wasp.master.balancer.LoadBalancerFactory;import com.alibaba.wasp.zookeeper.ZKAssign;import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;import org.apache.hadoop.hbase.HBaseTestingUtility;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Threads;
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
@@ -36,13 +24,16 @@ import com.alibaba.wasp.Server;
 import com.alibaba.wasp.ServerLoad;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.ZooKeeperConnectionException;
-import com.alibaba.wasp.executor.EventHandler.EventType;
+import com.alibaba.wasp.executor.EventHandler;
 import com.alibaba.wasp.executor.ExecutorService;
-import com.alibaba.wasp.executor.ExecutorService.ExecutorType;
 import com.alibaba.wasp.fserver.EntityGroupOpeningState;
 import com.alibaba.wasp.master.balancer.LoadBalancerFactory;
 import com.alibaba.wasp.zookeeper.ZKAssign;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.hadoop.hbase.HBaseTestingUtility;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Threads;
 import org.apache.zookeeper.KeeperException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -50,6 +41,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertNotSame;
 
 /**
  * Test {@link AssignmentManager}
@@ -157,9 +156,9 @@ public class TestAssignmentManager {
   /**
    * Tests AssignmentManager balance function. Runs a balance moving a
    * entityGroup from one server to another mocking fserver responding over zk.
-   * 
-   * @throws IOException
-   * @throws KeeperException
+   *
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException
    * @throws com.alibaba.wasp.DeserializationException
    */
   @Test
@@ -235,7 +234,7 @@ public class TestAssignmentManager {
   /**
    * Create and startup executor pools. Start same set as master does (just run
    * a few less).
-   * 
+   *
    * @param name
    *          Name to give our executor
    * @return Created executor (be sure to call shutdown when done).

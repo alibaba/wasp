@@ -17,20 +17,6 @@
  */
 package com.alibaba.wasp.protobuf;
 
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.FConstants;import com.alibaba.wasp.MetaException;import com.alibaba.wasp.ReadModel;import com.alibaba.wasp.ServerName;import com.alibaba.wasp.client.ExecuteResult;import com.alibaba.wasp.client.QueryResult;import com.alibaba.wasp.client.WriteResult;import com.alibaba.wasp.fserver.AdminProtocol;import com.alibaba.wasp.fserver.OperationStatus;import com.alibaba.wasp.meta.FTable;import com.alibaba.wasp.meta.Index;import com.alibaba.wasp.plan.action.Action;import com.alibaba.wasp.plan.action.ColumnStruct;import com.alibaba.wasp.plan.action.DeleteAction;import com.alibaba.wasp.plan.action.GetAction;import com.alibaba.wasp.plan.action.InsertAction;import com.alibaba.wasp.plan.action.ScanAction;import com.alibaba.wasp.plan.action.UpdateAction;import com.alibaba.wasp.protobuf.generated.ClientProtos;import com.alibaba.wasp.protobuf.generated.ComparatorProtos;import com.alibaba.wasp.protobuf.generated.FServerAdminProtos;import com.alibaba.wasp.protobuf.generated.MasterAdminProtos;import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos;import com.alibaba.wasp.protobuf.generated.MetaProtos;import com.alibaba.wasp.protobuf.generated.WaspProtos;import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.Message;
-import com.google.protobuf.ServiceException;
-import org.apache.hadoop.hbase.DoNotRetryIOException;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.hbase.HConstants.OperationStatusCode;
-import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Mutation;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.RowLock;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
@@ -50,49 +36,33 @@ import com.alibaba.wasp.plan.action.DeleteAction;
 import com.alibaba.wasp.plan.action.GetAction;
 import com.alibaba.wasp.plan.action.InsertAction;
 import com.alibaba.wasp.plan.action.ScanAction;
+import com.alibaba.wasp.plan.action.TransactionAction;
 import com.alibaba.wasp.plan.action.UpdateAction;
+import com.alibaba.wasp.protobuf.generated.ClientProtos;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResultProto;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResultProto.ResultType;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto;
-import com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.StatusCode;
 import com.alibaba.wasp.protobuf.generated.ComparatorProtos;
 import com.alibaba.wasp.protobuf.generated.ComparatorProtos.ByteArrayComparable;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.CloseEntityGroupResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetEntityGroupInfoRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetEntityGroupInfoResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetOnlineEntityGroupsRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetOnlineEntityGroupsResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetServerInfoRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.GetServerInfoResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.OpenEntityGroupResponse;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.ServerInfo;
-import com.alibaba.wasp.protobuf.generated.FServerAdminProtos.SplitEntityGroupRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateTableRequest;
-import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetTableDescriptorsResponse;
-import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.ITableSchema;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.GetActionProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.IndexSchema;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.MessageProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.MessageProto.ActionType;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ReadModelProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ScanActionProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto;
+import com.alibaba.wasp.protobuf.generated.FServerAdminProtos;
+import com.alibaba.wasp.protobuf.generated.MasterAdminProtos;
+import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
 import com.alibaba.wasp.protobuf.generated.WaspProtos;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupLoadProtos;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate.ColumnValue;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate.ColumnValue.QualifierValue;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate.DeleteType;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.Mutate.MutateType;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.StringBytesPair;
 import com.alibaba.wasp.protobuf.generated.WaspProtos.StringStringPair;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.Message;
+import com.google.protobuf.ServiceException;
+import org.apache.hadoop.hbase.DoNotRetryIOException;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.HConstants.OperationStatusCode;
+import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.Mutation;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.RowLock;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -158,7 +128,7 @@ public final class ProtobufUtil {
    * @param mutateType
    * @param mutation
    * @return a mutate
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static WaspProtos.Mutate toMutate(final WaspProtos.Mutate.MutateType mutateType,
       final Mutation mutation, final String tableName) throws IOException {
@@ -204,11 +174,11 @@ public final class ProtobufUtil {
 
   /**
    * Convert a protocol buffer Mutate to a Put
-   * 
+   *
    * @param proto
    *          the protocol buffer Mutate to convert
    * @return the converted client Put
-   * @throws DoNotRetryIOException
+   * @throws org.apache.hadoop.hbase.DoNotRetryIOException
    */
   public static Put toPut(final WaspProtos.Mutate proto, Long timestampTransaction)
       throws DoNotRetryIOException {
@@ -248,10 +218,10 @@ public final class ProtobufUtil {
 
   /**
    * Convert a delete KeyValue type to protocol buffer DeleteType.
-   * 
+   *
    * @param type
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static WaspProtos.Mutate.DeleteType toDeleteType(KeyValue.Type type) throws IOException {
     switch (type) {
@@ -272,7 +242,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert a protocol buffer Mutate to a Delete
-   * 
+   *
    * @param proto
    *          the protocol buffer Mutate to convert
    * @return the converted client Delete
@@ -324,7 +294,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert ReadModelProto to ReadModel.
-   * 
+   *
    * @param readModel
    * @return
    */
@@ -334,7 +304,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert ReadModel to ReadModelProto.
-   * 
+   *
    * @param readModel
    * @return
    */
@@ -344,7 +314,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert OperationStatus to WriteResultProto.
-   * 
+   *
    * @return WriteResultProto
    */
   public static ClientProtos.WriteResultProto toWriteResultProto(OperationStatus status) {
@@ -364,13 +334,13 @@ public final class ProtobufUtil {
 
   /**
    * Convert ExecuteResultProto to ExecuteResult.
-   * 
+   *
    * @param protoResults
    * @param metaDatas
    * @return
    */
   public static List<ExecuteResult> toExecuteResult(
-      List<ClientProtos.ExecuteResultProto> protoResults, List<ClientProtos.StringDataTypePair> metaDatas) {
+      List<ExecuteResultProto> protoResults, List<StringDataTypePair> metaDatas) {
 
     List<ExecuteResult> results = new ArrayList<ExecuteResult>();
     for (ClientProtos.ExecuteResultProto result : protoResults) {
@@ -405,20 +375,20 @@ public final class ProtobufUtil {
   }
 
   private static Map<String, Pair<DataType, byte[]>> newResultMap(
-      List<ClientProtos.StringDataTypePair> metaDatas) {
+      List<StringDataTypePair> metaDatas) {
     Map<String, Pair<DataType, byte[]>> resultMap;
     resultMap = new LinkedHashMap<String, Pair<DataType, byte[]>>();
     for (ClientProtos.StringDataTypePair metaData : metaDatas) {
       resultMap.put(metaData.getName(), Pair.newPair(
           DataType.convertDataTypeProtosToDataType(metaData.getDataType()),
-          new byte[] {}));
+          new byte[]{}));
     }
     return resultMap;
   }
 
   /**
    * Convert DeleteActionProto to DeleteAction.
-   * 
+   *
    * @param deleteActionProto
    * @return
    */
@@ -428,7 +398,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert UpdateActionProto to UpdateAction.
-   * 
+   *
    * @param updateActionProto
    * @return
    */
@@ -436,9 +406,19 @@ public final class ProtobufUtil {
     return UpdateAction.convert(updateActionProto);
   }
 
+   /**
+   * Convert TransactionActionProto to TransactionAction.
+   *
+   * @param transactionActionProto
+   * @return
+   */
+  public static TransactionAction toTransactionAction(MetaProtos.TransactionActionProto transactionActionProto) {
+    return TransactionAction.convert(transactionActionProto);
+  }
+
   /**
    * Convert ColumnStructProto to ColumnAction.
-   * 
+   *
    * @param col
    * @return
    */
@@ -448,7 +428,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert ColumnStructProto to ColumnAction.
-   * 
+   *
    * @param col
    * @return
    */
@@ -458,7 +438,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert InsertActionProto to InsertAction.
-   * 
+   *
    * @param insertActionProto
    * @return
    */
@@ -468,7 +448,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert GetActionProto to GetAction.
-   * 
+   *
    * @param getAction
    * @return
    */
@@ -478,7 +458,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert GetAction to GetActionProto.
-   * 
+   *
    * @param getAction
    * @return
    */
@@ -489,10 +469,10 @@ public final class ProtobufUtil {
   /**
    * Convert protobuf value to message object.This method will be used by
    * message queue.
-   * 
+   *
    * @param value
    * @return
-   * @throws InvalidProtocolBufferException
+   * @throws com.google.protobuf.InvalidProtocolBufferException
    */
   public static Action convertWriteAction(byte[] value)
       throws InvalidProtocolBufferException {
@@ -504,10 +484,10 @@ public final class ProtobufUtil {
 
   /**
    * Convert protobuf object MessageProto to write Action.
-   * 
+   *
    * @param proto
    * @return
-   * @throws InvalidProtocolBufferException
+   * @throws com.google.protobuf.InvalidProtocolBufferException
    */
   public static Action convertWriteAction(MetaProtos.MessageProto proto)
       throws InvalidProtocolBufferException {
@@ -523,10 +503,10 @@ public final class ProtobufUtil {
 
   /**
    * convert Action to MessageProto.
-   * 
+   *
    * @param action
    * @return
-   * @throws InvalidProtocolBufferException
+   * @throws com.google.protobuf.InvalidProtocolBufferException
    */
   public static MetaProtos.MessageProto convertWriteAction(Action action)
       throws InvalidProtocolBufferException {
@@ -542,7 +522,7 @@ public final class ProtobufUtil {
 
   /**
    * convert Action to MessageProto.
-   * 
+   *
    * @param action
    * @return
    */
@@ -556,7 +536,21 @@ public final class ProtobufUtil {
 
   /**
    * convert Action to MessageProto.
-   * 
+   *
+   * @param action
+   * @return
+   */
+  public static MetaProtos.MessageProto convertTransactionAction(TransactionAction action) {
+    MetaProtos.MessageProto.Builder builder = MetaProtos.MessageProto.newBuilder();
+    MetaProtos.TransactionActionProto proto = TransactionAction.convert(action);
+    builder.setType(MetaProtos.MessageProto.ActionType.TRANSACTION);
+    builder.setTransaction(proto);
+    return builder.build();
+  }
+
+  /**
+   * convert Action to MessageProto.
+   *
    * @param action
    * @return
    */
@@ -570,7 +564,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert Action to MessageProto.
-   * 
+   *
    * @param action
    * @return
    */
@@ -584,7 +578,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert ScanActionProto to ScanAction.
-   * 
+   *
    * @param scanActionProto
    * @return
    */
@@ -594,7 +588,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert ScanAction to ScanActionProto.
-   * 
+   *
    * @param scanAction
    * @return
    */
@@ -604,7 +598,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert result to QueryResultProto.
-   * 
+   *
    * @param result
    * @return
    */
@@ -620,7 +614,7 @@ public final class ProtobufUtil {
 
   /**
    * Combine result1 and result2,then convert it to QueryResultProto.
-   * 
+   *
    * @param result1
    * @param result2
    * @return
@@ -644,7 +638,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert result to NameDataTypeBytesPair.
-   * 
+   *
    * @param kv
    * @return
    */
@@ -658,7 +652,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert UpdateActionProto to UpdateAction.
-   * 
+   *
    * @param updateActionProto
    * @return
    */
@@ -669,7 +663,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert InsertActionProto to InsertAction.
-   * 
+   *
    * @param insertActionProto
    * @return
    */
@@ -680,7 +674,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert DeleteActionProto to DeleteAction.
-   * 
+   *
    * @param deleteActionProto
    * @return
    */
@@ -691,7 +685,7 @@ public final class ProtobufUtil {
 
   /**
    * Get HTableDescriptor[] from GetTableDescriptorsResponse protobuf
-   * 
+   *
    * @param proto
    *          the GetTableDescriptorsResponse
    * @return HTableDescriptor[]
@@ -731,7 +725,7 @@ public final class ProtobufUtil {
 
   /**
    * get the split keys in form "byte [][]" from a CreateTableRequest proto
-   * 
+   *
    * @param proto
    *          the CreateTableRequest
    * @return the split keys
@@ -746,7 +740,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert a ByteArrayComparable to a protocol buffer Comparator
-   * 
+   *
    * @param comparator
    *          the ByteArrayComparable to convert
    * @return the converted protocol buffer Comparator
@@ -763,7 +757,7 @@ public final class ProtobufUtil {
 
   /**
    * Convert a protocol buffer Comparator to a ByteArrayComparable
-   * 
+   *
    * @param proto
    *          the protocol buffer Comparator to convert
    * @return the converted ByteArrayComparable
@@ -775,7 +769,7 @@ public final class ProtobufUtil {
     String funcName = "parseFrom";
     byte[] value = proto.getSerializedComparator().toByteArray();
     try {
-      Class<? extends ComparatorProtos.ByteArrayComparable> c = (Class<? extends ComparatorProtos.ByteArrayComparable>) (Class
+      Class<? extends ByteArrayComparable> c = (Class<? extends ByteArrayComparable>) (Class
           .forName(type));
       Method parseFrom = c.getMethod(funcName, byte[].class);
       if (parseFrom == null) {
@@ -791,11 +785,11 @@ public final class ProtobufUtil {
   /**
    * Convert a stringified protocol buffer exception Parameter to a Java
    * Exception
-   * 
+   *
    * @param parameter
    *          the protocol buffer Parameter to convert
    * @return the converted Exception
-   * @throws IOException
+   * @throws java.io.IOException
    *           if failed to deserialize the parameter
    */
   @SuppressWarnings("unchecked")
@@ -819,11 +813,11 @@ public final class ProtobufUtil {
   /**
    * A helper to retrieve entityGroup info given a entityGroup name using admin
    * protocol.
-   * 
+   *
    * @param admin
    * @param entityGroupName
    * @return the retrieved entityGroup info
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static EntityGroupInfo getEntityGroupInfo(final AdminProtocol admin,
       final byte[] entityGroupName) throws IOException {
@@ -841,11 +835,11 @@ public final class ProtobufUtil {
   /**
    * A helper to close a entityGroup given a entityGroup name using admin
    * protocol.
-   * 
+   *
    * @param admin
    * @param egi
    * @param transitionInZK
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static void closeEntityGroup(final AdminProtocol admin,
       final EntityGroupInfo egi, final boolean transitionInZK)
@@ -862,12 +856,12 @@ public final class ProtobufUtil {
   /**
    * A helper to close a entityGroup given a entityGroup name using admin
    * protocol.
-   * 
+   *
    * @param admin
    * @param egi
    * @param versionOfClosingNode
    * @return true if the entityGroup is closed
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static boolean closeEntityGroup(final AdminProtocol admin,
       final EntityGroupInfo egi, final int versionOfClosingNode,
@@ -886,12 +880,12 @@ public final class ProtobufUtil {
   /**
    * A helper to close a entityGroup given a entityGroup name using admin
    * protocol.
-   * 
+   *
    * @param admin
    * @param egi
    * @param versionOfClosingNode
    * @return true if the entityGroup is closed
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static boolean closeEntityGroup(final AdminProtocol admin,
       final EntityGroupInfo egi, final int versionOfClosingNode)
@@ -909,10 +903,10 @@ public final class ProtobufUtil {
 
   /**
    * A helper to open a entityGroup using admin protocol.
-   * 
+   *
    * @param admin
    * @param entityGroup
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static void openEntityGroup(final AdminProtocol admin,
       final EntityGroupInfo entityGroup) throws IOException {
@@ -927,11 +921,11 @@ public final class ProtobufUtil {
 
   /**
    * A helper to open a list of entityGroups using admin protocol.
-   * 
+   *
    * @param admin
    * @param entityGroups
    * @return OpenEntityGroupResponse
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static FServerAdminProtos.OpenEntityGroupResponse openEntityGroup(
       final AdminProtocol admin, final List<EntityGroupInfo> entityGroups)
@@ -948,10 +942,10 @@ public final class ProtobufUtil {
   /**
    * A helper to get the all the online entityGroups on a fserver using admin
    * protocol.
-   * 
+   *
    * @param admin
    * @return a list of online entityGroup info
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static List<EntityGroupInfo> getOnlineEntityGroups(
       final AdminProtocol admin) throws IOException {
@@ -968,7 +962,7 @@ public final class ProtobufUtil {
 
   /**
    * Get the list of entityGroup info from a GetOnlineEntityGroupsResponse
-   * 
+   *
    * @param proto
    *          the GetOnlineEntityGroupsResponse
    * @return the list of entityGroup info or null if <code>proto</code> is null
@@ -987,10 +981,10 @@ public final class ProtobufUtil {
 
   /**
    * A helper to get the info of a fserver using admin protocol.
-   * 
+   *
    * @param admin
    * @return the server name
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static FServerAdminProtos.ServerInfo getServerInfo(final AdminProtocol admin)
       throws IOException {
@@ -1005,11 +999,11 @@ public final class ProtobufUtil {
 
   /**
    * A helper to split a entityGroup using admin protocol.
-   * 
+   *
    * @param admin
    * @param egi
    * @param splitPoint
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static void split(final AdminProtocol admin,
       final EntityGroupInfo egi, byte[] splitPoint) throws IOException {
@@ -1026,9 +1020,9 @@ public final class ProtobufUtil {
 
   /*
    * Get the total (read + write) requests from a EntityGroupLoad pb
-   * 
+   *
    * @param rl - EntityGroupLoad pb
-   * 
+   *
    * @return total (read + write) requests
    */
   public static long getTotalRequestsCount(WaspProtos.EntityGroupLoadProtos rl) {
@@ -1055,7 +1049,7 @@ public final class ProtobufUtil {
   /**
    * Unwraps an exception from a protobuf service into the underlying (expected)
    * IOException. This method will <strong>always</strong> throw an exception.
-   * 
+   *
    * @param se
    *          the {@code ServiceException} instance to convert into an
    *          {@code IOException}
@@ -1072,9 +1066,9 @@ public final class ProtobufUtil {
     throw new IOException(se);
   }
 
-  public static List<WaspProtos.StringStringPair> toStringStringPairList(
+  public static List<StringStringPair> toStringStringPairList(
       Map<String, String> parameter) {
-    List<WaspProtos.StringStringPair> pairs = new ArrayList<WaspProtos.StringStringPair>();
+    List<StringStringPair> pairs = new ArrayList<StringStringPair>();
     for (Map.Entry<String, String> entry : parameter.entrySet()) {
       WaspProtos.StringStringPair.Builder builder = WaspProtos.StringStringPair.newBuilder();
       builder.setName(entry.getKey());
@@ -1084,7 +1078,7 @@ public final class ProtobufUtil {
     return pairs;
   }
 
-  public static Map<String, String> toMap(List<WaspProtos.StringStringPair> pairs) {
+  public static Map<String, String> toMap(List<StringStringPair> pairs) {
     Map<String, String> parameters = new HashMap<String, String>();
     for (WaspProtos.StringStringPair pair : pairs) {
       parameters.put(pair.getName(), pair.getValue());
@@ -1102,4 +1096,6 @@ public final class ProtobufUtil {
   public static MetaProtos.GetActionProto convertGetAction(GetAction action) {
     return GetAction.convert(action);
   }
+
+
 }

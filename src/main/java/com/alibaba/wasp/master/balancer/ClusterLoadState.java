@@ -17,13 +17,13 @@
  */
 package com.alibaba.wasp.master.balancer;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.ServerName;
+
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
-
-import com.alibaba.wasp.ServerName;import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.ServerName;
 
 /**
  * Class used to hold the current state of the cluster and how balanced it is.

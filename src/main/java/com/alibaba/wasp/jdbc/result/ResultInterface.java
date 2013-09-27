@@ -17,9 +17,9 @@
  */
 package com.alibaba.wasp.jdbc.result;
 
-import java.sql.SQLException;
-
 import com.alibaba.wasp.jdbc.value.Value;
+
+import java.sql.SQLException;
 
 public interface ResultInterface {
 
@@ -54,4 +54,6 @@ public interface ResultInterface {
   void reset();
 
   boolean isQuery();
+
+  String getSessionId();
 }

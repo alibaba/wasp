@@ -18,12 +18,12 @@
  */
 package com.alibaba.wasp.metrics;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
+
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * JMX caches the beans that have been exported; even after the values are

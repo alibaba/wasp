@@ -18,13 +18,13 @@
 
 package com.alibaba.wasp.ipc;
 
+import org.apache.hadoop.conf.Configurable;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.apache.hadoop.conf.Configurable;
 
 /** Base transport class used by ClientCache}. */
 public abstract class Transceiver implements Closeable, Configurable {
@@ -51,7 +51,7 @@ public abstract class Transceiver implements Closeable, Configurable {
 
   /**
    * Called by {@link Requestor#request(String,Object)} for two-way messages. By
-   * default calls {@link #writeBuffers(List)} followed by
+   * default calls {@link #writeBuffers(java.util.List)} followed by
    * {@link #readBuffers()}.
    */
   public List<ByteBuffer> transceive(List<ByteBuffer> request)
@@ -66,7 +66,7 @@ public abstract class Transceiver implements Closeable, Configurable {
   }
 
   /**
-   * Called by {@link Requestor#request(String,Object,Callback)} for two-way
+   * Called by {@link Requestor#request(String,Object, Callback)} for two-way
    * messages using callbacks.
    */
   public void transceive(List<ByteBuffer> request,
@@ -80,7 +80,7 @@ public abstract class Transceiver implements Closeable, Configurable {
     }
   }
 
-  /** Called by the default definition of {@link #transceive(List)}. */
+  /** Called by the default definition of {@link #transceive(java.util.List)}. */
   public abstract List<ByteBuffer> readBuffers() throws IOException;
 
   /** Called by {@link Requestor#request(String,Object)} for one-way messages. */

@@ -17,12 +17,10 @@
  */
 package com.alibaba.wasp;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.alibaba.wasp.protobuf.ProtobufUtil;
+import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupInfoProtos;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.client.Result;
@@ -32,11 +30,12 @@ import org.apache.hadoop.hbase.util.MD5Hash;
 import org.apache.hadoop.hbase.util.Pair;
 import org.apache.hadoop.hbase.util.PairOfSameType;
 import org.apache.hadoop.io.DataInputBuffer;
-import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupInfoProtos;
 
-import com.google.protobuf.ByteString;
-import com.google.protobuf.InvalidProtocolBufferException;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * EntityGroup information. Contains EntityGroup id, start and end keys, a
@@ -361,7 +360,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
    * 
    * @param entityGroupName
    * @return Array of byte[] containing tableName, startKey and id
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static byte[][] parseEntityGroupName(final byte[] entityGroupName)
       throws IOException {
@@ -456,7 +455,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
 
   /**
    * Get current table name of the entityGroup
-   * 
+   *
    * @return byte array of table name
    */
   public byte[] getTableName() {
@@ -468,7 +467,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
 
   /**
    * Get current table name as string
-   * 
+   *
    * @return string representation of current table
    */
   public String getTableNameAsString() {
@@ -480,7 +479,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
    * this entityGroup. For example, if the entityGroup is foo,a,g and this is
    * passed ["b","c"] or ["a","c"] it will return true, but if this is passed
    * ["b","z"] it will return false.
-   * 
+   *
    * @throws IllegalArgumentException
    *           if the range passed is invalid (ie end < start)
    */
@@ -503,7 +502,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
   public boolean containsRow(byte[] row) {
     return Bytes.compareTo(row, startKey) >= 0
         && (Bytes.compareTo(row, endKey) < 0 || Bytes.equals(endKey,
-            FConstants.EMPTY_BYTE_ARRAY));
+        FConstants.EMPTY_BYTE_ARRAY));
   }
 
   /**
@@ -531,7 +530,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
   /**
    * The parent of a entityGroup split is offLine while split daughters hold
    * references to the parent. OffLined entityGroups are closed.
-   * 
+   *
    * @param offLine
    *          Set online/offLine status.
    */
@@ -553,7 +552,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {
@@ -566,7 +565,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
   }
 
   /**
-   * @see java.lang.Object#equals(java.lang.Object)
+   * @see Object#equals(Object)
    */
   @Override
   public boolean equals(Object o) {
@@ -583,7 +582,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
   }
 
   /**
-   * @see java.lang.Object#hashCode()
+   * @see Object#hashCode()
    */
   @Override
   public int hashCode() {
@@ -642,7 +641,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
 
   /**
    * Convert a EntityGroupInfo to a EntityGroupInfoProtos
-   * 
+   *
    * @return the converted EntityGroupInfoProtos
    */
   public EntityGroupInfoProtos convert() {
@@ -651,7 +650,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
 
   /**
    * Convert a EntityGroupInfo to a EntityGroupInfoProtos
-   * 
+   *
    * @param info
    *          the EntityGroupInfo to convert
    * @return the converted EntityGroupInfoProtos
@@ -675,7 +674,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
 
   /**
    * Convert a EntityGroupInfoProtos to a EntityGroupInfo
-   * 
+   *
    * @param proto
    *          the EntityGroupInfoProtos to convert
    * @return the converted EntityGroupInfo
@@ -751,10 +750,10 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
    * Use this instead of {@link #toByteArray()} when writing to a stream and you
    * want to use the pb mergeDelimitedFrom (w/o the delimiter, pb reads to EOF
    * which may not be what you want).
-   * 
+   *
    * @return This instance serialized as a delimited protobuf w/ a magic pb
    *         prefix.
-   * @throws IOException
+   * @throws java.io.IOException
    * @see {@link #toByteArray()}
    */
   public byte[] toDelimitedByteArray() throws IOException {
@@ -762,13 +761,13 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
   }
 
   /**
-   * Extract a EntityGroupInfo and ServerName from catalog table {@link Result}.
-   * 
+   * Extract a EntityGroupInfo and ServerName from catalog table {@link org.apache.hadoop.hbase.client.Result}.
+   *
    * @param r
    *          Result to pull from
    * @return A pair of the {@link EntityGroupInfo} and the {@link ServerName}
    *         (or null for server address if no address set in .FMETA.).
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static Pair<EntityGroupInfo, ServerName> getEntityGroupInfoAndServerName(
       final Result r) {
@@ -781,7 +780,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
    * Returns EntityGroupInfo object from the column
    * {@link FConstants#CATALOG_FAMILY};
    * {@link FConstants#ENTITYGROUPINFO_QUALIFIER} of the catalog table Result.
-   * 
+   *
    * @param data
    *          a Result object from the catalog table scan
    * @return EntityGroupInfo or null
@@ -800,7 +799,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
   /**
    * Returns the daughter entityGroups by reading the corresponding columns of
    * the catalog table Result.
-   * 
+   *
    * @param data
    *          a Result object from the catalog table scan
    * @return a pair of EntityGroupInfo or PairOfSameType(null, null) if the
@@ -820,7 +819,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
    * Returns the EntityGroupInfo object from the column
    * {@link FConstants#CATALOG_FAMILY} and <code>qualifier</code> of the catalog
    * table result.
-   * 
+   *
    * @param r
    *          a Result object from the catalog table scan
    * @param qualifier
@@ -829,7 +828,7 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
    *          {@link FConstants#SPLITB_QUALIFIER} or
    *          {@link FConstants#ENTITYGROUPINFO_QUALIFIER}.
    * @return An EntityGroupInfo instance or null.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static EntityGroupInfo getEntityGroupInfo(final Result r,
       byte[] qualifier) {
@@ -840,8 +839,8 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
   }
 
   /**
-   * Returns a {@link ServerName} from catalog table {@link Result}.
-   * 
+   * Returns a {@link ServerName} from catalog table {@link org.apache.hadoop.hbase.client.Result}.
+   *
    * @param r
    *          Result to pull from
    * @return A ServerName instance or null if necessary fields not found or
@@ -855,10 +854,10 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
    * Parses an EntityGroupInfo instance from the passed in stream. Presumes the
    * EntityGroupInfo was serialized to the stream with
    * {@link #toDelimitedByteArray()}
-   * 
+   *
    * @param in
    * @return An instance of EntityGroupInfo.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static EntityGroupInfo parseFrom(final DataInputStream in)
       throws IOException {
@@ -871,12 +870,12 @@ public class EntityGroupInfo implements Comparable<EntityGroupInfo> {
    * mergeDelimitedFrom (w/o the delimiter, pb reads to EOF which may not be
    * what you want). {@link #parseDelimitedFrom(byte[], int, int)} can be used
    * to read back the instances.
-   * 
+   *
    * @param infos
    *          EntityGroupInfo objects to serialize
    * @return This instance serialized as a delimited protobuf w/ a magic pb
    *         prefix.
-   * @throws IOException
+   * @throws java.io.IOException
    * @see {@link #toByteArray()}
    */
   public static byte[] toDelimitedByteArray(EntityGroupInfo... infos)

@@ -17,10 +17,10 @@
  */
 package com.alibaba.wasp.messagequeue;
 
-import java.io.IOException;
-
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.storage.StorageActionManager;
+
+import java.io.IOException;
 
 public class Publisher implements MessageQueue<MessageID> {
   private final EntityGroupInfo entityGroupInfo;

@@ -19,25 +19,11 @@
  */
 package com.alibaba.wasp.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.FieldKeyWord;
+import com.alibaba.wasp.NotAllChildTableDisableException;
 import com.alibaba.wasp.NotServingEntityGroupException;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.TableExistsException;
@@ -57,10 +43,25 @@ import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.meta.Field;
 import com.alibaba.wasp.zookeeper.ZKTable;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Class to test WaspAdmin. Spins up the minicluster once at test start and then
@@ -121,6 +122,24 @@ public class TestAdmin {
     assertTrue("Table must be enabled.",
         TEST_UTIL.getWaspCluster().getMaster().getAssignmentManager()
             .getZKTable().isEnabledTable(Bytes.toString(table)));
+  }
+
+  @Test
+  public void testDisableEnableTableHasChilds() throws IOException, InterruptedException {
+    final byte[] rootTable = Bytes.toBytes("testDisableTableHasChildsRoot");
+    final byte[] childTable = Bytes.toBytes("testDisableTableHasChildsChild");
+    TEST_UTIL.createTable(rootTable);
+    TEST_UTIL.waitTableAvailable(rootTable);
+    TEST_UTIL.createChildTable(rootTable, childTable);
+    TEST_UTIL.waitTableEnabled(childTable, 5000);
+    try {
+      admin.disableTable(rootTable);
+    } catch (Exception e) {
+      assertTrue(e instanceof NotAllChildTableDisableException);
+    }
+    assertTrue("Table must be enabled.",
+        TEST_UTIL.getWaspCluster().getMaster().getAssignmentManager()
+            .getZKTable().isEnabledTable(Bytes.toString(rootTable)));
   }
 
   @Test
@@ -334,51 +353,51 @@ public class TestAdmin {
     egis = entityGroups.keySet().iterator();
     egi = egis.next();
     assertTrue(egi.getStartKey() == null || egi.getStartKey().length == 0);
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 1, 1, 1, 1, 1, 1, 1,
-        1, 1, 1 }));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 1, 1, 1, 1, 1, 1,
-        1, 1, 1, 1 }));
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 2, 2, 2, 2, 2, 2, 2,
-        2, 2, 2 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1}));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 2, 2, 2, 2, 2, 2,
-        2, 2, 2, 2 }));
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 3, 3, 3, 3, 3, 3, 3,
-        3, 3, 3 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2}));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{3, 3, 3, 3, 3, 3, 3,
+        3, 3, 3}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 3, 3, 3, 3, 3, 3,
-        3, 3, 3, 3 }));
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 4, 4, 4, 4, 4, 4, 4,
-        4, 4, 4 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{3, 3, 3, 3, 3, 3,
+        3, 3, 3, 3}));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 4, 4, 4, 4, 4, 4,
-        4, 4, 4, 4 }));
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 5, 5, 5, 5, 5, 5, 5,
-        5, 5, 5 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4}));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 5, 5, 5, 5, 5, 5,
-        5, 5, 5, 5 }));
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 6, 6, 6, 6, 6, 6, 6,
-        6, 6, 6 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5}));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{6, 6, 6, 6, 6, 6, 6,
+        6, 6, 6}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 6, 6, 6, 6, 6, 6,
-        6, 6, 6, 6 }));
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 7, 7, 7, 7, 7, 7, 7,
-        7, 7, 7 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{6, 6, 6, 6, 6, 6,
+        6, 6, 6, 6}));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{7, 7, 7, 7, 7, 7, 7,
+        7, 7, 7}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 7, 7, 7, 7, 7, 7,
-        7, 7, 7, 7 }));
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 8, 8, 8, 8, 8, 8, 8,
-        8, 8, 8 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{7, 7, 7, 7, 7, 7,
+        7, 7, 7, 7}));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{8, 8, 8, 8, 8, 8, 8,
+        8, 8, 8}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 8, 8, 8, 8, 8, 8,
-        8, 8, 8, 8 }));
-    assertTrue(Bytes.equals(egi.getEndKey(), new byte[] { 9, 9, 9, 9, 9, 9, 9,
-        9, 9, 9 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{8, 8, 8, 8, 8, 8,
+        8, 8, 8, 8}));
+    assertTrue(Bytes.equals(egi.getEndKey(), new byte[]{9, 9, 9, 9, 9, 9, 9,
+        9, 9, 9}));
     egi = egis.next();
-    assertTrue(Bytes.equals(egi.getStartKey(), new byte[] { 9, 9, 9, 9, 9, 9,
-        9, 9, 9, 9 }));
+    assertTrue(Bytes.equals(egi.getStartKey(), new byte[]{9, 9, 9, 9, 9, 9,
+        9, 9, 9, 9}));
     assertTrue(egi.getEndKey() == null || egi.getEndKey().length == 0);
 
     // Try once more with something that divides into something infinite

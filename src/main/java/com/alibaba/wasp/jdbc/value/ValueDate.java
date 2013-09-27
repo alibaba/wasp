@@ -19,7 +19,7 @@
  */
 package com.alibaba.wasp.jdbc.value;
 
-import com.alibaba.wasp.util.MathUtils;import com.alibaba.wasp.SQLErrorCode;
+import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.jdbc.JdbcException;
 import com.alibaba.wasp.util.DateTimeUtils;
 import com.alibaba.wasp.util.MathUtils;

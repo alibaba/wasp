@@ -18,20 +18,20 @@
  */
 package com.alibaba.wasp.zookeeper;
 
+import com.alibaba.wasp.FConstants;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.util.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Map.Entry;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.util.StringUtils;
-import com.alibaba.wasp.FConstants;
+import java.util.Properties;
 
 /**
  * Utility methods for reading, parsing, and building zookeeper configuration.
@@ -112,7 +112,7 @@ public class ZKConfig {
    * @param conf WaspConfiguration to use for injecting variables.
    * @param inputStream InputStream to read from.
    * @return Properties parsed from config stream with variables substituted.
-   * @throws IOException if anything goes wrong parsing config
+   * @throws java.io.IOException if anything goes wrong parsing config
    */
   public static Properties parseZooCfg(Configuration conf,
       InputStream inputStream) throws IOException {

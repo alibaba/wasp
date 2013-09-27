@@ -17,14 +17,6 @@
  */
 package com.alibaba.wasp.meta;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.MetaException;
@@ -32,6 +24,13 @@ import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnSchema;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.TableSchema;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.TableSchema.TableTypeProtos;
+import org.apache.hadoop.hbase.util.Bytes;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Information about a table, Contains Table name, column fields, primary keys,
@@ -362,7 +361,7 @@ public class FTable {
   /**
    * convert to PB object
    * 
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public TableSchema convert() throws MetaException {
     try {
@@ -409,8 +408,8 @@ public class FTable {
 
   /**
    * convert PB object to byte[]
-   * 
-   * @throws MetaException
+   *
+   * @throws com.alibaba.wasp.MetaException
    */
   public byte[] toByte() throws MetaException {
     return convert().toByteArray();
@@ -418,8 +417,8 @@ public class FTable {
 
   /**
    * convert byte[] to Table Java Object
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public static FTable convert(byte[] value) throws MetaException {
     if (value == null || value.length <= 0) {
@@ -436,7 +435,7 @@ public class FTable {
    * @param bytes
    *          A pb TableSchema serialized.
    * @return A deserialized {@link FTable}
-   * @throws DeserializationException
+   * @throws com.alibaba.wasp.DeserializationException
    */
   private static FTable parseTableFrom(final byte[] bytes)
       throws DeserializationException {

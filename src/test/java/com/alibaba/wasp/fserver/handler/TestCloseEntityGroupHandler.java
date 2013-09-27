@@ -17,16 +17,6 @@
  */
 package com.alibaba.wasp.fserver.handler;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
-import com.alibaba.wasp.DeserializationException;import com.alibaba.wasp.util.MockFServerServices;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.HConstants;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupTransaction;
@@ -41,6 +31,10 @@ import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.util.MockFServerServices;
 import com.alibaba.wasp.util.MockServer;
 import com.alibaba.wasp.zookeeper.ZKAssign;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.junit.AfterClass;
@@ -48,6 +42,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test of the {@link CloseEntityGroupHandler}.
@@ -90,11 +90,11 @@ public class TestCloseEntityGroupHandler {
 
   /**
    * Test that if we fail a commit, abort gets set on close.
-   * 
-   * 
-   * @throws IOException
-   * @throws NodeExistsException
-   * @throws KeeperException
+   *
+   *
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException
+   * @throws org.apache.zookeeper.KeeperException
    */
   @Test
   public void testFailedCommitAborts() throws IOException, NodeExistsException,
@@ -134,10 +134,10 @@ public class TestCloseEntityGroupHandler {
 
   /**
    * Test if close entityGroup can handle ZK closing node version mismatch
-   * 
-   * @throws IOException
-   * @throws NodeExistsException
-   * @throws KeeperException
+   *
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException
+   * @throws org.apache.zookeeper.KeeperException
    * @throws com.alibaba.wasp.DeserializationException
    */
   @Test
@@ -167,11 +167,11 @@ public class TestCloseEntityGroupHandler {
 
   /**
    * Test if the entityGroup can be closed properly
-   * 
-   * @throws IOException
-   * @throws NodeExistsException
-   * @throws KeeperException
-   * @throws DeserializationException
+   *
+   * @throws java.io.IOException
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws com.alibaba.wasp.DeserializationException
    */
   @Test
   public void testCloseEntityGroup() throws IOException, NodeExistsException,

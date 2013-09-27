@@ -17,23 +17,23 @@
  */
 package com.alibaba.wasp.fserver.redo;
 
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.WaspTestingUtility;
 import com.alibaba.wasp.meta.FMetaTestUtil;
 import com.alibaba.wasp.meta.FTable;
 import com.alibaba.wasp.meta.StorageTableNameBuilder;
 import com.alibaba.wasp.plan.action.Primary;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
 
 /**
  * Test of the {@link RedoLog}.

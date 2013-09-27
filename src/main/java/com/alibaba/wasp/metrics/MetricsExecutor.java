@@ -24,7 +24,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Class to handle the ScheduledExecutorService{@link ScheduledExecutorService}
+ * Class to handle the ScheduledExecutorService{@link java.util.concurrent.ScheduledExecutorService}
  */
 public class MetricsExecutor {
 

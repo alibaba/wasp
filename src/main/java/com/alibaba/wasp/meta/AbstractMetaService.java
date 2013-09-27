@@ -17,8 +17,8 @@
  */
 package com.alibaba.wasp.meta;
 
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.MetaException;
+import org.apache.hadoop.conf.Configuration;
 
 public abstract class AbstractMetaService {
 

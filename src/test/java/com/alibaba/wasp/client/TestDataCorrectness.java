@@ -18,8 +18,16 @@
  */
 package com.alibaba.wasp.client;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.alibaba.wasp.DataType;
+import com.alibaba.wasp.FieldKeyWord;
+import com.alibaba.wasp.WaspTestingUtility;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -27,16 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.wasp.WaspTestingUtility;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.DataType;
-import com.alibaba.wasp.FieldKeyWord;
-import com.alibaba.wasp.WaspTestingUtility;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TestDataCorrectness {
   private static final Log LOG = LogFactory.getLog(TestDataCorrectness.class);
@@ -94,7 +94,7 @@ public class TestDataCorrectness {
    * {@link TestDataCorrectness#child_columns},
    * {@link TestDataCorrectness#field_Keys},
    * {@link TestDataCorrectness#data_Types}
-   * 
+   *
    * @throws Exception
    */
   private static void creatTable() throws Exception {
@@ -335,7 +335,7 @@ public class TestDataCorrectness {
         sql.append(indexColumn
             + "="
             + DataType.valueToStringAsDataType(columnData.getFirst(),
-                columnData.getSecond()));
+            columnData.getSecond()));
       }
       sql.append(";");
       selectSqls.add(sql.toString());

@@ -19,21 +19,18 @@
  */
 package com.alibaba.wasp.zookeeper;
 
+import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos;
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.zookeeper.KeeperException;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.hadoop.hbase.master.AssignmentManager;
-import org.apache.hadoop.hbase.zookeeper.ZKTable.TableState;
-import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos;
-import org.apache.zookeeper.KeeperException;
-
-import com.google.protobuf.InvalidProtocolBufferException;
-
 /**
  * Non-instantiable class that provides helper functions for clients other than
- * {@link AssignmentManager} for reading the state of a table in ZK.
- * 
+ * {@link org.apache.hadoop.hbase.master.AssignmentManager} for reading the state of a table in ZK.
+ *
  * <p>
  * Does not cache state like {@link ZKTable}, actually reads from ZK each call.
  */
@@ -43,14 +40,14 @@ public class ZKTableReadOnly {
   }
 
   /**
-   * Go to zookeeper and see if state of table is {@link TableState#DISABLED}.
+   * Go to zookeeper and see if state of table is {@link org.apache.hadoop.hbase.zookeeper.ZKTable.TableState#DISABLED}.
    * This method does not use cache as {@link #isDisabledTable(String)} does.
-   * This method is for clients other than {@link AssignmentManager}
-   * 
+   * This method is for clients other than {@link org.apache.hadoop.hbase.master.AssignmentManager}
+   *
    * @param zkw
    * @param tableName
    * @return True if table is enabled.
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static boolean isDisabledTable(final ZooKeeperWatcher zkw,
       final String tableName) throws KeeperException {
@@ -59,14 +56,14 @@ public class ZKTableReadOnly {
   }
 
   /**
-   * Go to zookeeper and see if state of table is {@link TableState#ENABLED}.
+   * Go to zookeeper and see if state of table is {@link org.apache.hadoop.hbase.zookeeper.ZKTable.TableState#ENABLED}.
    * This method does not use cache as {@link #isEnabledTable(String)} does.
-   * This method is for clients other than {@link AssignmentManager}
-   * 
+   * This method is for clients other than {@link org.apache.hadoop.hbase.master.AssignmentManager}
+   *
    * @param zkw
    * @param tableName
    * @return True if table is enabled.
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static boolean isEnabledTable(final ZooKeeperWatcher zkw,
       final String tableName) throws KeeperException {
@@ -74,15 +71,15 @@ public class ZKTableReadOnly {
   }
 
   /**
-   * Go to zookeeper and see if state of table is {@link TableState#DISABLING}
-   * of {@link TableState#DISABLED}. This method does not use cache as
+   * Go to zookeeper and see if state of table is {@link org.apache.hadoop.hbase.zookeeper.ZKTable.TableState#DISABLING}
+   * of {@link org.apache.hadoop.hbase.zookeeper.ZKTable.TableState#DISABLED}. This method does not use cache as
    * {@link #isEnabledTable(String)} does. This method is for clients other than
-   * {@link AssignmentManager}.
-   * 
+   * {@link org.apache.hadoop.hbase.master.AssignmentManager}.
+   *
    * @param zkw
    * @param tableName
    * @return True if table is enabled.
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static boolean isDisablingOrDisabledTable(final ZooKeeperWatcher zkw,
       final String tableName) throws KeeperException {
@@ -93,9 +90,9 @@ public class ZKTableReadOnly {
 
   /**
    * Gets a list of all the tables set as disabled in zookeeper.
-   * 
+   *
    * @return Set of disabled tables, empty Set if none
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static Set<String> getDisabledTables(ZooKeeperWatcher zkw)
       throws KeeperException {
@@ -111,9 +108,9 @@ public class ZKTableReadOnly {
 
   /**
    * Gets a list of all the tables set as disabled in zookeeper.
-   * 
+   *
    * @return Set of disabled tables, empty Set if none
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public static Set<String> getDisabledOrDisablingTables(ZooKeeperWatcher zkw)
       throws KeeperException {
@@ -136,8 +133,8 @@ public class ZKTableReadOnly {
   /**
    * @param zkw
    * @param child
-   * @return Null or {@link TableState} found in znode.
-   * @throws KeeperException
+   * @return Null or {@link org.apache.hadoop.hbase.zookeeper.ZKTable.TableState} found in znode.
+   * @throws org.apache.zookeeper.KeeperException
    */
   static ZooKeeperProtos.Table.State getTableState(final ZooKeeperWatcher zkw,
       final String child) throws KeeperException {

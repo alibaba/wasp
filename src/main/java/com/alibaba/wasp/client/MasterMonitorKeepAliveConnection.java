@@ -18,9 +18,9 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.Closeable;
-
 import com.alibaba.wasp.master.FMasterMonitorProtocol;
+
+import java.io.Closeable;
 
 /**
  * A KeepAlive connection is not physically closed immediately after the close,

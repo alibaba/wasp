@@ -25,24 +25,37 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class QueryInfo {
   public static enum QueryType {
     GET,
-      SCAN
+    SCAN,
+    AGGREGATE
   }
 
   /** map field to value **/
   private LinkedHashMap<String, Condition> eqConditions = new LinkedHashMap<String, Condition>();
 
-  private Condition rangeCondition;
+  private LinkedHashMap<String, Condition> rangeConditions = new LinkedHashMap<String, Condition>();
 
   private QueryType type;
 
+  private boolean forUpdate = false;
+
+  private AggregateInfo aggregateInfo;
+
   public QueryInfo(QueryType type, LinkedHashMap<String, Condition> fieldValue,
-      List<Condition> rangeCondition) throws UnsupportedException {
+      LinkedHashMap<String, Condition> rangeCondition) throws UnsupportedException {
+    this(type, fieldValue, rangeCondition, false);
+  }
+
+  public QueryInfo(QueryType type, LinkedHashMap<String, Condition> fieldValue,
+      LinkedHashMap<String, Condition> rangeConditions, boolean forUpdate) throws UnsupportedException {
     this.type = type;
-    initializeConditions(fieldValue, rangeCondition);
+    this.forUpdate = forUpdate;
+    this.eqConditions = fieldValue;
+    this.rangeConditions = rangeConditions;
   }
 
   public Condition getField(String fieldName) {
@@ -50,26 +63,11 @@ public class QueryInfo {
     if (condition != null) {
       return condition;
     }
-    if (rangeCondition != null
-        && rangeCondition.getFieldName().equalsIgnoreCase(fieldName)) {
-      return rangeCondition;
+    condition = rangeConditions.get(fieldName);
+    if(condition != null) {
+      return condition;
     }
     return null;
-  }
-
-  private void initializeConditions(
-      LinkedHashMap<String, Condition> fieldValue,
-      List<Condition> rangeCondition) throws UnsupportedException {
-    if (rangeCondition != null) {
-      if (rangeCondition.size() > 1) {
-        throw new UnsupportedException("More than one range condition.");
-      } else if (rangeCondition.size() == 1) {
-        this.rangeCondition = rangeCondition.get(0);
-      } else {
-        this.rangeCondition = null;
-      }
-    }
-    this.eqConditions = fieldValue;
   }
 
   public QueryType getType() {
@@ -80,6 +78,14 @@ public class QueryInfo {
     this.type = type;
   }
 
+  public boolean isForUpdate() {
+    return forUpdate;
+  }
+
+  public void setForUpdate(boolean forUpdate) {
+    this.forUpdate = forUpdate;
+  }
+
   /**
    * @return the eqConditions
    */
@@ -87,11 +93,21 @@ public class QueryInfo {
     return eqConditions;
   }
 
+
   /**
-   * @return the rangeCondition
+   *
+   * @return the rangeConditions
    */
-  public Condition getRangeCondition() {
-    return rangeCondition;
+  public LinkedHashMap<String, Condition> getRangeConditions() {
+    return rangeConditions;
+  }
+
+  public AggregateInfo getAggregateInfo() {
+    return aggregateInfo;
+  }
+
+  public void setAggregateInfo(AggregateInfo aggregateInfo) {
+    this.aggregateInfo = aggregateInfo;
   }
 
   /**
@@ -101,20 +117,11 @@ public class QueryInfo {
    */
   public List<String> getAllConditionFieldName() {
     List<String> fields = new ArrayList<String>(eqConditions.size()
-        + (rangeCondition == null ? 0 : 1));
-    Set<String> keySet = eqConditions.keySet();
-    if (rangeCondition != null) {
-      if (keySet.contains(rangeCondition.getFieldName())) {
-        // keySet.add(rangeCondition.getFieldName());
-        // java.lang.UnsupportedOperationException
-        fields.addAll(keySet);
-      } else {
-        fields.addAll(keySet);
-        fields.add(rangeCondition.getFieldName());
-      }
-    } else {
-      fields.addAll(keySet);
-    }
+        + (rangeConditions == null ? 0 : rangeConditions.size()));
+    Set<String> fieldSet = new TreeSet<String>();
+    fieldSet.addAll(eqConditions.keySet());
+    fieldSet.addAll(rangeConditions.keySet());
+    fields.addAll(fieldSet);
     return fields;
   }
 
@@ -124,7 +131,7 @@ public class QueryInfo {
     sb.append("TYPE: ");
     sb.append(type);
     sb.append("\n");
-    sb.append(eqConditions.size() + (rangeCondition == null ? 0 : 1));
+    sb.append(eqConditions.size() + rangeConditions.size());
     sb.append(" Filter Field:");
     Iterator<Entry<String, Condition>> iter = eqConditions.entrySet()
         .iterator();
@@ -136,8 +143,14 @@ public class QueryInfo {
       sb.append("\n");
     }
     sb.append("\t");
-    if (rangeCondition != null) {
-      sb.append(rangeCondition.toString());
+    iter = rangeConditions.entrySet()
+        .iterator();
+    sb.append("\n");
+    while (iter.hasNext()) {
+      sb.append("\t");
+      Condition entry = iter.next().getValue();
+      sb.append(entry.toString());
+      sb.append("\n");
     }
     sb.append("\n");
     return sb.toString();

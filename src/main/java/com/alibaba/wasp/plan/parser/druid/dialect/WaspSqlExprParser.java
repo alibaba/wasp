@@ -17,8 +17,6 @@
  */
 package com.alibaba.wasp.plan.parser.druid.dialect;
 
-import com.alibaba.wasp.FieldKeyWord;
-
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.statement.SQLColumnDefinition;
@@ -27,6 +25,7 @@ import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
 import com.alibaba.druid.sql.parser.Lexer;
 import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.Token;
+import com.alibaba.wasp.FieldKeyWord;
 
 public class WaspSqlExprParser extends MySqlExprParser {
 

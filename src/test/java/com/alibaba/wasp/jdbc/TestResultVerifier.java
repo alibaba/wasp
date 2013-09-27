@@ -34,4 +34,5 @@ public interface TestResultVerifier {
      * @return true if the method should be called again
      */
     boolean verify(Object returnValue, Throwable t, Method m, Object... args);
+
 }

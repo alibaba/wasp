@@ -5210,6 +5210,14 @@ public final class MetaProtos {
         getColsOrBuilderList();
     com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder getColsOrBuilder(
         int index);
+    
+    // optional bool forUpdate = 5;
+    boolean hasForUpdate();
+    boolean getForUpdate();
+    
+    // optional string sessionId = 6;
+    boolean hasSessionId();
+    String getSessionId();
   }
   public static final class GetActionProto extends
       com.google.protobuf.GeneratedMessage
@@ -5313,11 +5321,55 @@ public final class MetaProtos {
       return cols_.get(index);
     }
     
+    // optional bool forUpdate = 5;
+    public static final int FORUPDATE_FIELD_NUMBER = 5;
+    private boolean forUpdate_;
+    public boolean hasForUpdate() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public boolean getForUpdate() {
+      return forUpdate_;
+    }
+    
+    // optional string sessionId = 6;
+    public static final int SESSIONID_FIELD_NUMBER = 6;
+    private java.lang.Object sessionId_;
+    public boolean hasSessionId() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public String getSessionId() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          sessionId_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getSessionIdBytes() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        sessionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       readMode_ = com.alibaba.wasp.protobuf.generated.MetaProtos.ReadModelProto.CURRENT;
       entityTableName_ = "";
       row_ = com.google.protobuf.ByteString.EMPTY;
       cols_ = java.util.Collections.emptyList();
+      forUpdate_ = false;
+      sessionId_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5357,6 +5409,12 @@ public final class MetaProtos {
       for (int i = 0; i < cols_.size(); i++) {
         output.writeMessage(4, cols_.get(i));
       }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBool(5, forUpdate_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(6, getSessionIdBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -5381,6 +5439,14 @@ public final class MetaProtos {
       for (int i = 0; i < cols_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, cols_.get(i));
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, forUpdate_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getSessionIdBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5422,6 +5488,16 @@ public final class MetaProtos {
       }
       result = result && getColsList()
           .equals(other.getColsList());
+      result = result && (hasForUpdate() == other.hasForUpdate());
+      if (hasForUpdate()) {
+        result = result && (getForUpdate()
+            == other.getForUpdate());
+      }
+      result = result && (hasSessionId() == other.hasSessionId());
+      if (hasSessionId()) {
+        result = result && getSessionId()
+            .equals(other.getSessionId());
+      }
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -5446,6 +5522,14 @@ public final class MetaProtos {
       if (getColsCount() > 0) {
         hash = (37 * hash) + COLS_FIELD_NUMBER;
         hash = (53 * hash) + getColsList().hashCode();
+      }
+      if (hasForUpdate()) {
+        hash = (37 * hash) + FORUPDATE_FIELD_NUMBER;
+        hash = (53 * hash) + hashBoolean(getForUpdate());
+      }
+      if (hasSessionId()) {
+        hash = (37 * hash) + SESSIONID_FIELD_NUMBER;
+        hash = (53 * hash) + getSessionId().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
@@ -5576,6 +5660,10 @@ public final class MetaProtos {
         } else {
           colsBuilder_.clear();
         }
+        forUpdate_ = false;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        sessionId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
@@ -5635,6 +5723,14 @@ public final class MetaProtos {
         } else {
           result.cols_ = colsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.forUpdate_ = forUpdate_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.sessionId_ = sessionId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -5685,6 +5781,12 @@ public final class MetaProtos {
               colsBuilder_.addAllMessages(other.cols_);
             }
           }
+        }
+        if (other.hasForUpdate()) {
+          setForUpdate(other.getForUpdate());
+        }
+        if (other.hasSessionId()) {
+          setSessionId(other.getSessionId());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -5756,6 +5858,16 @@ public final class MetaProtos {
               com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addCols(subBuilder.buildPartial());
+              break;
+            }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              forUpdate_ = input.readBool();
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
+              sessionId_ = input.readBytes();
               break;
             }
           }
@@ -6034,6 +6146,63 @@ public final class MetaProtos {
         return colsBuilder_;
       }
       
+      // optional bool forUpdate = 5;
+      private boolean forUpdate_ ;
+      public boolean hasForUpdate() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public boolean getForUpdate() {
+        return forUpdate_;
+      }
+      public Builder setForUpdate(boolean value) {
+        bitField0_ |= 0x00000010;
+        forUpdate_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearForUpdate() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        forUpdate_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // optional string sessionId = 6;
+      private java.lang.Object sessionId_ = "";
+      public boolean hasSessionId() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public String getSessionId() {
+        java.lang.Object ref = sessionId_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          sessionId_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setSessionId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSessionId() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        sessionId_ = getDefaultInstance().getSessionId();
+        onChanged();
+        return this;
+      }
+      void setSessionId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000020;
+        sessionId_ = value;
+        onChanged();
+      }
+      
       // @@protoc_insertion_point(builder_scope:GetActionProto)
     }
     
@@ -6095,6 +6264,16 @@ public final class MetaProtos {
     // optional uint32 batch = 9;
     boolean hasBatch();
     int getBatch();
+    
+    // repeated .ColumnStructProto notIndexConditionCols = 10;
+    java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto> 
+        getNotIndexConditionColsList();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto getNotIndexConditionCols(int index);
+    int getNotIndexConditionColsCount();
+    java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder> 
+        getNotIndexConditionColsOrBuilderList();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder getNotIndexConditionColsOrBuilder(
+        int index);
   }
   public static final class ScanActionProto extends
       com.google.protobuf.GeneratedMessage
@@ -6281,6 +6460,27 @@ public final class MetaProtos {
       return batch_;
     }
     
+    // repeated .ColumnStructProto notIndexConditionCols = 10;
+    public static final int NOTINDEXCONDITIONCOLS_FIELD_NUMBER = 10;
+    private java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto> notIndexConditionCols_;
+    public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto> getNotIndexConditionColsList() {
+      return notIndexConditionCols_;
+    }
+    public java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder> 
+        getNotIndexConditionColsOrBuilderList() {
+      return notIndexConditionCols_;
+    }
+    public int getNotIndexConditionColsCount() {
+      return notIndexConditionCols_.size();
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto getNotIndexConditionCols(int index) {
+      return notIndexConditionCols_.get(index);
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder getNotIndexConditionColsOrBuilder(
+        int index) {
+      return notIndexConditionCols_.get(index);
+    }
+    
     private void initFields() {
       readMode_ = com.alibaba.wasp.protobuf.generated.MetaProtos.ReadModelProto.CURRENT;
       indexTableName_ = "";
@@ -6291,6 +6491,7 @@ public final class MetaProtos {
       entityCols_ = java.util.Collections.emptyList();
       indexCols_ = java.util.Collections.emptyList();
       batch_ = 0;
+      notIndexConditionCols_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -6309,6 +6510,12 @@ public final class MetaProtos {
       }
       for (int i = 0; i < getIndexColsCount(); i++) {
         if (!getIndexCols(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getNotIndexConditionColsCount(); i++) {
+        if (!getNotIndexConditionCols(i).isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -6346,6 +6553,9 @@ public final class MetaProtos {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeUInt32(9, batch_);
+      }
+      for (int i = 0; i < notIndexConditionCols_.size(); i++) {
+        output.writeMessage(10, notIndexConditionCols_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -6391,6 +6601,10 @@ public final class MetaProtos {
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(9, batch_);
+      }
+      for (int i = 0; i < notIndexConditionCols_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, notIndexConditionCols_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -6454,6 +6668,8 @@ public final class MetaProtos {
         result = result && (getBatch()
             == other.getBatch());
       }
+      result = result && getNotIndexConditionColsList()
+          .equals(other.getNotIndexConditionColsList());
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -6498,6 +6714,10 @@ public final class MetaProtos {
       if (hasBatch()) {
         hash = (37 * hash) + BATCH_FIELD_NUMBER;
         hash = (53 * hash) + getBatch();
+      }
+      if (getNotIndexConditionColsCount() > 0) {
+        hash = (37 * hash) + NOTINDEXCONDITIONCOLS_FIELD_NUMBER;
+        hash = (53 * hash) + getNotIndexConditionColsList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
@@ -6609,6 +6829,7 @@ public final class MetaProtos {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getEntityColsFieldBuilder();
           getIndexColsFieldBuilder();
+          getNotIndexConditionColsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -6643,6 +6864,12 @@ public final class MetaProtos {
         }
         batch_ = 0;
         bitField0_ = (bitField0_ & ~0x00000100);
+        if (notIndexConditionColsBuilder_ == null) {
+          notIndexConditionCols_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000200);
+        } else {
+          notIndexConditionColsBuilder_.clear();
+        }
         return this;
       }
       
@@ -6727,6 +6954,15 @@ public final class MetaProtos {
           to_bitField0_ |= 0x00000040;
         }
         result.batch_ = batch_;
+        if (notIndexConditionColsBuilder_ == null) {
+          if (((bitField0_ & 0x00000200) == 0x00000200)) {
+            notIndexConditionCols_ = java.util.Collections.unmodifiableList(notIndexConditionCols_);
+            bitField0_ = (bitField0_ & ~0x00000200);
+          }
+          result.notIndexConditionCols_ = notIndexConditionCols_;
+        } else {
+          result.notIndexConditionCols_ = notIndexConditionColsBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -6816,6 +7052,32 @@ public final class MetaProtos {
         if (other.hasBatch()) {
           setBatch(other.getBatch());
         }
+        if (notIndexConditionColsBuilder_ == null) {
+          if (!other.notIndexConditionCols_.isEmpty()) {
+            if (notIndexConditionCols_.isEmpty()) {
+              notIndexConditionCols_ = other.notIndexConditionCols_;
+              bitField0_ = (bitField0_ & ~0x00000200);
+            } else {
+              ensureNotIndexConditionColsIsMutable();
+              notIndexConditionCols_.addAll(other.notIndexConditionCols_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.notIndexConditionCols_.isEmpty()) {
+            if (notIndexConditionColsBuilder_.isEmpty()) {
+              notIndexConditionColsBuilder_.dispose();
+              notIndexConditionColsBuilder_ = null;
+              notIndexConditionCols_ = other.notIndexConditionCols_;
+              bitField0_ = (bitField0_ & ~0x00000200);
+              notIndexConditionColsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getNotIndexConditionColsFieldBuilder() : null;
+            } else {
+              notIndexConditionColsBuilder_.addAllMessages(other.notIndexConditionCols_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -6833,6 +7095,12 @@ public final class MetaProtos {
         }
         for (int i = 0; i < getIndexColsCount(); i++) {
           if (!getIndexCols(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getNotIndexConditionColsCount(); i++) {
+          if (!getNotIndexConditionCols(i).isInitialized()) {
             
             return false;
           }
@@ -6914,6 +7182,12 @@ public final class MetaProtos {
             case 72: {
               bitField0_ |= 0x00000100;
               batch_ = input.readUInt32();
+              break;
+            }
+            case 82: {
+              com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addNotIndexConditionCols(subBuilder.buildPartial());
               break;
             }
           }
@@ -7478,6 +7752,192 @@ public final class MetaProtos {
         batch_ = 0;
         onChanged();
         return this;
+      }
+      
+      // repeated .ColumnStructProto notIndexConditionCols = 10;
+      private java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto> notIndexConditionCols_ =
+        java.util.Collections.emptyList();
+      private void ensureNotIndexConditionColsIsMutable() {
+        if (!((bitField0_ & 0x00000200) == 0x00000200)) {
+          notIndexConditionCols_ = new java.util.ArrayList<com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto>(notIndexConditionCols_);
+          bitField0_ |= 0x00000200;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder> notIndexConditionColsBuilder_;
+      
+      public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto> getNotIndexConditionColsList() {
+        if (notIndexConditionColsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(notIndexConditionCols_);
+        } else {
+          return notIndexConditionColsBuilder_.getMessageList();
+        }
+      }
+      public int getNotIndexConditionColsCount() {
+        if (notIndexConditionColsBuilder_ == null) {
+          return notIndexConditionCols_.size();
+        } else {
+          return notIndexConditionColsBuilder_.getCount();
+        }
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto getNotIndexConditionCols(int index) {
+        if (notIndexConditionColsBuilder_ == null) {
+          return notIndexConditionCols_.get(index);
+        } else {
+          return notIndexConditionColsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setNotIndexConditionCols(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto value) {
+        if (notIndexConditionColsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNotIndexConditionColsIsMutable();
+          notIndexConditionCols_.set(index, value);
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setNotIndexConditionCols(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder builderForValue) {
+        if (notIndexConditionColsBuilder_ == null) {
+          ensureNotIndexConditionColsIsMutable();
+          notIndexConditionCols_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addNotIndexConditionCols(com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto value) {
+        if (notIndexConditionColsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNotIndexConditionColsIsMutable();
+          notIndexConditionCols_.add(value);
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addNotIndexConditionCols(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto value) {
+        if (notIndexConditionColsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNotIndexConditionColsIsMutable();
+          notIndexConditionCols_.add(index, value);
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addNotIndexConditionCols(
+          com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder builderForValue) {
+        if (notIndexConditionColsBuilder_ == null) {
+          ensureNotIndexConditionColsIsMutable();
+          notIndexConditionCols_.add(builderForValue.build());
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addNotIndexConditionCols(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder builderForValue) {
+        if (notIndexConditionColsBuilder_ == null) {
+          ensureNotIndexConditionColsIsMutable();
+          notIndexConditionCols_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllNotIndexConditionCols(
+          java.lang.Iterable<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto> values) {
+        if (notIndexConditionColsBuilder_ == null) {
+          ensureNotIndexConditionColsIsMutable();
+          super.addAll(values, notIndexConditionCols_);
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearNotIndexConditionCols() {
+        if (notIndexConditionColsBuilder_ == null) {
+          notIndexConditionCols_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000200);
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeNotIndexConditionCols(int index) {
+        if (notIndexConditionColsBuilder_ == null) {
+          ensureNotIndexConditionColsIsMutable();
+          notIndexConditionCols_.remove(index);
+          onChanged();
+        } else {
+          notIndexConditionColsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder getNotIndexConditionColsBuilder(
+          int index) {
+        return getNotIndexConditionColsFieldBuilder().getBuilder(index);
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder getNotIndexConditionColsOrBuilder(
+          int index) {
+        if (notIndexConditionColsBuilder_ == null) {
+          return notIndexConditionCols_.get(index);  } else {
+          return notIndexConditionColsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder> 
+           getNotIndexConditionColsOrBuilderList() {
+        if (notIndexConditionColsBuilder_ != null) {
+          return notIndexConditionColsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(notIndexConditionCols_);
+        }
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder addNotIndexConditionColsBuilder() {
+        return getNotIndexConditionColsFieldBuilder().addBuilder(
+            com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.getDefaultInstance());
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder addNotIndexConditionColsBuilder(
+          int index) {
+        return getNotIndexConditionColsFieldBuilder().addBuilder(
+            index, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.getDefaultInstance());
+      }
+      public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder> 
+           getNotIndexConditionColsBuilderList() {
+        return getNotIndexConditionColsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder> 
+          getNotIndexConditionColsFieldBuilder() {
+        if (notIndexConditionColsBuilder_ == null) {
+          notIndexConditionColsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder>(
+                  notIndexConditionCols_,
+                  ((bitField0_ & 0x00000200) == 0x00000200),
+                  getParentForChildren(),
+                  isClean());
+          notIndexConditionCols_ = null;
+        }
+        return notIndexConditionColsBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:ScanActionProto)
@@ -8788,6 +9248,10 @@ public final class MetaProtos {
         getColsOrBuilderList();
     com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProtoOrBuilder getColsOrBuilder(
         int index);
+    
+    // optional string sessionId = 4;
+    boolean hasSessionId();
+    String getSessionId();
   }
   public static final class UpdateActionProto extends
       com.google.protobuf.GeneratedMessage
@@ -8881,10 +9345,43 @@ public final class MetaProtos {
       return cols_.get(index);
     }
     
+    // optional string sessionId = 4;
+    public static final int SESSIONID_FIELD_NUMBER = 4;
+    private java.lang.Object sessionId_;
+    public boolean hasSessionId() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public String getSessionId() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          sessionId_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getSessionIdBytes() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        sessionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
     private void initFields() {
       primayKey_ = com.google.protobuf.ByteString.EMPTY;
       tableName_ = "";
       cols_ = java.util.Collections.emptyList();
+      sessionId_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -8921,6 +9418,9 @@ public final class MetaProtos {
       for (int i = 0; i < cols_.size(); i++) {
         output.writeMessage(3, cols_.get(i));
       }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(4, getSessionIdBytes());
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -8941,6 +9441,10 @@ public final class MetaProtos {
       for (int i = 0; i < cols_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, cols_.get(i));
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getSessionIdBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -8977,6 +9481,11 @@ public final class MetaProtos {
       }
       result = result && getColsList()
           .equals(other.getColsList());
+      result = result && (hasSessionId() == other.hasSessionId());
+      if (hasSessionId()) {
+        result = result && getSessionId()
+            .equals(other.getSessionId());
+      }
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -8997,6 +9506,10 @@ public final class MetaProtos {
       if (getColsCount() > 0) {
         hash = (37 * hash) + COLS_FIELD_NUMBER;
         hash = (53 * hash) + getColsList().hashCode();
+      }
+      if (hasSessionId()) {
+        hash = (37 * hash) + SESSIONID_FIELD_NUMBER;
+        hash = (53 * hash) + getSessionId().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
@@ -9125,6 +9638,8 @@ public final class MetaProtos {
         } else {
           colsBuilder_.clear();
         }
+        sessionId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
@@ -9180,6 +9695,10 @@ public final class MetaProtos {
         } else {
           result.cols_ = colsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.sessionId_ = sessionId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -9227,6 +9746,9 @@ public final class MetaProtos {
               colsBuilder_.addAllMessages(other.cols_);
             }
           }
+        }
+        if (other.hasSessionId()) {
+          setSessionId(other.getSessionId());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -9287,6 +9809,11 @@ public final class MetaProtos {
               com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addCols(subBuilder.buildPartial());
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              sessionId_ = input.readBytes();
               break;
             }
           }
@@ -9541,6 +10068,42 @@ public final class MetaProtos {
         return colsBuilder_;
       }
       
+      // optional string sessionId = 4;
+      private java.lang.Object sessionId_ = "";
+      public boolean hasSessionId() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      public String getSessionId() {
+        java.lang.Object ref = sessionId_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          sessionId_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setSessionId(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearSessionId() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        sessionId_ = getDefaultInstance().getSessionId();
+        onChanged();
+        return this;
+      }
+      void setSessionId(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000008;
+        sessionId_ = value;
+        onChanged();
+      }
+      
       // @@protoc_insertion_point(builder_scope:UpdateActionProto)
     }
     
@@ -9550,6 +10113,1295 @@ public final class MetaProtos {
     }
     
     // @@protoc_insertion_point(class_scope:UpdateActionProto)
+  }
+  
+  public interface TransactionActionProtoOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required string tableName = 1;
+    boolean hasTableName();
+    String getTableName();
+    
+    // repeated .InsertActionProto inserts = 2;
+    java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto> 
+        getInsertsList();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto getInserts(int index);
+    int getInsertsCount();
+    java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder> 
+        getInsertsOrBuilderList();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder getInsertsOrBuilder(
+        int index);
+    
+    // repeated .UpdateActionProto updates = 3;
+    java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto> 
+        getUpdatesList();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto getUpdates(int index);
+    int getUpdatesCount();
+    java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder> 
+        getUpdatesOrBuilderList();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder getUpdatesOrBuilder(
+        int index);
+    
+    // repeated .DeleteActionProto deletes = 4;
+    java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto> 
+        getDeletesList();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto getDeletes(int index);
+    int getDeletesCount();
+    java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder> 
+        getDeletesOrBuilderList();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder getDeletesOrBuilder(
+        int index);
+  }
+  public static final class TransactionActionProto extends
+      com.google.protobuf.GeneratedMessage
+      implements TransactionActionProtoOrBuilder {
+    // Use TransactionActionProto.newBuilder() to construct.
+    private TransactionActionProto(Builder builder) {
+      super(builder);
+    }
+    private TransactionActionProto(boolean noInit) {}
+    
+    private static final TransactionActionProto defaultInstance;
+    public static TransactionActionProto getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public TransactionActionProto getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.alibaba.wasp.protobuf.generated.MetaProtos.internal_static_TransactionActionProto_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.alibaba.wasp.protobuf.generated.MetaProtos.internal_static_TransactionActionProto_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required string tableName = 1;
+    public static final int TABLENAME_FIELD_NUMBER = 1;
+    private java.lang.Object tableName_;
+    public boolean hasTableName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getTableName() {
+      java.lang.Object ref = tableName_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          tableName_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getTableNameBytes() {
+      java.lang.Object ref = tableName_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        tableName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    
+    // repeated .InsertActionProto inserts = 2;
+    public static final int INSERTS_FIELD_NUMBER = 2;
+    private java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto> inserts_;
+    public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto> getInsertsList() {
+      return inserts_;
+    }
+    public java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder> 
+        getInsertsOrBuilderList() {
+      return inserts_;
+    }
+    public int getInsertsCount() {
+      return inserts_.size();
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto getInserts(int index) {
+      return inserts_.get(index);
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder getInsertsOrBuilder(
+        int index) {
+      return inserts_.get(index);
+    }
+    
+    // repeated .UpdateActionProto updates = 3;
+    public static final int UPDATES_FIELD_NUMBER = 3;
+    private java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto> updates_;
+    public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto> getUpdatesList() {
+      return updates_;
+    }
+    public java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder> 
+        getUpdatesOrBuilderList() {
+      return updates_;
+    }
+    public int getUpdatesCount() {
+      return updates_.size();
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto getUpdates(int index) {
+      return updates_.get(index);
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder getUpdatesOrBuilder(
+        int index) {
+      return updates_.get(index);
+    }
+    
+    // repeated .DeleteActionProto deletes = 4;
+    public static final int DELETES_FIELD_NUMBER = 4;
+    private java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto> deletes_;
+    public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto> getDeletesList() {
+      return deletes_;
+    }
+    public java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder> 
+        getDeletesOrBuilderList() {
+      return deletes_;
+    }
+    public int getDeletesCount() {
+      return deletes_.size();
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto getDeletes(int index) {
+      return deletes_.get(index);
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder getDeletesOrBuilder(
+        int index) {
+      return deletes_.get(index);
+    }
+    
+    private void initFields() {
+      tableName_ = "";
+      inserts_ = java.util.Collections.emptyList();
+      updates_ = java.util.Collections.emptyList();
+      deletes_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasTableName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getInsertsCount(); i++) {
+        if (!getInserts(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getUpdatesCount(); i++) {
+        if (!getUpdates(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      for (int i = 0; i < getDeletesCount(); i++) {
+        if (!getDeletes(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getTableNameBytes());
+      }
+      for (int i = 0; i < inserts_.size(); i++) {
+        output.writeMessage(2, inserts_.get(i));
+      }
+      for (int i = 0; i < updates_.size(); i++) {
+        output.writeMessage(3, updates_.get(i));
+      }
+      for (int i = 0; i < deletes_.size(); i++) {
+        output.writeMessage(4, deletes_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getTableNameBytes());
+      }
+      for (int i = 0; i < inserts_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, inserts_.get(i));
+      }
+      for (int i = 0; i < updates_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, updates_.get(i));
+      }
+      for (int i = 0; i < deletes_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, deletes_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto)) {
+        return super.equals(obj);
+      }
+      com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto other = (com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto) obj;
+      
+      boolean result = true;
+      result = result && (hasTableName() == other.hasTableName());
+      if (hasTableName()) {
+        result = result && getTableName()
+            .equals(other.getTableName());
+      }
+      result = result && getInsertsList()
+          .equals(other.getInsertsList());
+      result = result && getUpdatesList()
+          .equals(other.getUpdatesList());
+      result = result && getDeletesList()
+          .equals(other.getDeletesList());
+      result = result &&
+          getUnknownFields().equals(other.getUnknownFields());
+      return result;
+    }
+    
+    @java.lang.Override
+    public int hashCode() {
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      if (hasTableName()) {
+        hash = (37 * hash) + TABLENAME_FIELD_NUMBER;
+        hash = (53 * hash) + getTableName().hashCode();
+      }
+      if (getInsertsCount() > 0) {
+        hash = (37 * hash) + INSERTS_FIELD_NUMBER;
+        hash = (53 * hash) + getInsertsList().hashCode();
+      }
+      if (getUpdatesCount() > 0) {
+        hash = (37 * hash) + UPDATES_FIELD_NUMBER;
+        hash = (53 * hash) + getUpdatesList().hashCode();
+      }
+      if (getDeletesCount() > 0) {
+        hash = (37 * hash) + DELETES_FIELD_NUMBER;
+        hash = (53 * hash) + getDeletesList().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      return hash;
+    }
+    
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.alibaba.wasp.protobuf.generated.MetaProtos.internal_static_TransactionActionProto_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.alibaba.wasp.protobuf.generated.MetaProtos.internal_static_TransactionActionProto_fieldAccessorTable;
+      }
+      
+      // Construct using com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getInsertsFieldBuilder();
+          getUpdatesFieldBuilder();
+          getDeletesFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        tableName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (insertsBuilder_ == null) {
+          inserts_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          insertsBuilder_.clear();
+        }
+        if (updatesBuilder_ == null) {
+          updates_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        } else {
+          updatesBuilder_.clear();
+        }
+        if (deletesBuilder_ == null) {
+          deletes_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+        } else {
+          deletesBuilder_.clear();
+        }
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDescriptor();
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto getDefaultInstanceForType() {
+        return com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto build() {
+        com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto buildPartial() {
+        com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto result = new com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.tableName_ = tableName_;
+        if (insertsBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            inserts_ = java.util.Collections.unmodifiableList(inserts_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.inserts_ = inserts_;
+        } else {
+          result.inserts_ = insertsBuilder_.build();
+        }
+        if (updatesBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            updates_ = java.util.Collections.unmodifiableList(updates_);
+            bitField0_ = (bitField0_ & ~0x00000004);
+          }
+          result.updates_ = updates_;
+        } else {
+          result.updates_ = updatesBuilder_.build();
+        }
+        if (deletesBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+            deletes_ = java.util.Collections.unmodifiableList(deletes_);
+            bitField0_ = (bitField0_ & ~0x00000008);
+          }
+          result.deletes_ = deletes_;
+        } else {
+          result.deletes_ = deletesBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto) {
+          return mergeFrom((com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto other) {
+        if (other == com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance()) return this;
+        if (other.hasTableName()) {
+          setTableName(other.getTableName());
+        }
+        if (insertsBuilder_ == null) {
+          if (!other.inserts_.isEmpty()) {
+            if (inserts_.isEmpty()) {
+              inserts_ = other.inserts_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureInsertsIsMutable();
+              inserts_.addAll(other.inserts_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.inserts_.isEmpty()) {
+            if (insertsBuilder_.isEmpty()) {
+              insertsBuilder_.dispose();
+              insertsBuilder_ = null;
+              inserts_ = other.inserts_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              insertsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getInsertsFieldBuilder() : null;
+            } else {
+              insertsBuilder_.addAllMessages(other.inserts_);
+            }
+          }
+        }
+        if (updatesBuilder_ == null) {
+          if (!other.updates_.isEmpty()) {
+            if (updates_.isEmpty()) {
+              updates_ = other.updates_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+            } else {
+              ensureUpdatesIsMutable();
+              updates_.addAll(other.updates_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.updates_.isEmpty()) {
+            if (updatesBuilder_.isEmpty()) {
+              updatesBuilder_.dispose();
+              updatesBuilder_ = null;
+              updates_ = other.updates_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+              updatesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getUpdatesFieldBuilder() : null;
+            } else {
+              updatesBuilder_.addAllMessages(other.updates_);
+            }
+          }
+        }
+        if (deletesBuilder_ == null) {
+          if (!other.deletes_.isEmpty()) {
+            if (deletes_.isEmpty()) {
+              deletes_ = other.deletes_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+            } else {
+              ensureDeletesIsMutable();
+              deletes_.addAll(other.deletes_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.deletes_.isEmpty()) {
+            if (deletesBuilder_.isEmpty()) {
+              deletesBuilder_.dispose();
+              deletesBuilder_ = null;
+              deletes_ = other.deletes_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+              deletesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getDeletesFieldBuilder() : null;
+            } else {
+              deletesBuilder_.addAllMessages(other.deletes_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasTableName()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getInsertsCount(); i++) {
+          if (!getInserts(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getUpdatesCount(); i++) {
+          if (!getUpdates(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getDeletesCount(); i++) {
+          if (!getDeletes(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              tableName_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addInserts(subBuilder.buildPartial());
+              break;
+            }
+            case 26: {
+              com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addUpdates(subBuilder.buildPartial());
+              break;
+            }
+            case 34: {
+              com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addDeletes(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required string tableName = 1;
+      private java.lang.Object tableName_ = "";
+      public boolean hasTableName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public String getTableName() {
+        java.lang.Object ref = tableName_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          tableName_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
+      }
+      public Builder setTableName(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        tableName_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearTableName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        tableName_ = getDefaultInstance().getTableName();
+        onChanged();
+        return this;
+      }
+      void setTableName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        tableName_ = value;
+        onChanged();
+      }
+      
+      // repeated .InsertActionProto inserts = 2;
+      private java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto> inserts_ =
+        java.util.Collections.emptyList();
+      private void ensureInsertsIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          inserts_ = new java.util.ArrayList<com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto>(inserts_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder> insertsBuilder_;
+      
+      public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto> getInsertsList() {
+        if (insertsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(inserts_);
+        } else {
+          return insertsBuilder_.getMessageList();
+        }
+      }
+      public int getInsertsCount() {
+        if (insertsBuilder_ == null) {
+          return inserts_.size();
+        } else {
+          return insertsBuilder_.getCount();
+        }
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto getInserts(int index) {
+        if (insertsBuilder_ == null) {
+          return inserts_.get(index);
+        } else {
+          return insertsBuilder_.getMessage(index);
+        }
+      }
+      public Builder setInserts(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto value) {
+        if (insertsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureInsertsIsMutable();
+          inserts_.set(index, value);
+          onChanged();
+        } else {
+          insertsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setInserts(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder builderForValue) {
+        if (insertsBuilder_ == null) {
+          ensureInsertsIsMutable();
+          inserts_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          insertsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addInserts(com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto value) {
+        if (insertsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureInsertsIsMutable();
+          inserts_.add(value);
+          onChanged();
+        } else {
+          insertsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addInserts(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto value) {
+        if (insertsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureInsertsIsMutable();
+          inserts_.add(index, value);
+          onChanged();
+        } else {
+          insertsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addInserts(
+          com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder builderForValue) {
+        if (insertsBuilder_ == null) {
+          ensureInsertsIsMutable();
+          inserts_.add(builderForValue.build());
+          onChanged();
+        } else {
+          insertsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addInserts(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder builderForValue) {
+        if (insertsBuilder_ == null) {
+          ensureInsertsIsMutable();
+          inserts_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          insertsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllInserts(
+          java.lang.Iterable<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto> values) {
+        if (insertsBuilder_ == null) {
+          ensureInsertsIsMutable();
+          super.addAll(values, inserts_);
+          onChanged();
+        } else {
+          insertsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearInserts() {
+        if (insertsBuilder_ == null) {
+          inserts_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          insertsBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeInserts(int index) {
+        if (insertsBuilder_ == null) {
+          ensureInsertsIsMutable();
+          inserts_.remove(index);
+          onChanged();
+        } else {
+          insertsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder getInsertsBuilder(
+          int index) {
+        return getInsertsFieldBuilder().getBuilder(index);
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder getInsertsOrBuilder(
+          int index) {
+        if (insertsBuilder_ == null) {
+          return inserts_.get(index);  } else {
+          return insertsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder> 
+           getInsertsOrBuilderList() {
+        if (insertsBuilder_ != null) {
+          return insertsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(inserts_);
+        }
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder addInsertsBuilder() {
+        return getInsertsFieldBuilder().addBuilder(
+            com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.getDefaultInstance());
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder addInsertsBuilder(
+          int index) {
+        return getInsertsFieldBuilder().addBuilder(
+            index, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.getDefaultInstance());
+      }
+      public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder> 
+           getInsertsBuilderList() {
+        return getInsertsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder> 
+          getInsertsFieldBuilder() {
+        if (insertsBuilder_ == null) {
+          insertsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder>(
+                  inserts_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          inserts_ = null;
+        }
+        return insertsBuilder_;
+      }
+      
+      // repeated .UpdateActionProto updates = 3;
+      private java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto> updates_ =
+        java.util.Collections.emptyList();
+      private void ensureUpdatesIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          updates_ = new java.util.ArrayList<com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto>(updates_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder> updatesBuilder_;
+      
+      public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto> getUpdatesList() {
+        if (updatesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(updates_);
+        } else {
+          return updatesBuilder_.getMessageList();
+        }
+      }
+      public int getUpdatesCount() {
+        if (updatesBuilder_ == null) {
+          return updates_.size();
+        } else {
+          return updatesBuilder_.getCount();
+        }
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto getUpdates(int index) {
+        if (updatesBuilder_ == null) {
+          return updates_.get(index);
+        } else {
+          return updatesBuilder_.getMessage(index);
+        }
+      }
+      public Builder setUpdates(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto value) {
+        if (updatesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUpdatesIsMutable();
+          updates_.set(index, value);
+          onChanged();
+        } else {
+          updatesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setUpdates(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder builderForValue) {
+        if (updatesBuilder_ == null) {
+          ensureUpdatesIsMutable();
+          updates_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          updatesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addUpdates(com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto value) {
+        if (updatesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUpdatesIsMutable();
+          updates_.add(value);
+          onChanged();
+        } else {
+          updatesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addUpdates(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto value) {
+        if (updatesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUpdatesIsMutable();
+          updates_.add(index, value);
+          onChanged();
+        } else {
+          updatesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addUpdates(
+          com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder builderForValue) {
+        if (updatesBuilder_ == null) {
+          ensureUpdatesIsMutable();
+          updates_.add(builderForValue.build());
+          onChanged();
+        } else {
+          updatesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addUpdates(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder builderForValue) {
+        if (updatesBuilder_ == null) {
+          ensureUpdatesIsMutable();
+          updates_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          updatesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllUpdates(
+          java.lang.Iterable<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto> values) {
+        if (updatesBuilder_ == null) {
+          ensureUpdatesIsMutable();
+          super.addAll(values, updates_);
+          onChanged();
+        } else {
+          updatesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearUpdates() {
+        if (updatesBuilder_ == null) {
+          updates_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          onChanged();
+        } else {
+          updatesBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeUpdates(int index) {
+        if (updatesBuilder_ == null) {
+          ensureUpdatesIsMutable();
+          updates_.remove(index);
+          onChanged();
+        } else {
+          updatesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder getUpdatesBuilder(
+          int index) {
+        return getUpdatesFieldBuilder().getBuilder(index);
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder getUpdatesOrBuilder(
+          int index) {
+        if (updatesBuilder_ == null) {
+          return updates_.get(index);  } else {
+          return updatesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder> 
+           getUpdatesOrBuilderList() {
+        if (updatesBuilder_ != null) {
+          return updatesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(updates_);
+        }
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder addUpdatesBuilder() {
+        return getUpdatesFieldBuilder().addBuilder(
+            com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.getDefaultInstance());
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder addUpdatesBuilder(
+          int index) {
+        return getUpdatesFieldBuilder().addBuilder(
+            index, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.getDefaultInstance());
+      }
+      public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder> 
+           getUpdatesBuilderList() {
+        return getUpdatesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder> 
+          getUpdatesFieldBuilder() {
+        if (updatesBuilder_ == null) {
+          updatesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProtoOrBuilder>(
+                  updates_,
+                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          updates_ = null;
+        }
+        return updatesBuilder_;
+      }
+      
+      // repeated .DeleteActionProto deletes = 4;
+      private java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto> deletes_ =
+        java.util.Collections.emptyList();
+      private void ensureDeletesIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          deletes_ = new java.util.ArrayList<com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto>(deletes_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder> deletesBuilder_;
+      
+      public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto> getDeletesList() {
+        if (deletesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(deletes_);
+        } else {
+          return deletesBuilder_.getMessageList();
+        }
+      }
+      public int getDeletesCount() {
+        if (deletesBuilder_ == null) {
+          return deletes_.size();
+        } else {
+          return deletesBuilder_.getCount();
+        }
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto getDeletes(int index) {
+        if (deletesBuilder_ == null) {
+          return deletes_.get(index);
+        } else {
+          return deletesBuilder_.getMessage(index);
+        }
+      }
+      public Builder setDeletes(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto value) {
+        if (deletesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDeletesIsMutable();
+          deletes_.set(index, value);
+          onChanged();
+        } else {
+          deletesBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      public Builder setDeletes(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder builderForValue) {
+        if (deletesBuilder_ == null) {
+          ensureDeletesIsMutable();
+          deletes_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          deletesBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addDeletes(com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto value) {
+        if (deletesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDeletesIsMutable();
+          deletes_.add(value);
+          onChanged();
+        } else {
+          deletesBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      public Builder addDeletes(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto value) {
+        if (deletesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDeletesIsMutable();
+          deletes_.add(index, value);
+          onChanged();
+        } else {
+          deletesBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      public Builder addDeletes(
+          com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder builderForValue) {
+        if (deletesBuilder_ == null) {
+          ensureDeletesIsMutable();
+          deletes_.add(builderForValue.build());
+          onChanged();
+        } else {
+          deletesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addDeletes(
+          int index, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder builderForValue) {
+        if (deletesBuilder_ == null) {
+          ensureDeletesIsMutable();
+          deletes_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          deletesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAllDeletes(
+          java.lang.Iterable<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto> values) {
+        if (deletesBuilder_ == null) {
+          ensureDeletesIsMutable();
+          super.addAll(values, deletes_);
+          onChanged();
+        } else {
+          deletesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      public Builder clearDeletes() {
+        if (deletesBuilder_ == null) {
+          deletes_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          onChanged();
+        } else {
+          deletesBuilder_.clear();
+        }
+        return this;
+      }
+      public Builder removeDeletes(int index) {
+        if (deletesBuilder_ == null) {
+          ensureDeletesIsMutable();
+          deletes_.remove(index);
+          onChanged();
+        } else {
+          deletesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder getDeletesBuilder(
+          int index) {
+        return getDeletesFieldBuilder().getBuilder(index);
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder getDeletesOrBuilder(
+          int index) {
+        if (deletesBuilder_ == null) {
+          return deletes_.get(index);  } else {
+          return deletesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder> 
+           getDeletesOrBuilderList() {
+        if (deletesBuilder_ != null) {
+          return deletesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(deletes_);
+        }
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder addDeletesBuilder() {
+        return getDeletesFieldBuilder().addBuilder(
+            com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.getDefaultInstance());
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder addDeletesBuilder(
+          int index) {
+        return getDeletesFieldBuilder().addBuilder(
+            index, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.getDefaultInstance());
+      }
+      public java.util.List<com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder> 
+           getDeletesBuilderList() {
+        return getDeletesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder> 
+          getDeletesFieldBuilder() {
+        if (deletesBuilder_ == null) {
+          deletesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProtoOrBuilder>(
+                  deletes_,
+                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  getParentForChildren(),
+                  isClean());
+          deletes_ = null;
+        }
+        return deletesBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:TransactionActionProto)
+    }
+    
+    static {
+      defaultInstance = new TransactionActionProto(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:TransactionActionProto)
   }
   
   public interface ColumnStructProtoOrBuilder
@@ -9574,6 +11426,10 @@ public final class MetaProtos {
     // optional bytes value = 5;
     boolean hasValue();
     com.google.protobuf.ByteString getValue();
+    
+    // optional uint32 compareOp = 6;
+    boolean hasCompareOp();
+    int getCompareOp();
   }
   public static final class ColumnStructProto extends
       com.google.protobuf.GeneratedMessage
@@ -9720,12 +11576,23 @@ public final class MetaProtos {
       return value_;
     }
     
+    // optional uint32 compareOp = 6;
+    public static final int COMPAREOP_FIELD_NUMBER = 6;
+    private int compareOp_;
+    public boolean hasCompareOp() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public int getCompareOp() {
+      return compareOp_;
+    }
+    
     private void initFields() {
       tableName_ = "";
       familyName_ = "";
       columnName_ = "";
       dataType_ = com.alibaba.wasp.protobuf.generated.MetaProtos.DataTypeProtos.TYPE_INT32;
       value_ = com.google.protobuf.ByteString.EMPTY;
+      compareOp_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -9766,6 +11633,9 @@ public final class MetaProtos {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(5, value_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeUInt32(6, compareOp_);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -9794,6 +11664,10 @@ public final class MetaProtos {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(5, value_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(6, compareOp_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -9843,6 +11717,11 @@ public final class MetaProtos {
         result = result && getValue()
             .equals(other.getValue());
       }
+      result = result && (hasCompareOp() == other.hasCompareOp());
+      if (hasCompareOp()) {
+        result = result && (getCompareOp()
+            == other.getCompareOp());
+      }
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -9871,6 +11750,10 @@ public final class MetaProtos {
       if (hasValue()) {
         hash = (37 * hash) + VALUE_FIELD_NUMBER;
         hash = (53 * hash) + getValue().hashCode();
+      }
+      if (hasCompareOp()) {
+        hash = (37 * hash) + COMPAREOP_FIELD_NUMBER;
+        hash = (53 * hash) + getCompareOp();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
@@ -9998,6 +11881,8 @@ public final class MetaProtos {
         bitField0_ = (bitField0_ & ~0x00000008);
         value_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000010);
+        compareOp_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       
@@ -10056,6 +11941,10 @@ public final class MetaProtos {
           to_bitField0_ |= 0x00000010;
         }
         result.value_ = value_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.compareOp_ = compareOp_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -10086,6 +11975,9 @@ public final class MetaProtos {
         }
         if (other.hasValue()) {
           setValue(other.getValue());
+        }
+        if (other.hasCompareOp()) {
+          setCompareOp(other.getCompareOp());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -10159,6 +12051,11 @@ public final class MetaProtos {
             case 42: {
               bitField0_ |= 0x00000010;
               value_ = input.readBytes();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              compareOp_ = input.readUInt32();
               break;
             }
           }
@@ -10323,6 +12220,27 @@ public final class MetaProtos {
         return this;
       }
       
+      // optional uint32 compareOp = 6;
+      private int compareOp_ ;
+      public boolean hasCompareOp() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public int getCompareOp() {
+        return compareOp_;
+      }
+      public Builder setCompareOp(int value) {
+        bitField0_ |= 0x00000020;
+        compareOp_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearCompareOp() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        compareOp_ = 0;
+        onChanged();
+        return this;
+      }
+      
       // @@protoc_insertion_point(builder_scope:ColumnStructProto)
     }
     
@@ -10355,6 +12273,11 @@ public final class MetaProtos {
     boolean hasInsert();
     com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto getInsert();
     com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProtoOrBuilder getInsertOrBuilder();
+    
+    // optional .TransactionActionProto transaction = 5;
+    boolean hasTransaction();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto getTransaction();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder getTransactionOrBuilder();
   }
   public static final class MessageProto extends
       com.google.protobuf.GeneratedMessage
@@ -10389,11 +12312,13 @@ public final class MetaProtos {
       UPDATE(0, 0),
       DELETE(1, 1),
       INSERT(2, 2),
+      TRANSACTION(3, 3),
       ;
       
       public static final int UPDATE_VALUE = 0;
       public static final int DELETE_VALUE = 1;
       public static final int INSERT_VALUE = 2;
+      public static final int TRANSACTION_VALUE = 3;
       
       
       public final int getNumber() { return value; }
@@ -10403,6 +12328,7 @@ public final class MetaProtos {
           case 0: return UPDATE;
           case 1: return DELETE;
           case 2: return INSERT;
+          case 3: return TRANSACTION;
           default: return null;
         }
       }
@@ -10433,7 +12359,7 @@ public final class MetaProtos {
       }
       
       private static final ActionType[] VALUES = {
-        UPDATE, DELETE, INSERT, 
+        UPDATE, DELETE, INSERT, TRANSACTION, 
       };
       
       public static ActionType valueOf(
@@ -10506,11 +12432,25 @@ public final class MetaProtos {
       return insert_;
     }
     
+    // optional .TransactionActionProto transaction = 5;
+    public static final int TRANSACTION_FIELD_NUMBER = 5;
+    private com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto transaction_;
+    public boolean hasTransaction() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto getTransaction() {
+      return transaction_;
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder getTransactionOrBuilder() {
+      return transaction_;
+    }
+    
     private void initFields() {
       type_ = com.alibaba.wasp.protobuf.generated.MetaProtos.MessageProto.ActionType.UPDATE;
       delete_ = com.alibaba.wasp.protobuf.generated.MetaProtos.DeleteActionProto.getDefaultInstance();
       update_ = com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.getDefaultInstance();
       insert_ = com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto.getDefaultInstance();
+      transaction_ = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -10539,6 +12479,12 @@ public final class MetaProtos {
           return false;
         }
       }
+      if (hasTransaction()) {
+        if (!getTransaction().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -10557,6 +12503,9 @@ public final class MetaProtos {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeMessage(4, insert_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(5, transaction_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -10582,6 +12531,10 @@ public final class MetaProtos {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, insert_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, transaction_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -10626,6 +12579,11 @@ public final class MetaProtos {
         result = result && getInsert()
             .equals(other.getInsert());
       }
+      result = result && (hasTransaction() == other.hasTransaction());
+      if (hasTransaction()) {
+        result = result && getTransaction()
+            .equals(other.getTransaction());
+      }
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -10650,6 +12608,10 @@ public final class MetaProtos {
       if (hasInsert()) {
         hash = (37 * hash) + INSERT_FIELD_NUMBER;
         hash = (53 * hash) + getInsert().hashCode();
+      }
+      if (hasTransaction()) {
+        hash = (37 * hash) + TRANSACTION_FIELD_NUMBER;
+        hash = (53 * hash) + getTransaction().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
@@ -10762,6 +12724,7 @@ public final class MetaProtos {
           getDeleteFieldBuilder();
           getUpdateFieldBuilder();
           getInsertFieldBuilder();
+          getTransactionFieldBuilder();
         }
       }
       private static Builder create() {
@@ -10790,6 +12753,12 @@ public final class MetaProtos {
           insertBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
+        if (transactionBuilder_ == null) {
+          transaction_ = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
+        } else {
+          transactionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
       
@@ -10856,6 +12825,14 @@ public final class MetaProtos {
         } else {
           result.insert_ = insertBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        if (transactionBuilder_ == null) {
+          result.transaction_ = transaction_;
+        } else {
+          result.transaction_ = transactionBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -10884,6 +12861,9 @@ public final class MetaProtos {
         if (other.hasInsert()) {
           mergeInsert(other.getInsert());
         }
+        if (other.hasTransaction()) {
+          mergeTransaction(other.getTransaction());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -10907,6 +12887,12 @@ public final class MetaProtos {
         }
         if (hasInsert()) {
           if (!getInsert().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasTransaction()) {
+          if (!getTransaction().isInitialized()) {
             
             return false;
           }
@@ -10973,6 +12959,15 @@ public final class MetaProtos {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setInsert(subBuilder.buildPartial());
+              break;
+            }
+            case 42: {
+              com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.newBuilder();
+              if (hasTransaction()) {
+                subBuilder.mergeFrom(getTransaction());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setTransaction(subBuilder.buildPartial());
               break;
             }
           }
@@ -11275,6 +13270,96 @@ public final class MetaProtos {
         return insertBuilder_;
       }
       
+      // optional .TransactionActionProto transaction = 5;
+      private com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto transaction_ = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder> transactionBuilder_;
+      public boolean hasTransaction() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto getTransaction() {
+        if (transactionBuilder_ == null) {
+          return transaction_;
+        } else {
+          return transactionBuilder_.getMessage();
+        }
+      }
+      public Builder setTransaction(com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto value) {
+        if (transactionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          transaction_ = value;
+          onChanged();
+        } else {
+          transactionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder setTransaction(
+          com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder builderForValue) {
+        if (transactionBuilder_ == null) {
+          transaction_ = builderForValue.build();
+          onChanged();
+        } else {
+          transactionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder mergeTransaction(com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto value) {
+        if (transactionBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+              transaction_ != com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance()) {
+            transaction_ =
+              com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.newBuilder(transaction_).mergeFrom(value).buildPartial();
+          } else {
+            transaction_ = value;
+          }
+          onChanged();
+        } else {
+          transactionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      public Builder clearTransaction() {
+        if (transactionBuilder_ == null) {
+          transaction_ = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
+          onChanged();
+        } else {
+          transactionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder getTransactionBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return getTransactionFieldBuilder().getBuilder();
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder getTransactionOrBuilder() {
+        if (transactionBuilder_ != null) {
+          return transactionBuilder_.getMessageOrBuilder();
+        } else {
+          return transaction_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder> 
+          getTransactionFieldBuilder() {
+        if (transactionBuilder_ == null) {
+          transactionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder>(
+                  transaction_,
+                  getParentForChildren(),
+                  isClean());
+          transaction_ = null;
+        }
+        return transactionBuilder_;
+      }
+      
       // @@protoc_insertion_point(builder_scope:MessageProto)
     }
     
@@ -11332,6 +13417,11 @@ public final class MetaProtos {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_UpdateActionProto_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_TransactionActionProto_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_TransactionActionProto_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_ColumnStructProto_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -11370,37 +13460,46 @@ public final class MetaProtos {
       "ingPair\022\021\n\ttableName\030\004 \002(\t\022\"\n\013storingKey" +
       "s\030\005 \003(\0132\r.ColumnSchema\022\014\n\004desc\030\006 \003(\t\"9\n\020" +
       "TransactionProto\022\013\n\003tid\030\001 \002(\004\022\030\n\007mutates",
-      "\030\002 \003(\0132\007.Mutate\"{\n\016GetActionProto\022!\n\010rea" +
-      "dMode\030\001 \001(\0162\017.ReadModelProto\022\027\n\017entityTa" +
-      "bleName\030\002 \002(\t\022\013\n\003row\030\003 \002(\014\022 \n\004cols\030\004 \003(\013" +
-      "2\022.ColumnStructProto\"\364\001\n\017ScanActionProto" +
-      "\022!\n\010readMode\030\001 \001(\0162\017.ReadModelProto\022\026\n\016i" +
-      "ndexTableName\030\002 \001(\t\022\027\n\017entityTableName\030\003" +
-      " \002(\t\022\020\n\010startKey\030\004 \001(\014\022\016\n\006endKey\030\005 \001(\014\022\r" +
-      "\n\005limit\030\006 \001(\r\022&\n\nentityCols\030\007 \003(\0132\022.Colu" +
-      "mnStructProto\022%\n\tindexCols\030\010 \003(\0132\022.Colum" +
-      "nStructProto\022\r\n\005batch\030\t \001(\r\"9\n\021DeleteAct",
-      "ionProto\022\021\n\ttableName\030\001 \002(\t\022\021\n\tprimayKey" +
-      "\030\002 \002(\014\"[\n\021InsertActionProto\022\021\n\ttableName" +
-      "\030\001 \002(\t\022\021\n\tprimayKey\030\002 \002(\014\022 \n\004cols\030\003 \003(\0132" +
-      "\022.ColumnStructProto\"[\n\021UpdateActionProto" +
-      "\022\021\n\tprimayKey\030\001 \002(\014\022\021\n\ttableName\030\002 \002(\t\022 " +
-      "\n\004cols\030\003 \003(\0132\022.ColumnStructProto\"\200\001\n\021Col" +
-      "umnStructProto\022\021\n\ttableName\030\001 \002(\t\022\022\n\nfam" +
-      "ilyName\030\002 \002(\t\022\022\n\ncolumnName\030\003 \002(\t\022!\n\010dat" +
-      "aType\030\004 \001(\0162\017.DataTypeProtos\022\r\n\005value\030\005 " +
-      "\001(\014\"\324\001\n\014MessageProto\022&\n\004type\030\001 \002(\0162\030.Mes",
-      "sageProto.ActionType\022\"\n\006delete\030\002 \001(\0132\022.D" +
-      "eleteActionProto\022\"\n\006update\030\003 \001(\0132\022.Updat" +
-      "eActionProto\022\"\n\006insert\030\004 \001(\0132\022.InsertAct" +
-      "ionProto\"0\n\nActionType\022\n\n\006UPDATE\020\000\022\n\n\006DE" +
-      "LETE\020\001\022\n\n\006INSERT\020\002*\210\001\n\016DataTypeProtos\022\016\n" +
-      "\nTYPE_INT32\020\000\022\016\n\nTYPE_INT64\020\001\022\017\n\013TYPE_ST" +
-      "RING\020\002\022\016\n\nTYPE_FLOAT\020\003\022\021\n\rTYPE_PROTOBUF\020" +
-      "\004\022\017\n\013TYPE_DOUBLE\020\005\022\021\n\rTYPE_DATETIME\020\006*=\n" +
-      "\016ReadModelProto\022\013\n\007CURRENT\020\000\022\014\n\010SNAPSHOT" +
-      "\020\001\022\020\n\014INCONSISTENT\020\002B9\n#com.alibaba.wasp",
-      ".protobuf.generatedB\nMetaProtosH\001\210\001\001\240\001\001"
+      "\030\002 \003(\0132\007.Mutate\"\241\001\n\016GetActionProto\022!\n\010re" +
+      "adMode\030\001 \001(\0162\017.ReadModelProto\022\027\n\017entityT" +
+      "ableName\030\002 \002(\t\022\013\n\003row\030\003 \002(\014\022 \n\004cols\030\004 \003(" +
+      "\0132\022.ColumnStructProto\022\021\n\tforUpdate\030\005 \001(\010" +
+      "\022\021\n\tsessionId\030\006 \001(\t\"\247\002\n\017ScanActionProto\022" +
+      "!\n\010readMode\030\001 \001(\0162\017.ReadModelProto\022\026\n\016in" +
+      "dexTableName\030\002 \001(\t\022\027\n\017entityTableName\030\003 " +
+      "\002(\t\022\020\n\010startKey\030\004 \001(\014\022\016\n\006endKey\030\005 \001(\014\022\r\n" +
+      "\005limit\030\006 \001(\r\022&\n\nentityCols\030\007 \003(\0132\022.Colum" +
+      "nStructProto\022%\n\tindexCols\030\010 \003(\0132\022.Column",
+      "StructProto\022\r\n\005batch\030\t \001(\r\0221\n\025notIndexCo" +
+      "nditionCols\030\n \003(\0132\022.ColumnStructProto\"9\n" +
+      "\021DeleteActionProto\022\021\n\ttableName\030\001 \002(\t\022\021\n" +
+      "\tprimayKey\030\002 \002(\014\"[\n\021InsertActionProto\022\021\n" +
+      "\ttableName\030\001 \002(\t\022\021\n\tprimayKey\030\002 \002(\014\022 \n\004c" +
+      "ols\030\003 \003(\0132\022.ColumnStructProto\"n\n\021UpdateA" +
+      "ctionProto\022\021\n\tprimayKey\030\001 \002(\014\022\021\n\ttableNa" +
+      "me\030\002 \002(\t\022 \n\004cols\030\003 \003(\0132\022.ColumnStructPro" +
+      "to\022\021\n\tsessionId\030\004 \001(\t\"\232\001\n\026TransactionAct" +
+      "ionProto\022\021\n\ttableName\030\001 \002(\t\022#\n\007inserts\030\002",
+      " \003(\0132\022.InsertActionProto\022#\n\007updates\030\003 \003(" +
+      "\0132\022.UpdateActionProto\022#\n\007deletes\030\004 \003(\0132\022" +
+      ".DeleteActionProto\"\223\001\n\021ColumnStructProto" +
+      "\022\021\n\ttableName\030\001 \002(\t\022\022\n\nfamilyName\030\002 \002(\t\022" +
+      "\022\n\ncolumnName\030\003 \002(\t\022!\n\010dataType\030\004 \001(\0162\017." +
+      "DataTypeProtos\022\r\n\005value\030\005 \001(\014\022\021\n\tcompare" +
+      "Op\030\006 \001(\r\"\223\002\n\014MessageProto\022&\n\004type\030\001 \002(\0162" +
+      "\030.MessageProto.ActionType\022\"\n\006delete\030\002 \001(" +
+      "\0132\022.DeleteActionProto\022\"\n\006update\030\003 \001(\0132\022." +
+      "UpdateActionProto\022\"\n\006insert\030\004 \001(\0132\022.Inse",
+      "rtActionProto\022,\n\013transaction\030\005 \001(\0132\027.Tra" +
+      "nsactionActionProto\"A\n\nActionType\022\n\n\006UPD" +
+      "ATE\020\000\022\n\n\006DELETE\020\001\022\n\n\006INSERT\020\002\022\017\n\013TRANSAC" +
+      "TION\020\003*\210\001\n\016DataTypeProtos\022\016\n\nTYPE_INT32\020" +
+      "\000\022\016\n\nTYPE_INT64\020\001\022\017\n\013TYPE_STRING\020\002\022\016\n\nTY" +
+      "PE_FLOAT\020\003\022\021\n\rTYPE_PROTOBUF\020\004\022\017\n\013TYPE_DO" +
+      "UBLE\020\005\022\021\n\rTYPE_DATETIME\020\006*=\n\016ReadModelPr" +
+      "oto\022\013\n\007CURRENT\020\000\022\014\n\010SNAPSHOT\020\001\022\020\n\014INCONS" +
+      "ISTENT\020\002B9\n#com.alibaba.wasp.protobuf.ge" +
+      "neratedB\nMetaProtosH\001\210\001\001\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -11444,7 +13543,7 @@ public final class MetaProtos {
           internal_static_GetActionProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_GetActionProto_descriptor,
-              new java.lang.String[] { "ReadMode", "EntityTableName", "Row", "Cols", },
+              new java.lang.String[] { "ReadMode", "EntityTableName", "Row", "Cols", "ForUpdate", "SessionId", },
               com.alibaba.wasp.protobuf.generated.MetaProtos.GetActionProto.class,
               com.alibaba.wasp.protobuf.generated.MetaProtos.GetActionProto.Builder.class);
           internal_static_ScanActionProto_descriptor =
@@ -11452,7 +13551,7 @@ public final class MetaProtos {
           internal_static_ScanActionProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ScanActionProto_descriptor,
-              new java.lang.String[] { "ReadMode", "IndexTableName", "EntityTableName", "StartKey", "EndKey", "Limit", "EntityCols", "IndexCols", "Batch", },
+              new java.lang.String[] { "ReadMode", "IndexTableName", "EntityTableName", "StartKey", "EndKey", "Limit", "EntityCols", "IndexCols", "Batch", "NotIndexConditionCols", },
               com.alibaba.wasp.protobuf.generated.MetaProtos.ScanActionProto.class,
               com.alibaba.wasp.protobuf.generated.MetaProtos.ScanActionProto.Builder.class);
           internal_static_DeleteActionProto_descriptor =
@@ -11476,23 +13575,31 @@ public final class MetaProtos {
           internal_static_UpdateActionProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_UpdateActionProto_descriptor,
-              new java.lang.String[] { "PrimayKey", "TableName", "Cols", },
+              new java.lang.String[] { "PrimayKey", "TableName", "Cols", "SessionId", },
               com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.class,
               com.alibaba.wasp.protobuf.generated.MetaProtos.UpdateActionProto.Builder.class);
-          internal_static_ColumnStructProto_descriptor =
+          internal_static_TransactionActionProto_descriptor =
             getDescriptor().getMessageTypes().get(9);
+          internal_static_TransactionActionProto_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_TransactionActionProto_descriptor,
+              new java.lang.String[] { "TableName", "Inserts", "Updates", "Deletes", },
+              com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.class,
+              com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder.class);
+          internal_static_ColumnStructProto_descriptor =
+            getDescriptor().getMessageTypes().get(10);
           internal_static_ColumnStructProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ColumnStructProto_descriptor,
-              new java.lang.String[] { "TableName", "FamilyName", "ColumnName", "DataType", "Value", },
+              new java.lang.String[] { "TableName", "FamilyName", "ColumnName", "DataType", "Value", "CompareOp", },
               com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.class,
               com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto.Builder.class);
           internal_static_MessageProto_descriptor =
-            getDescriptor().getMessageTypes().get(10);
+            getDescriptor().getMessageTypes().get(11);
           internal_static_MessageProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_MessageProto_descriptor,
-              new java.lang.String[] { "Type", "Delete", "Update", "Insert", },
+              new java.lang.String[] { "Type", "Delete", "Update", "Insert", "Transaction", },
               com.alibaba.wasp.protobuf.generated.MetaProtos.MessageProto.class,
               com.alibaba.wasp.protobuf.generated.MetaProtos.MessageProto.Builder.class);
           return null;

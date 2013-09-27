@@ -19,13 +19,13 @@
  */
 package com.alibaba.wasp.jdbc.result;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.jdbc.JdbcConnection;
 import com.alibaba.wasp.jdbc.JdbcException;
 import com.alibaba.wasp.jdbc.Logger;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -196,7 +196,7 @@ public class JdbcDatabaseMetaData implements DatabaseMetaData {
     try {
       return conn.getUser();
     } catch (Exception e) {
-      throw Logger.logAndConvert(log,e);
+      throw Logger.logAndConvert(log, e);
     }
   }
 

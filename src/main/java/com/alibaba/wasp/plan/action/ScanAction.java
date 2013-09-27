@@ -19,13 +19,13 @@
  */
 package com.alibaba.wasp.plan.action;
 
-import com.google.protobuf.ByteString;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.ReadModelProto;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.ScanActionProto;
+import com.google.protobuf.ByteString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +51,12 @@ public class ScanAction extends NoPrimaryReadAction {
   private int batch = -1;
 
   private List<ColumnStruct> storingColumns = new ArrayList<ColumnStruct>();
+
+  private List<ColumnStruct> notIndexConditionColumns = new ArrayList<ColumnStruct>();
+
+  public ScanAction(String entityTableName) {
+    this(null, null, entityTableName, null, null);
+  }
 
   public ScanAction(ReadModel readerMode, String indexTableName,
       String entityTableName, byte[] startKey, byte[] endKey) {
@@ -131,7 +137,6 @@ public class ScanAction extends NoPrimaryReadAction {
    * @param familyName
    * @param columnName
    * @param value
-   * @param columns
    */
   public void addStoringColumn(String tableName, String familyName,
       String columnName, DataType dataType, byte[] value) {
@@ -143,11 +148,7 @@ public class ScanAction extends NoPrimaryReadAction {
   /**
    * Generate ColumnAction instance and then add it to list.
    * 
-   * @param fTableName
-   * @param familyName
-   * @param columnName
-   * @param value
-   * @param columns
+   * @param col
    */
   public void addStoringColumn(ColumnStruct col) {
     storingColumns.add(col);
@@ -169,6 +170,22 @@ public class ScanAction extends NoPrimaryReadAction {
   }
 
   /**
+   * Generate ColumnAction instance and then add it to list.
+   *
+   */
+  public void addNotIndexConditionColumns(ColumnStruct col) {
+    notIndexConditionColumns.add(col);
+  }
+
+  public List<ColumnStruct> getNotIndexConditionColumns() {
+    return notIndexConditionColumns;
+  }
+
+  public void setNotIndexConditionColumns(List<ColumnStruct> notIndexConditionColumns) {
+    this.notIndexConditionColumns = notIndexConditionColumns;
+  }
+
+  /**
    * 
    * 
    * @param scanActionProto
@@ -184,6 +201,9 @@ public class ScanAction extends NoPrimaryReadAction {
     }
     for (ColumnStructProto col : scanActionProto.getIndexColsList()) {
       action.addStoringColumn(ProtobufUtil.toColumnAction(col));
+    }
+    for (ColumnStructProto col : scanActionProto.getNotIndexConditionColsList()) {
+      action.addNotIndexConditionColumns(ProtobufUtil.toColumnAction(col));
     }
     action.setBatch(scanActionProto.getBatch());
     action.setLimit(scanActionProto.getLimit());
@@ -212,11 +232,14 @@ public class ScanAction extends NoPrimaryReadAction {
     for (ColumnStruct col : scanAction.getStoringColumns()) {
       builder.addEntityCols(ProtobufUtil.toColumnStructProto(col));
     }
+    for (ColumnStruct col : scanAction.getNotIndexConditionColumns()) {
+      builder.addNotIndexConditionCols(ProtobufUtil.toColumnStructProto(col));
+    }
     return builder.build();
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

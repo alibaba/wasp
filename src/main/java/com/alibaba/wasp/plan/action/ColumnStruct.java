@@ -17,10 +17,11 @@
  */
 package com.alibaba.wasp.plan.action;
 
-import com.google.protobuf.ByteString;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto;
+import com.alibaba.wasp.util.ParserUtils;
+import com.google.protobuf.ByteString;
+import org.apache.hadoop.hbase.util.Bytes;
 
 import java.util.Arrays;
 
@@ -38,6 +39,8 @@ public class ColumnStruct {
 
   private DataType dataType;
 
+  private final int compareOp;
+
   public ColumnStruct(String tableName, String familyName, String columnName,
       DataType datatype) {
     this(tableName, familyName, columnName, datatype, null);
@@ -45,11 +48,17 @@ public class ColumnStruct {
 
   public ColumnStruct(String tableName, String familyName, String columnName,
       DataType datatype, byte[] value) {
+    this(tableName, familyName, columnName, datatype, value, ParserUtils.OperatorOpValue.NO_OP);
+  }
+
+  public ColumnStruct(String tableName, String familyName, String columnName,
+      DataType datatype, byte[] value, int compareOp) {
     this.tableName = tableName;
     this.familyName = familyName;
     this.columnName = columnName;
     this.dataType = datatype;
     this.value = value;
+    this.compareOp = compareOp;
   }
 
   /**
@@ -95,6 +104,10 @@ public class ColumnStruct {
     return isIndex;
   }
 
+  public int getCompareOp() {
+    return compareOp;
+  }
+
   /**
    * @param isIndex
    *          the isIndex to set
@@ -115,12 +128,12 @@ public class ColumnStruct {
           col.getColumnName(),
           col.getDataType() != null ? DataType
               .convertDataTypeProtosToDataType(col.getDataType()) : null, col
-              .getValue().toByteArray());
+              .getValue().toByteArray(), col.getCompareOp());
     } else {
       return new ColumnStruct(col.getTableName(), col.getFamilyName(),
           col.getColumnName(),
           col.getDataType() != null ? DataType
-              .convertDataTypeProtosToDataType(col.getDataType()) : null);
+              .convertDataTypeProtosToDataType(col.getDataType()) : null, null, col.getCompareOp());
     }
   }
 
@@ -142,12 +155,13 @@ public class ColumnStruct {
     if (col.getValue() != null) {
       colProto.setValue(ByteString.copyFrom(col.getValue()));
     }
+    colProto.setCompareOp(col.getCompareOp());
     return colProto.build();
   }
 
   /**
    * 
-   * @see java.lang.Object#equals(java.lang.Object)
+   * @see Object#equals(Object)
    */
   @Override
   public boolean equals(Object obj) {
@@ -161,11 +175,12 @@ public class ColumnStruct {
             : this.value,
             instance.getValue() == null ? new byte[0] : instance.getValue()) == 0
         && this.familyName.equals(instance.getFamilyName())
-        && this.isIndex == instance.isIndex();
+        && this.isIndex == instance.isIndex()
+        && this.compareOp == instance.getCompareOp();
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

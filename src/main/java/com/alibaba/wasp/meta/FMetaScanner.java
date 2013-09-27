@@ -19,16 +19,11 @@
 
 package com.alibaba.wasp.meta;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
+import com.alibaba.wasp.EnityGroupOfflineException;
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.ServerName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -43,11 +38,16 @@ import org.apache.hadoop.hbase.filter.PrefixFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.hbase.util.Pair;
 import org.apache.hadoop.hbase.util.PairOfSameType;
-import com.alibaba.wasp.EnityGroupOfflineException;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.MetaException;
-import com.alibaba.wasp.ServerName;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Scanner class that contains the <code>.FMETA.</code> table scanning logic and
@@ -68,12 +68,12 @@ public class FMetaScanner extends AbstractMetaService {
   /**
    * Scans the meta table and calls a visitor on each RowResult and uses a empty
    * start row value as table name.
-   * 
+   *
    * @param configuration
    *          conf
    * @param visitor
    *          A custom visitor
-   * @throws IOException
+   * @throws java.io.IOException
    *           e
    */
   public static void metaScan(Configuration configuration,
@@ -83,11 +83,11 @@ public class FMetaScanner extends AbstractMetaService {
 
   /**
    * Need to add comments.
-   * 
+   *
    * @param conf
    * @param entityGroupName
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static Pair<EntityGroupInfo, ServerName> getEntityGroup(
       Configuration conf, byte[] entityGroupName) throws IOException {
@@ -97,7 +97,7 @@ public class FMetaScanner extends AbstractMetaService {
   /**
    * Scans the meta table and calls a visitor on each RowResult. Uses a table
    * name to locate meta entitGroups.
-   * 
+   *
    * @param configuration
    *          config
    * @param visitor
@@ -105,7 +105,7 @@ public class FMetaScanner extends AbstractMetaService {
    * @param userTableName
    *          User table name in meta table to start scan at. Pass null if not
    *          interested in a particular table.
-   * @throws IOException
+   * @throws java.io.IOException
    *           e
    */
   public static void metaScan(Configuration configuration,
@@ -171,7 +171,7 @@ public class FMetaScanner extends AbstractMetaService {
   /**
    * Returns EntityGroupInfo object from the column
    * FConstants.CATALOG_FAMILY:FConstants.EGINFO of the catalog table Result.
-   * 
+   *
    * @param data a Result object from the catalog table scan
    * @return EntityGroupInfo or null
    */
@@ -188,10 +188,10 @@ public class FMetaScanner extends AbstractMetaService {
 
   /**
    * Lists all of the EntityGroups currently in META.
-   * 
+   *
    * @param conf
    * @return List of all user-space EntityGroups.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static List<EntityGroupInfo> listAllEntityGroups(Configuration conf)
       throws IOException {
@@ -200,13 +200,13 @@ public class FMetaScanner extends AbstractMetaService {
 
   /**
    * Lists all of the EntityGroups currently in META.
-   * 
+   *
    * @param conf
    * @param offlined
    *          True if we are to include offlined EntityGroups, false and we'll
    *          leave out offlined EntityGroups from returned list.
    * @return List of all user-space EntityGroups.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static List<EntityGroupInfo> listAllEntityGroups(Configuration conf,
       final boolean offlined) throws IOException {
@@ -238,7 +238,7 @@ public class FMetaScanner extends AbstractMetaService {
 
   /**
    * Get root table name
-   * 
+   *
    * @param FTable
    * @return
    */
@@ -252,13 +252,13 @@ public class FMetaScanner extends AbstractMetaService {
 
   /**
    * Lists all of the table EntityGroups currently in META.
-   * 
+   *
    * @param conf
    * @param offlined
    *          True if we are to include offlined EntityGroups, false and we'll
    *          leave out offlined EntityGroups from returned list.
    * @return Map of all user-space EntityGroups to servers
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public static NavigableMap<EntityGroupInfo, ServerName> allTableEntityGroups(
       Configuration conf, final byte[] tablename, final boolean offlined)
@@ -291,12 +291,12 @@ public class FMetaScanner extends AbstractMetaService {
      * Visitor method that accepts a RowResult and the meta entityGroup location.
      * Implementations can return false to stop the entityGroup's loop if it
      * becomes unnecessary for some reason.
-     * 
+     *
      * @param rowResult
      *          result
      * @return A boolean to know if it should continue to loop in the
      *         entityGroup
-     * @throws IOException
+     * @throws java.io.IOException
      *           e
      */
     public boolean processRow(Result rowResult) throws IOException;
@@ -460,12 +460,12 @@ public class FMetaScanner extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param disabledOrDisablingOrEnabling
    * @param excludeOfflinedSplitParents
    * @return
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static Map<EntityGroupInfo, ServerName> fullScan(Configuration conf,
       Set<String> disabledOrDisablingOrEnabling,
@@ -475,22 +475,22 @@ public class FMetaScanner extends AbstractMetaService {
   }
 
   /**
-   * 
+   *
    * @param conf
    * @return
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static List<Result> fullScan(Configuration conf) throws MetaException {
     return getService(conf).fullScan();
   }
 
   /**
-   * 
+   *
    * @param conf
    * @param visitor
    * @param startrow
    * @param endrow
-   * @throws MetaException
+   * @throws com.alibaba.wasp.MetaException
    */
   public static void fullScan(final Configuration conf,
       final FMetaVisitor visitor, final byte[] startrow, final byte[] endrow)

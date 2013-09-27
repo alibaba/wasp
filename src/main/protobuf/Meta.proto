@@ -112,7 +112,10 @@ message GetActionProto {
   required bytes row = 3;
   
   //which cols will be fetched.
-  repeated ColumnStructProto cols = 4; 
+  repeated ColumnStructProto cols = 4;
+
+  optional bool forUpdate = 5;
+  optional string sessionId = 6;
 }
 
 message ScanActionProto {
@@ -125,6 +128,7 @@ message ScanActionProto {
   repeated ColumnStructProto entityCols = 7;
   repeated ColumnStructProto indexCols = 8;
   optional uint32 batch = 9;
+  repeated ColumnStructProto notIndexConditionCols = 10;
 }
 
 message DeleteActionProto {
@@ -142,6 +146,14 @@ message UpdateActionProto {
   required bytes primayKey = 1;
   required string tableName = 2;
   repeated ColumnStructProto cols = 3;
+  optional string sessionId = 4;
+}
+
+message TransactionActionProto {
+  required string tableName = 1;
+  repeated InsertActionProto inserts = 2;
+  repeated UpdateActionProto updates = 3;
+  repeated DeleteActionProto deletes = 4;
 }
 	
 message ColumnStructProto { 
@@ -150,6 +162,7 @@ message ColumnStructProto {
   required string columnName = 3;
   optional DataTypeProtos dataType = 4;
   optional bytes value = 5;
+  optional uint32 compareOp = 6;
 }
 
 message MessageProto{
@@ -158,11 +171,13 @@ message MessageProto{
   optional DeleteActionProto delete = 2;
   optional UpdateActionProto update = 3;
   optional InsertActionProto insert = 4;
-  
+  optional TransactionActionProto transaction = 5;
+
   //put type
   enum ActionType{
 	UPDATE = 0;
     DELETE = 1;
     INSERT = 2;
+    TRANSACTION = 3;
   }
 }

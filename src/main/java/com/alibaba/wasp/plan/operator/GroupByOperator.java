@@ -20,7 +20,7 @@
 package com.alibaba.wasp.plan.operator;
 
 
-public class GroupByOperator extends Operator{
+public class GroupByOperator extends Operator {
 
 
   @Override

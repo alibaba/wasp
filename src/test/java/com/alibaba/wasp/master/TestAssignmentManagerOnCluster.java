@@ -18,14 +18,6 @@
  */
 package com.alibaba.wasp.master;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.List;
-
-import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.FConstants;import com.alibaba.wasp.ServerName;import com.alibaba.wasp.WaspTestingUtility;import com.alibaba.wasp.client.WaspAdmin;import com.alibaba.wasp.fserver.FServer;import com.alibaba.wasp.fserver.redo.MemRedoLog;import com.alibaba.wasp.fserver.redo.Redo;import com.alibaba.wasp.meta.FMetaEditor;import com.alibaba.wasp.meta.FMetaTestUtil;import com.alibaba.wasp.meta.FTable;import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.ServerName;
@@ -37,9 +29,17 @@ import com.alibaba.wasp.fserver.redo.Redo;
 import com.alibaba.wasp.meta.FMetaEditor;
 import com.alibaba.wasp.meta.FMetaTestUtil;
 import com.alibaba.wasp.meta.FTable;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class TestAssignmentManagerOnCluster {
   private final static WaspTestingUtility TEST_UTIL = new WaspTestingUtility();

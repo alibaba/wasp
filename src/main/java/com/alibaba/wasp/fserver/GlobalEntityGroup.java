@@ -17,14 +17,14 @@
  */
 package com.alibaba.wasp.fserver;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.GlobalEntityGroupInfo;
 import com.alibaba.wasp.NotServingEntityGroupException;
 import com.alibaba.wasp.plan.action.ScanAction;
 import com.alibaba.wasp.storage.StorageTableNotFoundException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -64,8 +64,8 @@ public class GlobalEntityGroup implements Closeable, EntityGroupServices {
    * 
    * @param action
    * @return
-   * @throws IOException
-   * @throws StorageTableNotFoundException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    */
   public EntityGroupScanner getScanner(ScanAction action) throws IOException,
       StorageTableNotFoundException {
@@ -79,11 +79,11 @@ public class GlobalEntityGroup implements Closeable, EntityGroupServices {
 
   /**
    * return EntityGroupScanner.
-   * 
+   *
    * @param action
    * @return
-   * @throws IOException
-   * @throws StorageTableNotFoundException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.storage.StorageTableNotFoundException
    */
   protected EntityGroupScanner instantiateEntityGroupScanner(ScanAction action)
       throws StorageTableNotFoundException, IOException {
@@ -94,7 +94,7 @@ public class GlobalEntityGroup implements Closeable, EntityGroupServices {
    * This method needs to be called before any public call that reads or
    * modifies data. It has to be called just before a try. Acquires checks if
    * the entityGroup is close.
-   * 
+   *
    * @throws com.alibaba.wasp.NotServingEntityGroupException
    *           when the entityGroup is closing or closed
    */

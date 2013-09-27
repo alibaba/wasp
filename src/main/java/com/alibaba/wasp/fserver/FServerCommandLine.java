@@ -18,12 +18,12 @@
  */
 package com.alibaba.wasp.fserver;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.LocalWaspCluster;
 import com.alibaba.wasp.util.ServerCommandLine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 
 /**
  * Class responsible for parsing the command line and starting the FServer.

@@ -18,6 +18,32 @@
 
 package com.alibaba.wasp.ipc;
 
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.ipc.NettyTransportCodec.NettyDataPack;
+import com.alibaba.wasp.ipc.NettyTransportCodec.NettyFrameDecoder;
+import com.alibaba.wasp.ipc.NettyTransportCodec.NettyFrameEncoder;
+import com.alibaba.wasp.protobuf.generated.RPCProtos;
+import com.alibaba.wasp.protobuf.generated.RPCProtos.*;
+import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcResponseHeader.Status;
+import com.alibaba.wasp.protobuf.generated.Tracing.RPCTInfo;
+import com.alibaba.wasp.util.ByteBufferInputStream;
+import com.alibaba.wasp.util.ByteBufferOutputStream;
+import com.google.protobuf.Message;
+import com.google.protobuf.Message.Builder;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.ipc.RemoteException;
+import org.cloudera.htrace.Span;
+import org.cloudera.htrace.Trace;
+import org.jboss.netty.bootstrap.ClientBootstrap;
+import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.jboss.netty.handler.timeout.ReadTimeoutHandler;
+import org.jboss.netty.handler.timeout.WriteTimeoutHandler;
+import org.jboss.netty.util.HashedWheelTimer;
+import org.jboss.netty.util.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -31,50 +57,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.ipc.RemoteException;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.ipc.NettyTransportCodec.NettyDataPack;
-import com.alibaba.wasp.ipc.NettyTransportCodec.NettyFrameDecoder;
-import com.alibaba.wasp.ipc.NettyTransportCodec.NettyFrameEncoder;
-import com.alibaba.wasp.protobuf.generated.RPCProtos;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.ConnectionHeader;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcException;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcRequestBody;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcRequestHeader;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcResponseHeader;
-import com.alibaba.wasp.protobuf.generated.RPCProtos.RpcResponseHeader.Status;
-import com.alibaba.wasp.protobuf.generated.Tracing.RPCTInfo;
-import com.alibaba.wasp.util.ByteBufferInputStream;
-import com.alibaba.wasp.util.ByteBufferOutputStream;
-import org.cloudera.htrace.Span;
-import org.cloudera.htrace.Trace;
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelEvent;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.ChannelState;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.handler.timeout.ReadTimeoutHandler;
-import org.jboss.netty.handler.timeout.WriteTimeoutHandler;
-import org.jboss.netty.util.HashedWheelTimer;
-import org.jboss.netty.util.Timer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.protobuf.Message;
-import com.google.protobuf.Message.Builder;
 
 /**
  * A Netty-based {@link Transceiver} implementation.
@@ -124,10 +106,10 @@ public class NettyTransceiver extends Transceiver {
    * Creates a NettyTransceiver, and attempts to connect to the given address.
    * {@link #DEFAULT_CONNECTION_TIMEOUT_MILLIS} is used for the connection
    * timeout.
-   * 
+   *
    * @param addr
    *          the address to connect to.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if an error occurs connecting to the given address.
    */
   public NettyTransceiver(InetSocketAddress addr) throws IOException {
@@ -136,14 +118,14 @@ public class NettyTransceiver extends Transceiver {
 
   /**
    * Creates a NettyTransceiver, and attempts to connect to the given address.
-   * 
+   *
    * @param addr
    *          the address to connect to.
    * @param connectTimeoutMillis
    *          maximum amount of time to wait for connection establishment in
    *          milliseconds, or null to use
    *          {@link #DEFAULT_CONNECTION_TIMEOUT_MILLIS}.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if an error occurs connecting to the given address.
    */
   public NettyTransceiver(InetSocketAddress addr, Long connectTimeoutMillis)
@@ -160,12 +142,12 @@ public class NettyTransceiver extends Transceiver {
    * Creates a NettyTransceiver, and attempts to connect to the given address.
    * {@link #DEFAULT_CONNECTION_TIMEOUT_MILLIS} is used for the connection
    * timeout.
-   * 
+   *
    * @param addr
    *          the address to connect to.
    * @param channelFactory
    *          the factory to use to create a new Netty Channel.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if an error occurs connecting to the given address.
    */
   public NettyTransceiver(InetSocketAddress addr, ChannelFactory channelFactory)
@@ -175,7 +157,7 @@ public class NettyTransceiver extends Transceiver {
 
   /**
    * Creates a NettyTransceiver, and attempts to connect to the given address.
-   * 
+   *
    * @param addr
    *          the address to connect to.
    * @param channelFactory
@@ -184,7 +166,7 @@ public class NettyTransceiver extends Transceiver {
    *          maximum amount of time to wait for connection establishment in
    *          milliseconds, or null to use
    *          {@link #DEFAULT_CONNECTION_TIMEOUT_MILLIS}.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if an error occurs connecting to the given address.
    */
   public NettyTransceiver(InetSocketAddress addr,
@@ -201,14 +183,14 @@ public class NettyTransceiver extends Transceiver {
    * to prevent connect/disconnect attempts from hanging indefinitely. It is
    * also recommended that the {@link #NETTY_TCP_NODELAY_OPTION} option be set
    * to true to minimize RPC latency.
-   * 
+   *
    * @param addr
    *          the address to connect to.
    * @param channelFactory
    *          the factory to use to create a new Netty Channel.
    * @param nettyClientBootstrapOptions
    *          map of Netty ClientBootstrap options to use.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if an error occurs connecting to the given address.
    */
   public NettyTransceiver(InetSocketAddress addr,
@@ -272,7 +254,7 @@ public class NettyTransceiver extends Transceiver {
 
   /**
    * Creates the default options map for the Netty ClientBootstrap.
-   * 
+   *
    * @param connectTimeoutMillis
    *          connection timeout in milliseconds, or null if no timeout is
    *          desired.
@@ -292,7 +274,7 @@ public class NettyTransceiver extends Transceiver {
 
   /**
    * Tests whether the given channel is ready for writing.
-   * 
+   *
    * @return true if the channel is open and ready; false otherwise.
    */
   private static boolean isChannelReady(Channel channel) {
@@ -304,9 +286,9 @@ public class NettyTransceiver extends Transceiver {
    * Gets the Netty channel. If the channel is not connected, first attempts to
    * connect. NOTE: The stateLock read lock *must* be acquired before calling
    * this method.
-   * 
+   *
    * @return the Netty channel
-   * @throws IOException
+   * @throws java.io.IOException
    *           if an error occurs connecting the channel.
    */
   private Channel getChannel() throws IOException {
@@ -358,7 +340,7 @@ public class NettyTransceiver extends Transceiver {
 
   /**
    * Closes the connection to the remote peer if connected.
-   * 
+   *
    * @param awaitCompletion
    *          if true, will block until the close has completed.
    * @param cancelPendingRequests
@@ -604,10 +586,10 @@ public class NettyTransceiver extends Transceiver {
   /**
    * Writes a NettyDataPack, reconnecting to the remote peer if necessary. NOTE:
    * The stateLock read lock *must* be acquired before calling this method.
-   * 
+   *
    * @param dataPack
    *          the data pack to write.
-   * @throws IOException
+   * @throws java.io.IOException
    *           if an error occurs connecting to the remote peer.
    */
   private void writeDataPack(NettyDataPack dataPack) throws IOException {

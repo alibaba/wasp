@@ -17,9 +17,9 @@
  */
 package com.alibaba.wasp.master.balancer;
 
-import java.util.Comparator;
-
 import com.alibaba.wasp.EntityGroupInfo;
+
+import java.util.Comparator;
 
 /**
  * The following comparator assumes that EntityGroupId from EntityGroupInfo can

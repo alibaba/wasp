@@ -18,14 +18,20 @@
  */
 package com.alibaba.wasp;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.alibaba.wasp.client.WaspAdmin;import com.alibaba.wasp.conf.WaspConfiguration;import org.apache.commons.logging.Log;
+import com.alibaba.wasp.client.WaspAdmin;
+import com.alibaba.wasp.conf.WaspConfiguration;
+import com.alibaba.wasp.fserver.EntityGroup;
+import com.alibaba.wasp.fserver.FServer;
+import com.alibaba.wasp.master.FMaster;
+import com.alibaba.wasp.meta.AbstractMetaService;
+import com.alibaba.wasp.meta.FMetaScanner;
+import com.alibaba.wasp.meta.FMetaScanner.BlockingMetaScannerVisitor;
+import com.alibaba.wasp.meta.FMetaScanner.MetaScannerVisitor;
+import com.alibaba.wasp.meta.FMetaTestUtil;
+import com.alibaba.wasp.meta.FTable;
+import com.alibaba.wasp.zookeeper.ZKAssign;
+import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Abortable;
@@ -40,20 +46,6 @@ import org.apache.hadoop.metrics2.impl.MetricsSystemImpl;
 import org.apache.hadoop.metrics2.util.MBeans;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import com.alibaba.wasp.client.FConnection;
-import com.alibaba.wasp.client.WaspAdmin;
-import com.alibaba.wasp.conf.WaspConfiguration;
-import com.alibaba.wasp.fserver.EntityGroup;
-import com.alibaba.wasp.fserver.FServer;
-import com.alibaba.wasp.master.FMaster;
-import com.alibaba.wasp.meta.AbstractMetaService;
-import com.alibaba.wasp.meta.FMetaScanner;
-import com.alibaba.wasp.meta.FMetaScanner.BlockingMetaScannerVisitor;
-import com.alibaba.wasp.meta.FMetaScanner.MetaScannerVisitor;
-import com.alibaba.wasp.meta.FMetaTestUtil;
-import com.alibaba.wasp.meta.FTable;
-import com.alibaba.wasp.zookeeper.ZKAssign;
-import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
 import org.apache.zookeeper.ClientCnxn;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
@@ -61,6 +53,13 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.server.NIOServerCnxn;
 import org.apache.zookeeper.server.PrepRequestProcessor;
 import org.apache.zookeeper.server.ZooKeeperServer;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class WaspTestingUtility {
   static final Log LOG = LogFactory.getLog(WaspTestingUtility.class);
@@ -80,15 +79,15 @@ public class WaspTestingUtility {
   }
 
   /**
-   * Returns this classes's instance of {@link Configuration}. Be careful how
-   * you use the returned Configuration since {@link FConnection} instances can
+   * Returns this classes's instance of {@link org.apache.hadoop.conf.Configuration}. Be careful how
+   * you use the returned Configuration since {@link com.alibaba.wasp.client.FConnection} instances can
    * be shared. The Map of FConnections is keyed by the Configuration. If say, a
    * Connection was being used against a cluster that had been shutdown, see
    * {@link #shutdownMiniCluster()}, then the Connection will no longer be
    * wholesome. Rather than use the return direct, its usually best to make a
    * copy and use that. Do
    * <code>Configuration c = new Configuration(INSTANCE.getConfiguration());</code>
-   * 
+   *
    * @return Instance of Configuration.
    */
   public Configuration getConfiguration() {
@@ -119,7 +118,7 @@ public class WaspTestingUtility {
 
   /**
    * Get HBaseTestingUtility
-   * 
+   *
    * @return HBaseTestingUtility
    */
   public HBaseTestingUtility getHBaseTestingUtility() {
@@ -131,7 +130,7 @@ public class WaspTestingUtility {
    * Modifies Configuration. Homes the cluster data directory under a random
    * subdirectory in a directory under System property test.build.data.
    * Directory is cleaned up on exit.
-   * 
+   *
    * @param numSlaves
    *          Number of slaves to start up. We'll start this many fservers,
    *          datanodes and regionservers. If numSlaves is > 1, then make sure
@@ -150,7 +149,7 @@ public class WaspTestingUtility {
    * Modifies Configuration. Homes the cluster data directory under a random
    * subdirectory in a directory under System property test.build.data.
    * Directory is cleaned up on exit.
-   * 
+   *
    * @param numMasters
    *          Number of masters to start up.
    * @param numSlaves
@@ -190,11 +189,11 @@ public class WaspTestingUtility {
    * {@link #startMiniCluster(int, int)} when doing stepped startup of clusters.
    * Usually you won't want this. You'll usually want
    * {@link #startMiniCluster(int)}.
-   * 
+   *
    * @param numMasters
    * @param numSlaves
    * @return Reference to the wasp mini wasp cluster.
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws InterruptedException
    * @see {@link #startMiniCluster(int)}
    */
@@ -233,9 +232,9 @@ public class WaspTestingUtility {
    * Returns a WaspAdmin instance. This instance is shared between
    * WaspTestingUtility instance users. Don't close it, it will be closed
    * automatically when the cluster shutdowns
-   * 
+   *
    * @return The WaspAdmin instance.
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public synchronized WaspAdmin getWaspAdmin() throws IOException {
     if (waspAdmin == null) {
@@ -250,10 +249,10 @@ public class WaspTestingUtility {
    * Starts the wasp cluster up again after shutting it down previously in a
    * test. Use this if you want to keep hbase/dfs/zk up and just stop/start
    * wasp.
-   * 
+   *
    * @param servers
    *          number of fservers
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void restartWaspCluster(int servers) throws IOException,
       InterruptedException {
@@ -287,8 +286,8 @@ public class WaspTestingUtility {
 
   /**
    * Stops mini wasp, hbase, zk, and hdfs clusters.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    * @see {@link #startMiniCluster(int)}
    */
   public void shutdownMiniCluster() throws Exception {
@@ -300,8 +299,8 @@ public class WaspTestingUtility {
 
   /**
    * Shutdown Wasp mini cluster. Does not shutdown hbase, zk or dfs if running.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    */
   public void shutdownMiniWaspCluster() throws IOException {
     if (waspAdmin != null) {
@@ -325,8 +324,8 @@ public class WaspTestingUtility {
 
   /**
    * Returns all rows from the .FMETA. table for a given user table
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    *           When reading the rows fails.
    */
   public List<byte[]> getMetaTableRows(byte[] tableName) throws IOException {
@@ -361,11 +360,11 @@ public class WaspTestingUtility {
    * of the specified user table. It first searches for the meta rows that
    * contain the region of the specified table, then gets the index of that RS,
    * and finally retrieves the RS's reference.
-   * 
+   *
    * @param tableName
    *          user table to lookup in .META.
    * @return region server that holds it, null if the row doesn't exist
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public FServer getFSForFirstEntityGroupInTable(byte[] tableName)
       throws IOException {
@@ -383,7 +382,7 @@ public class WaspTestingUtility {
 
   /**
    * Get the Mini Wasp cluster.
-   * 
+   *
    * @return wasp cluster
    */
   public MiniWaspCluster getWaspCluster() {
@@ -411,12 +410,26 @@ public class WaspTestingUtility {
     return createTable(Bytes.toString(tablename));
   }
 
+  public FTable createChildTable(byte[] table, byte[] childTable) throws IOException {
+    return createChildTable(Bytes.toString(table), Bytes.toString(childTable));
+  }
+
   /**
    * @param tablename
    * @return
    */
   public FTable createTable(String tablename) throws IOException {
     FTable desc = FMetaTestUtil.makeTable(tablename);
+    getWaspAdmin().createTable(desc);
+    return desc;
+  }
+
+  /**
+   * @param tablename
+   * @return
+   */
+  public FTable createChildTable(String tablename, String childTablename) throws IOException {
+    FTable desc = FMetaTestUtil.makeChildTable(tablename, childTablename);
     getWaspAdmin().createTable(desc);
     return desc;
   }
@@ -429,11 +442,11 @@ public class WaspTestingUtility {
   }
 
   /**
-   * 
+   *
    * @param table
    * @param timeoutMillis
    * @throws InterruptedException
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void waitTableAvailable(byte[] table, long timeoutMillis)
       throws IOException, InterruptedException {
@@ -469,15 +482,15 @@ public class WaspTestingUtility {
 
   /**
    * Creates a znode with OPENED state.
-   * 
+   *
    * @param TEST_UTIL
    * @param entityGroup
    * @param serverName
    * @return
-   * @throws IOException
+   * @throws java.io.IOException
    * @throws ZooKeeperConnectionException
-   * @throws KeeperException
-   * @throws NodeExistsException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws org.apache.zookeeper.KeeperException.NodeExistsException
    */
   public static ZooKeeperWatcher createAndForceNodeToOpenedState(
       WaspTestingUtility TEST_UTIL, EntityGroup entityGroup,
@@ -496,11 +509,11 @@ public class WaspTestingUtility {
   /**
    * Make sure that at least the specified number of entityGroup servers are
    * running
-   * 
+   *
    * @param num
    *          minimum number of region servers that should be running
    * @return True if we started some servers
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public boolean ensureSomeFServersAvailable(final int num) throws IOException {
     boolean startedServer = false;
@@ -515,7 +528,7 @@ public class WaspTestingUtility {
 
   /**
    * Gets a ZooKeeperWatcher.
-   * 
+   *
    * @param TEST_UTIL
    */
   public static ZooKeeperWatcher getZooKeeperWatcher(
@@ -553,8 +566,8 @@ public class WaspTestingUtility {
    * Due to async racing issue, a entityGroup may not be in the online
    * entityGroup list of a entityGroup server yet, after the assignment znode is
    * deleted and the new assignment is recorded in master.
-   * 
-   * @throws IOException
+   *
+   * @throws java.io.IOException
    * @throws InterruptedException
    */
   public void assertEntityGroupOnServer(EntityGroupInfo egInfo,
@@ -582,4 +595,5 @@ public class WaspTestingUtility {
     getWaspAdmin().disableTable(tableName);
     getWaspAdmin().deleteTable(tableName);
   }
+
 }

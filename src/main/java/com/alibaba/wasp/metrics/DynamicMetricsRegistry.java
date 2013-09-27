@@ -18,12 +18,9 @@
  */
 package com.alibaba.wasp.metrics;
 
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import com.alibaba.wasp.metrics.lib.MetricMutableQuantiles;import org.apache.hadoop.metrics2.MetricsException;
+import com.alibaba.wasp.metrics.lib.MetricMutableHistogram;
+import com.alibaba.wasp.metrics.lib.MetricMutableQuantiles;
+import org.apache.hadoop.metrics2.MetricsException;
 import org.apache.hadoop.metrics2.MetricsRecordBuilder;
 import org.apache.hadoop.metrics2.MetricsTag;
 import org.apache.hadoop.metrics2.lib.MetricMutable;
@@ -33,8 +30,11 @@ import org.apache.hadoop.metrics2.lib.MetricMutableFactory;
 import org.apache.hadoop.metrics2.lib.MetricMutableGaugeInt;
 import org.apache.hadoop.metrics2.lib.MetricMutableGaugeLong;
 import org.apache.hadoop.metrics2.lib.MetricMutableStat;
-import com.alibaba.wasp.metrics.lib.MetricMutableHistogram;
-import com.alibaba.wasp.metrics.lib.MetricMutableQuantiles;
+
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * An optional metrics registry class for creating and maintaining a collection

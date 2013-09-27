@@ -2573,6 +2573,15 @@ public final class ClientProtos {
     // optional uint32 fetchSize = 5;
     boolean hasFetchSize();
     int getFetchSize();
+    
+    // optional bool isTransaction = 6;
+    boolean hasIsTransaction();
+    boolean getIsTransaction();
+    
+    // repeated string transactionSql = 7;
+    java.util.List<String> getTransactionSqlList();
+    int getTransactionSqlCount();
+    String getTransactionSql(int index);
   }
   public static final class ExecuteRequest extends
       com.google.protobuf.GeneratedMessage
@@ -2697,12 +2706,38 @@ public final class ClientProtos {
       return fetchSize_;
     }
     
+    // optional bool isTransaction = 6;
+    public static final int ISTRANSACTION_FIELD_NUMBER = 6;
+    private boolean isTransaction_;
+    public boolean hasIsTransaction() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    public boolean getIsTransaction() {
+      return isTransaction_;
+    }
+    
+    // repeated string transactionSql = 7;
+    public static final int TRANSACTIONSQL_FIELD_NUMBER = 7;
+    private com.google.protobuf.LazyStringList transactionSql_;
+    public java.util.List<String>
+        getTransactionSqlList() {
+      return transactionSql_;
+    }
+    public int getTransactionSqlCount() {
+      return transactionSql_.size();
+    }
+    public String getTransactionSql(int index) {
+      return transactionSql_.get(index);
+    }
+    
     private void initFields() {
       sql_ = "";
       readModel_ = com.alibaba.wasp.protobuf.generated.MetaProtos.ReadModelProto.CURRENT;
       sessionId_ = "";
       closeSession_ = false;
       fetchSize_ = 0;
+      isTransaction_ = false;
+      transactionSql_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2730,6 +2765,12 @@ public final class ClientProtos {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeUInt32(5, fetchSize_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBool(6, isTransaction_);
+      }
+      for (int i = 0; i < transactionSql_.size(); i++) {
+        output.writeBytes(7, transactionSql_.getByteString(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -2759,6 +2800,19 @@ public final class ClientProtos {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(5, fetchSize_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(6, isTransaction_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < transactionSql_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(transactionSql_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getTransactionSqlList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2808,6 +2862,13 @@ public final class ClientProtos {
         result = result && (getFetchSize()
             == other.getFetchSize());
       }
+      result = result && (hasIsTransaction() == other.hasIsTransaction());
+      if (hasIsTransaction()) {
+        result = result && (getIsTransaction()
+            == other.getIsTransaction());
+      }
+      result = result && getTransactionSqlList()
+          .equals(other.getTransactionSqlList());
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -2836,6 +2897,14 @@ public final class ClientProtos {
       if (hasFetchSize()) {
         hash = (37 * hash) + FETCHSIZE_FIELD_NUMBER;
         hash = (53 * hash) + getFetchSize();
+      }
+      if (hasIsTransaction()) {
+        hash = (37 * hash) + ISTRANSACTION_FIELD_NUMBER;
+        hash = (53 * hash) + hashBoolean(getIsTransaction());
+      }
+      if (getTransactionSqlCount() > 0) {
+        hash = (37 * hash) + TRANSACTIONSQL_FIELD_NUMBER;
+        hash = (53 * hash) + getTransactionSqlList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       return hash;
@@ -2963,6 +3032,10 @@ public final class ClientProtos {
         bitField0_ = (bitField0_ & ~0x00000008);
         fetchSize_ = 0;
         bitField0_ = (bitField0_ & ~0x00000010);
+        isTransaction_ = false;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        transactionSql_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
       
@@ -3021,6 +3094,16 @@ public final class ClientProtos {
           to_bitField0_ |= 0x00000010;
         }
         result.fetchSize_ = fetchSize_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.isTransaction_ = isTransaction_;
+        if (((bitField0_ & 0x00000040) == 0x00000040)) {
+          transactionSql_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              transactionSql_);
+          bitField0_ = (bitField0_ & ~0x00000040);
+        }
+        result.transactionSql_ = transactionSql_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3051,6 +3134,19 @@ public final class ClientProtos {
         }
         if (other.hasFetchSize()) {
           setFetchSize(other.getFetchSize());
+        }
+        if (other.hasIsTransaction()) {
+          setIsTransaction(other.getIsTransaction());
+        }
+        if (!other.transactionSql_.isEmpty()) {
+          if (transactionSql_.isEmpty()) {
+            transactionSql_ = other.transactionSql_;
+            bitField0_ = (bitField0_ & ~0x00000040);
+          } else {
+            ensureTransactionSqlIsMutable();
+            transactionSql_.addAll(other.transactionSql_);
+          }
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3112,6 +3208,16 @@ public final class ClientProtos {
             case 40: {
               bitField0_ |= 0x00000010;
               fetchSize_ = input.readUInt32();
+              break;
+            }
+            case 48: {
+              bitField0_ |= 0x00000020;
+              isTransaction_ = input.readBool();
+              break;
+            }
+            case 58: {
+              ensureTransactionSqlIsMutable();
+              transactionSql_.add(input.readBytes());
               break;
             }
           }
@@ -3256,6 +3362,83 @@ public final class ClientProtos {
         fetchSize_ = 0;
         onChanged();
         return this;
+      }
+      
+      // optional bool isTransaction = 6;
+      private boolean isTransaction_ ;
+      public boolean hasIsTransaction() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      public boolean getIsTransaction() {
+        return isTransaction_;
+      }
+      public Builder setIsTransaction(boolean value) {
+        bitField0_ |= 0x00000020;
+        isTransaction_ = value;
+        onChanged();
+        return this;
+      }
+      public Builder clearIsTransaction() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        isTransaction_ = false;
+        onChanged();
+        return this;
+      }
+      
+      // repeated string transactionSql = 7;
+      private com.google.protobuf.LazyStringList transactionSql_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureTransactionSqlIsMutable() {
+        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
+          transactionSql_ = new com.google.protobuf.LazyStringArrayList(transactionSql_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+      public java.util.List<String>
+          getTransactionSqlList() {
+        return java.util.Collections.unmodifiableList(transactionSql_);
+      }
+      public int getTransactionSqlCount() {
+        return transactionSql_.size();
+      }
+      public String getTransactionSql(int index) {
+        return transactionSql_.get(index);
+      }
+      public Builder setTransactionSql(
+          int index, String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTransactionSqlIsMutable();
+        transactionSql_.set(index, value);
+        onChanged();
+        return this;
+      }
+      public Builder addTransactionSql(String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureTransactionSqlIsMutable();
+        transactionSql_.add(value);
+        onChanged();
+        return this;
+      }
+      public Builder addAllTransactionSql(
+          java.lang.Iterable<String> values) {
+        ensureTransactionSqlIsMutable();
+        super.addAll(values, transactionSql_);
+        onChanged();
+        return this;
+      }
+      public Builder clearTransactionSql() {
+        transactionSql_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        onChanged();
+        return this;
+      }
+      void addTransactionSql(com.google.protobuf.ByteString value) {
+        ensureTransactionSqlIsMutable();
+        transactionSql_.add(value);
+        onChanged();
       }
       
       // @@protoc_insertion_point(builder_scope:ExecuteRequest)
@@ -10971,6 +11154,1120 @@ public final class ClientProtos {
     // @@protoc_insertion_point(class_scope:DeleteResponse)
   }
   
+  public interface TransactionRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .EntityGroupSpecifier entityGroup = 1;
+    boolean hasEntityGroup();
+    com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier getEntityGroup();
+    com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifierOrBuilder getEntityGroupOrBuilder();
+    
+    // required .TransactionActionProto transactionAction = 2;
+    boolean hasTransactionAction();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto getTransactionAction();
+    com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder getTransactionActionOrBuilder();
+  }
+  public static final class TransactionRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements TransactionRequestOrBuilder {
+    // Use TransactionRequest.newBuilder() to construct.
+    private TransactionRequest(Builder builder) {
+      super(builder);
+    }
+    private TransactionRequest(boolean noInit) {}
+    
+    private static final TransactionRequest defaultInstance;
+    public static TransactionRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public TransactionRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.alibaba.wasp.protobuf.generated.ClientProtos.internal_static_TransactionRequest_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.alibaba.wasp.protobuf.generated.ClientProtos.internal_static_TransactionRequest_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required .EntityGroupSpecifier entityGroup = 1;
+    public static final int ENTITYGROUP_FIELD_NUMBER = 1;
+    private com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier entityGroup_;
+    public boolean hasEntityGroup() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier getEntityGroup() {
+      return entityGroup_;
+    }
+    public com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifierOrBuilder getEntityGroupOrBuilder() {
+      return entityGroup_;
+    }
+    
+    // required .TransactionActionProto transactionAction = 2;
+    public static final int TRANSACTIONACTION_FIELD_NUMBER = 2;
+    private com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto transactionAction_;
+    public boolean hasTransactionAction() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto getTransactionAction() {
+      return transactionAction_;
+    }
+    public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder getTransactionActionOrBuilder() {
+      return transactionAction_;
+    }
+    
+    private void initFields() {
+      entityGroup_ = com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.getDefaultInstance();
+      transactionAction_ = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasEntityGroup()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasTransactionAction()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getEntityGroup().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getTransactionAction().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, entityGroup_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, transactionAction_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, entityGroup_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, transactionAction_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest)) {
+        return super.equals(obj);
+      }
+      com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest other = (com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest) obj;
+      
+      boolean result = true;
+      result = result && (hasEntityGroup() == other.hasEntityGroup());
+      if (hasEntityGroup()) {
+        result = result && getEntityGroup()
+            .equals(other.getEntityGroup());
+      }
+      result = result && (hasTransactionAction() == other.hasTransactionAction());
+      if (hasTransactionAction()) {
+        result = result && getTransactionAction()
+            .equals(other.getTransactionAction());
+      }
+      result = result &&
+          getUnknownFields().equals(other.getUnknownFields());
+      return result;
+    }
+    
+    @java.lang.Override
+    public int hashCode() {
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      if (hasEntityGroup()) {
+        hash = (37 * hash) + ENTITYGROUP_FIELD_NUMBER;
+        hash = (53 * hash) + getEntityGroup().hashCode();
+      }
+      if (hasTransactionAction()) {
+        hash = (37 * hash) + TRANSACTIONACTION_FIELD_NUMBER;
+        hash = (53 * hash) + getTransactionAction().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      return hash;
+    }
+    
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.alibaba.wasp.protobuf.generated.ClientProtos.internal_static_TransactionRequest_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.alibaba.wasp.protobuf.generated.ClientProtos.internal_static_TransactionRequest_fieldAccessorTable;
+      }
+      
+      // Construct using com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getEntityGroupFieldBuilder();
+          getTransactionActionFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (entityGroupBuilder_ == null) {
+          entityGroup_ = com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.getDefaultInstance();
+        } else {
+          entityGroupBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (transactionActionBuilder_ == null) {
+          transactionAction_ = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
+        } else {
+          transactionActionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest.getDescriptor();
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest getDefaultInstanceForType() {
+        return com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest.getDefaultInstance();
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest build() {
+        com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest buildPartial() {
+        com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest result = new com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (entityGroupBuilder_ == null) {
+          result.entityGroup_ = entityGroup_;
+        } else {
+          result.entityGroup_ = entityGroupBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (transactionActionBuilder_ == null) {
+          result.transactionAction_ = transactionAction_;
+        } else {
+          result.transactionAction_ = transactionActionBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest) {
+          return mergeFrom((com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest other) {
+        if (other == com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest.getDefaultInstance()) return this;
+        if (other.hasEntityGroup()) {
+          mergeEntityGroup(other.getEntityGroup());
+        }
+        if (other.hasTransactionAction()) {
+          mergeTransactionAction(other.getTransactionAction());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasEntityGroup()) {
+          
+          return false;
+        }
+        if (!hasTransactionAction()) {
+          
+          return false;
+        }
+        if (!getEntityGroup().isInitialized()) {
+          
+          return false;
+        }
+        if (!getTransactionAction().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.Builder subBuilder = com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.newBuilder();
+              if (hasEntityGroup()) {
+                subBuilder.mergeFrom(getEntityGroup());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setEntityGroup(subBuilder.buildPartial());
+              break;
+            }
+            case 18: {
+              com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.newBuilder();
+              if (hasTransactionAction()) {
+                subBuilder.mergeFrom(getTransactionAction());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setTransactionAction(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required .EntityGroupSpecifier entityGroup = 1;
+      private com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier entityGroup_ = com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier, com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.Builder, com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifierOrBuilder> entityGroupBuilder_;
+      public boolean hasEntityGroup() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier getEntityGroup() {
+        if (entityGroupBuilder_ == null) {
+          return entityGroup_;
+        } else {
+          return entityGroupBuilder_.getMessage();
+        }
+      }
+      public Builder setEntityGroup(com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier value) {
+        if (entityGroupBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          entityGroup_ = value;
+          onChanged();
+        } else {
+          entityGroupBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setEntityGroup(
+          com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.Builder builderForValue) {
+        if (entityGroupBuilder_ == null) {
+          entityGroup_ = builderForValue.build();
+          onChanged();
+        } else {
+          entityGroupBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergeEntityGroup(com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier value) {
+        if (entityGroupBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              entityGroup_ != com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.getDefaultInstance()) {
+            entityGroup_ =
+              com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.newBuilder(entityGroup_).mergeFrom(value).buildPartial();
+          } else {
+            entityGroup_ = value;
+          }
+          onChanged();
+        } else {
+          entityGroupBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearEntityGroup() {
+        if (entityGroupBuilder_ == null) {
+          entityGroup_ = com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.getDefaultInstance();
+          onChanged();
+        } else {
+          entityGroupBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.Builder getEntityGroupBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getEntityGroupFieldBuilder().getBuilder();
+      }
+      public com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifierOrBuilder getEntityGroupOrBuilder() {
+        if (entityGroupBuilder_ != null) {
+          return entityGroupBuilder_.getMessageOrBuilder();
+        } else {
+          return entityGroup_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier, com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.Builder, com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifierOrBuilder> 
+          getEntityGroupFieldBuilder() {
+        if (entityGroupBuilder_ == null) {
+          entityGroupBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier, com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.Builder, com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifierOrBuilder>(
+                  entityGroup_,
+                  getParentForChildren(),
+                  isClean());
+          entityGroup_ = null;
+        }
+        return entityGroupBuilder_;
+      }
+      
+      // required .TransactionActionProto transactionAction = 2;
+      private com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto transactionAction_ = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder> transactionActionBuilder_;
+      public boolean hasTransactionAction() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto getTransactionAction() {
+        if (transactionActionBuilder_ == null) {
+          return transactionAction_;
+        } else {
+          return transactionActionBuilder_.getMessage();
+        }
+      }
+      public Builder setTransactionAction(com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto value) {
+        if (transactionActionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          transactionAction_ = value;
+          onChanged();
+        } else {
+          transactionActionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder setTransactionAction(
+          com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder builderForValue) {
+        if (transactionActionBuilder_ == null) {
+          transactionAction_ = builderForValue.build();
+          onChanged();
+        } else {
+          transactionActionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder mergeTransactionAction(com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto value) {
+        if (transactionActionBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              transactionAction_ != com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance()) {
+            transactionAction_ =
+              com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.newBuilder(transactionAction_).mergeFrom(value).buildPartial();
+          } else {
+            transactionAction_ = value;
+          }
+          onChanged();
+        } else {
+          transactionActionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      public Builder clearTransactionAction() {
+        if (transactionActionBuilder_ == null) {
+          transactionAction_ = com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.getDefaultInstance();
+          onChanged();
+        } else {
+          transactionActionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder getTransactionActionBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getTransactionActionFieldBuilder().getBuilder();
+      }
+      public com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder getTransactionActionOrBuilder() {
+        if (transactionActionBuilder_ != null) {
+          return transactionActionBuilder_.getMessageOrBuilder();
+        } else {
+          return transactionAction_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder> 
+          getTransactionActionFieldBuilder() {
+        if (transactionActionBuilder_ == null) {
+          transactionActionBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProto.Builder, com.alibaba.wasp.protobuf.generated.MetaProtos.TransactionActionProtoOrBuilder>(
+                  transactionAction_,
+                  getParentForChildren(),
+                  isClean());
+          transactionAction_ = null;
+        }
+        return transactionActionBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:TransactionRequest)
+    }
+    
+    static {
+      defaultInstance = new TransactionRequest(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:TransactionRequest)
+  }
+  
+  public interface TransactionResponseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required .WriteResultProto result = 1;
+    boolean hasResult();
+    com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto getResult();
+    com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProtoOrBuilder getResultOrBuilder();
+  }
+  public static final class TransactionResponse extends
+      com.google.protobuf.GeneratedMessage
+      implements TransactionResponseOrBuilder {
+    // Use TransactionResponse.newBuilder() to construct.
+    private TransactionResponse(Builder builder) {
+      super(builder);
+    }
+    private TransactionResponse(boolean noInit) {}
+    
+    private static final TransactionResponse defaultInstance;
+    public static TransactionResponse getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public TransactionResponse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.alibaba.wasp.protobuf.generated.ClientProtos.internal_static_TransactionResponse_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.alibaba.wasp.protobuf.generated.ClientProtos.internal_static_TransactionResponse_fieldAccessorTable;
+    }
+    
+    private int bitField0_;
+    // required .WriteResultProto result = 1;
+    public static final int RESULT_FIELD_NUMBER = 1;
+    private com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto result_;
+    public boolean hasResult() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto getResult() {
+      return result_;
+    }
+    public com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProtoOrBuilder getResultOrBuilder() {
+      return result_;
+    }
+    
+    private void initFields() {
+      result_ = com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasResult()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getResult().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, result_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, result_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+    
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse)) {
+        return super.equals(obj);
+      }
+      com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse other = (com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse) obj;
+      
+      boolean result = true;
+      result = result && (hasResult() == other.hasResult());
+      if (hasResult()) {
+        result = result && getResult()
+            .equals(other.getResult());
+      }
+      result = result &&
+          getUnknownFields().equals(other.getUnknownFields());
+      return result;
+    }
+    
+    @java.lang.Override
+    public int hashCode() {
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      if (hasResult()) {
+        hash = (37 * hash) + RESULT_FIELD_NUMBER;
+        hash = (53 * hash) + getResult().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      return hash;
+    }
+    
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.alibaba.wasp.protobuf.generated.ClientProtos.internal_static_TransactionResponse_descriptor;
+      }
+      
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.alibaba.wasp.protobuf.generated.ClientProtos.internal_static_TransactionResponse_fieldAccessorTable;
+      }
+      
+      // Construct using com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getResultFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+      
+      public Builder clear() {
+        super.clear();
+        if (resultBuilder_ == null) {
+          result_ = com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.getDefaultInstance();
+        } else {
+          resultBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.getDescriptor();
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse getDefaultInstanceForType() {
+        return com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.getDefaultInstance();
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse build() {
+        com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+      
+      private com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return result;
+      }
+      
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse buildPartial() {
+        com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse result = new com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (resultBuilder_ == null) {
+          result.result_ = result_;
+        } else {
+          result.result_ = resultBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse) {
+          return mergeFrom((com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse other) {
+        if (other == com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.getDefaultInstance()) return this;
+        if (other.hasResult()) {
+          mergeResult(other.getResult());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasResult()) {
+          
+          return false;
+        }
+        if (!getResult().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              onChanged();
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                onChanged();
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.Builder subBuilder = com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.newBuilder();
+              if (hasResult()) {
+                subBuilder.mergeFrom(getResult());
+              }
+              input.readMessage(subBuilder, extensionRegistry);
+              setResult(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      private int bitField0_;
+      
+      // required .WriteResultProto result = 1;
+      private com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto result_ = com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto, com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.Builder, com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProtoOrBuilder> resultBuilder_;
+      public boolean hasResult() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto getResult() {
+        if (resultBuilder_ == null) {
+          return result_;
+        } else {
+          return resultBuilder_.getMessage();
+        }
+      }
+      public Builder setResult(com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto value) {
+        if (resultBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          result_ = value;
+          onChanged();
+        } else {
+          resultBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder setResult(
+          com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.Builder builderForValue) {
+        if (resultBuilder_ == null) {
+          result_ = builderForValue.build();
+          onChanged();
+        } else {
+          resultBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder mergeResult(com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto value) {
+        if (resultBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              result_ != com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.getDefaultInstance()) {
+            result_ =
+              com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.newBuilder(result_).mergeFrom(value).buildPartial();
+          } else {
+            result_ = value;
+          }
+          onChanged();
+        } else {
+          resultBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      public Builder clearResult() {
+        if (resultBuilder_ == null) {
+          result_ = com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.getDefaultInstance();
+          onChanged();
+        } else {
+          resultBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.Builder getResultBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getResultFieldBuilder().getBuilder();
+      }
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProtoOrBuilder getResultOrBuilder() {
+        if (resultBuilder_ != null) {
+          return resultBuilder_.getMessageOrBuilder();
+        } else {
+          return result_;
+        }
+      }
+      private com.google.protobuf.SingleFieldBuilder<
+          com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto, com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.Builder, com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProtoOrBuilder> 
+          getResultFieldBuilder() {
+        if (resultBuilder_ == null) {
+          resultBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto, com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto.Builder, com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProtoOrBuilder>(
+                  result_,
+                  getParentForChildren(),
+                  isClean());
+          result_ = null;
+        }
+        return resultBuilder_;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:TransactionResponse)
+    }
+    
+    static {
+      defaultInstance = new TransactionResponse(true);
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:TransactionResponse)
+  }
+  
   public static abstract class ClientService
       implements com.google.protobuf.Service {
     protected ClientService() {}
@@ -11005,6 +12302,11 @@ public final class ClientProtos {
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest request,
           com.google.protobuf.RpcCallback<com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse> done);
+      
+      public abstract void transaction(
+          com.google.protobuf.RpcController controller,
+          com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest request,
+          com.google.protobuf.RpcCallback<com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse> done);
       
     }
     
@@ -11059,6 +12361,14 @@ public final class ClientProtos {
           impl.delete(controller, request, done);
         }
         
+        @java.lang.Override
+        public  void transaction(
+            com.google.protobuf.RpcController controller,
+            com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest request,
+            com.google.protobuf.RpcCallback<com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse> done) {
+          impl.transaction(controller, request, done);
+        }
+        
       };
     }
     
@@ -11093,6 +12403,8 @@ public final class ClientProtos {
               return impl.update(controller, (com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateRequest)request);
             case 5:
               return impl.delete(controller, (com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest)request);
+            case 6:
+              return impl.transaction(controller, (com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest)request);
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -11119,6 +12431,8 @@ public final class ClientProtos {
               return com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateRequest.getDefaultInstance();
             case 5:
               return com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest.getDefaultInstance();
+            case 6:
+              return com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest.getDefaultInstance();
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -11145,6 +12459,8 @@ public final class ClientProtos {
               return com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateResponse.getDefaultInstance();
             case 5:
               return com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse.getDefaultInstance();
+            case 6:
+              return com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.getDefaultInstance();
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -11182,6 +12498,11 @@ public final class ClientProtos {
         com.google.protobuf.RpcController controller,
         com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest request,
         com.google.protobuf.RpcCallback<com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse> done);
+    
+    public abstract void transaction(
+        com.google.protobuf.RpcController controller,
+        com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest request,
+        com.google.protobuf.RpcCallback<com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse> done);
     
     public static final
         com.google.protobuf.Descriptors.ServiceDescriptor
@@ -11235,6 +12556,11 @@ public final class ClientProtos {
             com.google.protobuf.RpcUtil.<com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse>specializeCallback(
               done));
           return;
+        case 6:
+          this.transaction(controller, (com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest)request,
+            com.google.protobuf.RpcUtil.<com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse>specializeCallback(
+              done));
+          return;
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -11261,6 +12587,8 @@ public final class ClientProtos {
           return com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateRequest.getDefaultInstance();
         case 5:
           return com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest.getDefaultInstance();
+        case 6:
+          return com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest.getDefaultInstance();
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -11287,6 +12615,8 @@ public final class ClientProtos {
           return com.alibaba.wasp.protobuf.generated.ClientProtos.UpdateResponse.getDefaultInstance();
         case 5:
           return com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse.getDefaultInstance();
+        case 6:
+          return com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.getDefaultInstance();
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -11397,6 +12727,21 @@ public final class ClientProtos {
             com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse.class,
             com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse.getDefaultInstance()));
       }
+      
+      public  void transaction(
+          com.google.protobuf.RpcController controller,
+          com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest request,
+          com.google.protobuf.RpcCallback<com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse> done) {
+        channel.callMethod(
+          getDescriptor().getMethods().get(6),
+          controller,
+          request,
+          com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.getDefaultInstance(),
+          com.google.protobuf.RpcUtil.generalizeCallback(
+            done,
+            com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.class,
+            com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.getDefaultInstance()));
+      }
     }
     
     public static BlockingInterface newBlockingStub(
@@ -11433,6 +12778,11 @@ public final class ClientProtos {
       public com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse delete(
           com.google.protobuf.RpcController controller,
           com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteRequest request)
+          throws com.google.protobuf.ServiceException;
+      
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse transaction(
+          com.google.protobuf.RpcController controller,
+          com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest request)
           throws com.google.protobuf.ServiceException;
     }
     
@@ -11512,6 +12862,18 @@ public final class ClientProtos {
           controller,
           request,
           com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse.getDefaultInstance());
+      }
+      
+      
+      public com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse transaction(
+          com.google.protobuf.RpcController controller,
+          com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest request)
+          throws com.google.protobuf.ServiceException {
+        return (com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse) channel.callBlockingMethod(
+          getDescriptor().getMethods().get(6),
+          controller,
+          request,
+          com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.getDefaultInstance());
       }
       
     }
@@ -11597,6 +12959,16 @@ public final class ClientProtos {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_DeleteResponse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_TransactionRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_TransactionRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_TransactionResponse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_TransactionResponse_fieldAccessorTable;
   
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -11619,45 +12991,52 @@ public final class ClientProtos {
       "\0162\034.WriteResultProto.StatusCode\022\024\n\014excep" +
       "tionMsg\030\002 \001(\t\022\032\n\022exceptionClassName\030\003 \001(" +
       "\t\"3\n\nStatusCode\022\013\n\007SUCCESS\020\000\022\013\n\007FAILURE\020" +
-      "\001\022\013\n\007NOT_RUN\020\002\"}\n\016ExecuteRequest\022\013\n\003sql\030" +
-      "\001 \001(\t\022\"\n\treadModel\030\002 \001(\0162\017.ReadModelProt" +
-      "o\022\021\n\tsessionId\030\003 \001(\t\022\024\n\014closeSession\030\004 \001" +
-      "(\010\022\021\n\tfetchSize\030\005 \001(\r\"\221\001\n\017ExecuteRespons" +
-      "e\022\021\n\ttableName\030\001 \001(\t\022!\n\004meta\030\002 \003(\0132\023.Str" +
-      "ingDataTypePair\022#\n\006result\030\003 \003(\0132\023.Execut" +
-      "eResultProto\022\021\n\tsessionId\030\004 \001(\t\022\020\n\010lastS",
-      "can\030\005 \001(\010\"V\n\nGetRequest\022*\n\013entityGroup\030\001" +
-      " \002(\0132\025.EntityGroupSpecifier\022\034\n\003get\030\002 \002(\013" +
-      "2\017.GetActionProto\"c\n\013GetResponse\022!\n\006resu" +
-      "lt\030\001 \001(\0132\021.QueryResultProto\022!\n\004meta\030\002 \003(" +
-      "\0132\023.StringDataTypePair\022\016\n\006exists\030\003 \001(\010\"\217" +
-      "\001\n\013ScanRequest\022$\n\nscanAction\030\001 \002(\0132\020.Sca" +
-      "nActionProto\022\021\n\tscannerId\030\002 \001(\004\022\033\n\014close" +
-      "Scanner\030\003 \001(\010:\005false\022*\n\013entityGroup\030\004 \002(" +
-      "\0132\025.EntityGroupSpecifier\"g\n\014ScanResponse" +
-      "\022!\n\006result\030\001 \003(\0132\021.QueryResultProto\022!\n\004m",
-      "eta\030\002 \003(\0132\023.StringDataTypePair\022\021\n\tscanne" +
-      "rId\030\003 \002(\004\"e\n\rInsertRequest\022*\n\013entityGrou" +
-      "p\030\001 \002(\0132\025.EntityGroupSpecifier\022(\n\014insert" +
-      "Action\030\002 \002(\0132\022.InsertActionProto\"3\n\016Inse" +
-      "rtResponse\022!\n\006result\030\001 \002(\0132\021.WriteResult" +
-      "Proto\"e\n\rUpdateRequest\022*\n\013entityGroup\030\001 " +
-      "\002(\0132\025.EntityGroupSpecifier\022(\n\014updateActi" +
-      "on\030\002 \002(\0132\022.UpdateActionProto\"3\n\016UpdateRe" +
-      "sponse\022!\n\006result\030\001 \002(\0132\021.WriteResultProt" +
-      "o\"e\n\rDeleteRequest\022*\n\013entityGroup\030\001 \002(\0132",
-      "\025.EntityGroupSpecifier\022(\n\014deleteAction\030\002" +
-      " \002(\0132\022.DeleteActionProto\"3\n\016DeleteRespon" +
-      "se\022!\n\006result\030\001 \002(\0132\021.WriteResultProto2\205\002" +
-      "\n\rClientService\022,\n\007execute\022\017.ExecuteRequ" +
-      "est\032\020.ExecuteResponse\022 \n\003get\022\013.GetReques" +
-      "t\032\014.GetResponse\022#\n\004scan\022\014.ScanRequest\032\r." +
-      "ScanResponse\022)\n\006insert\022\016.InsertRequest\032\017" +
-      ".InsertResponse\022)\n\006update\022\016.UpdateReques" +
-      "t\032\017.UpdateResponse\022)\n\006delete\022\016.DeleteReq" +
-      "uest\032\017.DeleteResponseB;\n#com.alibaba.was",
-      "p.protobuf.generatedB\014ClientProtosH\001\210\001\001\240" +
-      "\001\001"
+      "\001\022\013\n\007NOT_RUN\020\002\"\254\001\n\016ExecuteRequest\022\013\n\003sql" +
+      "\030\001 \001(\t\022\"\n\treadModel\030\002 \001(\0162\017.ReadModelPro" +
+      "to\022\021\n\tsessionId\030\003 \001(\t\022\024\n\014closeSession\030\004 " +
+      "\001(\010\022\021\n\tfetchSize\030\005 \001(\r\022\025\n\risTransaction\030" +
+      "\006 \001(\010\022\026\n\016transactionSql\030\007 \003(\t\"\221\001\n\017Execut" +
+      "eResponse\022\021\n\ttableName\030\001 \001(\t\022!\n\004meta\030\002 \003" +
+      "(\0132\023.StringDataTypePair\022#\n\006result\030\003 \003(\0132",
+      "\023.ExecuteResultProto\022\021\n\tsessionId\030\004 \001(\t\022" +
+      "\020\n\010lastScan\030\005 \001(\010\"V\n\nGetRequest\022*\n\013entit" +
+      "yGroup\030\001 \002(\0132\025.EntityGroupSpecifier\022\034\n\003g" +
+      "et\030\002 \002(\0132\017.GetActionProto\"c\n\013GetResponse" +
+      "\022!\n\006result\030\001 \001(\0132\021.QueryResultProto\022!\n\004m" +
+      "eta\030\002 \003(\0132\023.StringDataTypePair\022\016\n\006exists" +
+      "\030\003 \001(\010\"\217\001\n\013ScanRequest\022$\n\nscanAction\030\001 \002" +
+      "(\0132\020.ScanActionProto\022\021\n\tscannerId\030\002 \001(\004\022" +
+      "\033\n\014closeScanner\030\003 \001(\010:\005false\022*\n\013entityGr" +
+      "oup\030\004 \002(\0132\025.EntityGroupSpecifier\"g\n\014Scan",
+      "Response\022!\n\006result\030\001 \003(\0132\021.QueryResultPr" +
+      "oto\022!\n\004meta\030\002 \003(\0132\023.StringDataTypePair\022\021" +
+      "\n\tscannerId\030\003 \002(\004\"e\n\rInsertRequest\022*\n\013en" +
+      "tityGroup\030\001 \002(\0132\025.EntityGroupSpecifier\022(" +
+      "\n\014insertAction\030\002 \002(\0132\022.InsertActionProto" +
+      "\"3\n\016InsertResponse\022!\n\006result\030\001 \002(\0132\021.Wri" +
+      "teResultProto\"e\n\rUpdateRequest\022*\n\013entity" +
+      "Group\030\001 \002(\0132\025.EntityGroupSpecifier\022(\n\014up" +
+      "dateAction\030\002 \002(\0132\022.UpdateActionProto\"3\n\016" +
+      "UpdateResponse\022!\n\006result\030\001 \002(\0132\021.WriteRe",
+      "sultProto\"e\n\rDeleteRequest\022*\n\013entityGrou" +
+      "p\030\001 \002(\0132\025.EntityGroupSpecifier\022(\n\014delete" +
+      "Action\030\002 \002(\0132\022.DeleteActionProto\"3\n\016Dele" +
+      "teResponse\022!\n\006result\030\001 \002(\0132\021.WriteResult" +
+      "Proto\"t\n\022TransactionRequest\022*\n\013entityGro" +
+      "up\030\001 \002(\0132\025.EntityGroupSpecifier\0222\n\021trans" +
+      "actionAction\030\002 \002(\0132\027.TransactionActionPr" +
+      "oto\"8\n\023TransactionResponse\022!\n\006result\030\001 \002" +
+      "(\0132\021.WriteResultProto2\277\002\n\rClientService\022" +
+      ",\n\007execute\022\017.ExecuteRequest\032\020.ExecuteRes",
+      "ponse\022 \n\003get\022\013.GetRequest\032\014.GetResponse\022" +
+      "#\n\004scan\022\014.ScanRequest\032\r.ScanResponse\022)\n\006" +
+      "insert\022\016.InsertRequest\032\017.InsertResponse\022" +
+      ")\n\006update\022\016.UpdateRequest\032\017.UpdateRespon" +
+      "se\022)\n\006delete\022\016.DeleteRequest\032\017.DeleteRes" +
+      "ponse\0228\n\013transaction\022\023.TransactionReques" +
+      "t\032\024.TransactionResponseB;\n#com.alibaba.w" +
+      "asp.protobuf.generatedB\014ClientProtosH\001\210\001" +
+      "\001\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -11701,7 +13080,7 @@ public final class ClientProtos {
           internal_static_ExecuteRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ExecuteRequest_descriptor,
-              new java.lang.String[] { "Sql", "ReadModel", "SessionId", "CloseSession", "FetchSize", },
+              new java.lang.String[] { "Sql", "ReadModel", "SessionId", "CloseSession", "FetchSize", "IsTransaction", "TransactionSql", },
               com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteRequest.class,
               com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteRequest.Builder.class);
           internal_static_ExecuteResponse_descriptor =
@@ -11792,6 +13171,22 @@ public final class ClientProtos {
               new java.lang.String[] { "Result", },
               com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse.class,
               com.alibaba.wasp.protobuf.generated.ClientProtos.DeleteResponse.Builder.class);
+          internal_static_TransactionRequest_descriptor =
+            getDescriptor().getMessageTypes().get(16);
+          internal_static_TransactionRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_TransactionRequest_descriptor,
+              new java.lang.String[] { "EntityGroup", "TransactionAction", },
+              com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest.class,
+              com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionRequest.Builder.class);
+          internal_static_TransactionResponse_descriptor =
+            getDescriptor().getMessageTypes().get(17);
+          internal_static_TransactionResponse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_TransactionResponse_descriptor,
+              new java.lang.String[] { "Result", },
+              com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.class,
+              com.alibaba.wasp.protobuf.generated.ClientProtos.TransactionResponse.Builder.class);
           return null;
         }
       };

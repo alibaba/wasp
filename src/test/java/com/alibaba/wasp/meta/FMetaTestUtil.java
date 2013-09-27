@@ -20,13 +20,13 @@
 
 package com.alibaba.wasp.meta;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.FieldKeyWord;
 import com.alibaba.wasp.meta.FTable.TableType;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class FMetaTestUtil {
 
@@ -42,8 +42,8 @@ public class FMetaTestUtil {
    * CREATE local index PhotosByTime on Photo(user_id,time); CREATE global index
    * PhotosByTag on Photo(tag) storing (thumbnail_url);
    */
-  public static String CF = "default";
-  public static String CF2 = "default2";
+  public static String CF = "d";
+  public static String CF2 = "d2";
 
   public static FTable User = new FTable(); // Table User
   public static Field user_id = new Field(FieldKeyWord.REQUIRED, CF, "user_id",
@@ -134,6 +134,20 @@ public class FMetaTestUtil {
       finalColumns.put(field.getName(), field);
     }
     return new FTable(null, tableName, TableType.ROOT, finalColumns,
+        primaryKeys, columns.get(0));
+  }
+
+  public static FTable makeChildTable(String tableName, String childTablename) {
+    List<Field> columns = getColumns();
+    LinkedHashMap<String, Field> primaryKeys = new LinkedHashMap<String, Field>();
+    primaryKeys.put(columns.get(0).getName(), columns.get(0));
+    primaryKeys.put(columns.get(1).getName(), columns.get(1));
+    primaryKeys.put(columns.get(2).getName(), columns.get(2));
+    LinkedHashMap<String, Field> finalColumns = new LinkedHashMap<String, Field>();
+    for (Field field : columns) {
+      finalColumns.put(field.getName(), field);
+    }
+    return new FTable(tableName, childTablename, TableType.CHILD, finalColumns,
         primaryKeys, columns.get(0));
   }
 

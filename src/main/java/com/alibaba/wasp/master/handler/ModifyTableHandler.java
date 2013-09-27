@@ -17,8 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.TableLockedException;
@@ -26,6 +24,8 @@ import com.alibaba.wasp.master.FMasterServices;
 import com.alibaba.wasp.master.TableLockManager;
 import com.alibaba.wasp.meta.FMetaEditor;
 import com.alibaba.wasp.meta.FTable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.List;

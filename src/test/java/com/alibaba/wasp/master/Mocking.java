@@ -17,8 +17,6 @@
  */
 package com.alibaba.wasp.master;
 
-import static org.junit.Assert.assertNotSame;
-
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.EntityGroupTransaction;
@@ -28,6 +26,8 @@ import com.alibaba.wasp.zookeeper.ZKAssign;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
 import org.apache.zookeeper.KeeperException;
+
+import static org.junit.Assert.assertNotSame;
 
 /**
  * Package scoped mocking utility.
@@ -61,8 +61,8 @@ public class Mocking {
    * @param w ZooKeeperWatcher to use.
    * @param sn Name of the regionserver doing the 'opening'
    * @param egInfo EntityGroup we're 'opening'.
-   * @throws KeeperException
-   * @throws DeserializationException
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws com.alibaba.wasp.DeserializationException
    */
   static void fakeEntityGroupServerEntityGroupOpenInZK(FMaster master,  final ZooKeeperWatcher w,
       final ServerName sn, final EntityGroupInfo egInfo)
@@ -77,7 +77,7 @@ public class Mocking {
     // looked at exposing the method over in openregionhandler but its just a
     // one liner and its deep over in another package so just repeat it below.
     versionid = ZKAssign.transitionNode(w, egInfo, sn,
-      EventType.M_ZK_ENTITYGROUP_OFFLINE, EventType.FSERVER_ZK_ENTITYGROUP_OPENING, versionid);
+        EventType.M_ZK_ENTITYGROUP_OFFLINE, EventType.FSERVER_ZK_ENTITYGROUP_OPENING, versionid);
     assertNotSame(-1, versionid);
     // Move znode from OPENING to OPENED as FSERVER does on successful open.
     versionid = ZKAssign.transitionNodeOpened(w, egInfo, sn, versionid);
@@ -99,7 +99,7 @@ public class Mocking {
    * @param region
    * @param expectedState
    * @return true if region exists and is in expected state
-   * @throws DeserializationException
+   * @throws com.alibaba.wasp.DeserializationException
    */
   static boolean verifyEntityGroupState(ZooKeeperWatcher zkw, EntityGroupInfo region, EventType expectedState)
   throws KeeperException, DeserializationException {

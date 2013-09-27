@@ -17,8 +17,6 @@
  */
 package com.alibaba.wasp.master;
 
-import java.io.IOException;
-
 import com.alibaba.wasp.ipc.VersionedProtocol;
 import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.FServerReportRequest;
 import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.FServerReportResponse;
@@ -27,9 +25,10 @@ import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.FServerStartupRes
 import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.FServerStatusService;
 import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.ReportRSFatalErrorRequest;
 import com.alibaba.wasp.protobuf.generated.FServerStatusProtos.ReportRSFatalErrorResponse;
-
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
+
+import java.io.IOException;
 
 /**
  * Protocol that a FServer uses to communicate its status to the FMaster.
@@ -41,7 +40,7 @@ public interface FServerStatusProtocol extends
 
   /**
    * 
-   * @see com.alibaba.wasp.ipc.VersionedProtocol#getProtocolVersion(java.lang.String,
+   * @see com.alibaba.wasp.ipc.VersionedProtocol#getProtocolVersion(String,
    *      long)
    */
   @Override
@@ -56,7 +55,7 @@ public interface FServerStatusProtocol extends
    */
   @Override
   public FServerStartupResponse fServerStartup(RpcController controller,
-      FServerStartupRequest request) throws ServiceException;
+                                               FServerStartupRequest request) throws ServiceException;
 
   /**
    * 
@@ -67,7 +66,7 @@ public interface FServerStatusProtocol extends
    */
   @Override
   public FServerReportResponse fServerReport(RpcController controller,
-      FServerReportRequest request) throws ServiceException;
+                                             FServerReportRequest request) throws ServiceException;
 
   /**
    * @see com.alibaba.wasp.protobuf.generated.FServerStatusProtos.FServerStatusService

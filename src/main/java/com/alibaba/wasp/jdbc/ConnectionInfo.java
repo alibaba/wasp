@@ -17,13 +17,13 @@
  */
 package com.alibaba.wasp.jdbc;
 
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.util.New;
 import com.alibaba.wasp.util.StringUtils;
 import com.alibaba.wasp.util.Utils;
+import org.apache.hadoop.conf.Configuration;
 
 import java.util.ArrayList;
 import java.util.HashSet;

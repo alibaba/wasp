@@ -17,26 +17,26 @@
  */
 package com.alibaba.wasp.jdbc;
 
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.ReadModel;
+import com.alibaba.wasp.WaspTestingUtility;
+import com.alibaba.wasp.client.FClient;
+import com.alibaba.wasp.fserver.EntityGroup;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.MediumTests;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.MediumTests;
-import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.ReadModel;
-import com.alibaba.wasp.WaspTestingUtility;
-import com.alibaba.wasp.client.FClient;
-import com.alibaba.wasp.fserver.EntityGroup;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 /**
  *

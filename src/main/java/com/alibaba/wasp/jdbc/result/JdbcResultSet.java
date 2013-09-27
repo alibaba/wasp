@@ -18,32 +18,6 @@
  */
 package com.alibaba.wasp.jdbc.result;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.RowId;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.SQLErrorCode;
 import com.alibaba.wasp.jdbc.JdbcConnection;
@@ -70,6 +44,32 @@ import com.alibaba.wasp.util.DateTimeUtils;
 import com.alibaba.wasp.util.MathUtils;
 import com.alibaba.wasp.util.New;
 import com.alibaba.wasp.util.StringUtils;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
+import java.sql.NClob;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -170,7 +170,7 @@ public class JdbcResultSet implements ResultSet {
    * @param columnLabel
    *          the column label
    * @return the column index (1,2,...)
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -217,7 +217,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the statement that created this object.
-   * 
+   *
    * @return the statement or prepared statement, or null if created by a
    *         DatabaseMetaData call.
    */
@@ -237,7 +237,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Gets the first warning reported by calls on this object.
-   * 
+   *
    * @return null
    */
   @Override
@@ -266,11 +266,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a String.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -284,11 +284,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a String.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -302,11 +302,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as an int.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -320,11 +320,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as an int.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -338,11 +338,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a BigDecimal.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -356,11 +356,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a java.sql.Date.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -374,11 +374,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a java.sql.Time.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -392,11 +392,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a java.sql.Timestamp.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -410,11 +410,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a BigDecimal.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -428,11 +428,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a java.sql.Date.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -446,11 +446,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a java.sql.Time.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -464,11 +464,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a java.sql.Timestamp.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -483,11 +483,11 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Returns a column value as a Java object. The data is de-serialized into a
    * Java object (on the client side).
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value or null
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -503,11 +503,11 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Returns a column value as a Java object. The data is de-serialized into a
    * Java object (on the client side).
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value or null
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -522,11 +522,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a boolean.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -541,11 +541,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a boolean.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -560,11 +560,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a byte.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -578,11 +578,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a byte.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -596,11 +596,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a short.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -614,11 +614,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a short.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -632,11 +632,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a long.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -650,11 +650,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a long.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -668,11 +668,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a float.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -686,11 +686,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a float.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -704,11 +704,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a double.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -722,11 +722,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a double.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -740,15 +740,15 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a BigDecimal.
-   * 
+   *
    * @deprecated use {@link #getBigDecimal(String)}
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param scale
    *          the scale of the returned value
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -767,15 +767,15 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a BigDecimal.
-   * 
+   *
    * @deprecated use {@link #getBigDecimal(int)}
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param scale
    *          the scale of the returned value
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -794,7 +794,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * [Not supported]
-   * 
+   *
    * @deprecated since JDBC 2.0, use getCharacterStream
    */
   @Override
@@ -804,7 +804,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * [Not supported]
-   * 
+   *
    * @deprecated since JDBC 2.0, use setCharacterStream
    */
   @Override
@@ -849,13 +849,13 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Returns the value of the specified column as a java.sql.Date using a
    * specified time zone.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param calendar
    *          the calendar
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -870,13 +870,13 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Returns the value of the specified column as a java.sql.Date using a
    * specified time zone.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param calendar
    *          the calendar
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -892,13 +892,13 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Returns the value of the specified column as a java.sql.Time using a
    * specified time zone.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param calendar
    *          the calendar
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -913,13 +913,13 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Returns the value of the specified column as a java.sql.Time using a
    * specified time zone.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param calendar
    *          the calendar
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -935,13 +935,13 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Returns the value of the specified column as a java.sql.Timestamp using a
    * specified time zone.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param calendar
    *          the calendar
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -957,13 +957,13 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a java.sql.Timestamp.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param calendar
    *          the calendar
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -979,11 +979,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a Blob.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -993,11 +993,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a Blob.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1007,11 +1007,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a byte array.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1025,12 +1025,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a byte array.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
-   * 
+   * @throws java.sql.SQLException
+   *
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1044,11 +1044,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as an input stream.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1062,11 +1062,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as an input stream.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1080,11 +1080,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a Clob.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1094,11 +1094,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a Clob.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1108,11 +1108,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as an Array.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1122,11 +1122,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as an Array.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1136,11 +1136,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as an input stream.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1150,11 +1150,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as an input stream.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1164,11 +1164,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a reader.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1178,11 +1178,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a reader.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -1210,10 +1210,10 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1227,10 +1227,10 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1244,12 +1244,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1263,12 +1263,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if result set is closed or not updatable
    */
   @Override
@@ -1282,12 +1282,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1301,12 +1301,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1320,12 +1320,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1340,12 +1340,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1360,12 +1360,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1379,12 +1379,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1398,12 +1398,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1417,12 +1417,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1436,12 +1436,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1455,12 +1455,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1474,12 +1474,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1493,12 +1493,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1512,12 +1512,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1531,12 +1531,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1550,12 +1550,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1571,12 +1571,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1592,12 +1592,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1612,12 +1612,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1632,12 +1632,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1652,12 +1652,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1672,12 +1672,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1692,12 +1692,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1712,12 +1712,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1732,12 +1732,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1753,14 +1753,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1771,12 +1771,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1787,14 +1787,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1805,14 +1805,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1823,12 +1823,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -1839,14 +1839,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1857,14 +1857,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1875,12 +1875,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1891,14 +1891,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1909,12 +1909,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1925,14 +1925,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1943,14 +1943,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1961,14 +1961,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1979,14 +1979,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -1997,12 +1997,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2013,14 +2013,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2031,12 +2031,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2047,14 +2047,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2065,14 +2065,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param scale
    *          is ignored
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2087,14 +2087,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param scale
    *          is ignored
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2109,12 +2109,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2128,12 +2128,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2163,12 +2163,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2178,14 +2178,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the length
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2196,12 +2196,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2211,12 +2211,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2226,12 +2226,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2241,14 +2241,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the length
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2259,12 +2259,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2274,12 +2274,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2289,14 +2289,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the length
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2307,12 +2307,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2322,12 +2322,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2337,14 +2337,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the length
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -2382,7 +2382,7 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Gets the current row number. The first row is row 1, the second 2 and so
    * on. This method returns 0 before the first and after the last row.
-   * 
+   *
    * @return the row number
    */
   @Override
@@ -2403,7 +2403,7 @@ public class JdbcResultSet implements ResultSet {
    * Gets the result set concurrency. Result sets are only updatable if the
    * statement was created with updatable concurrency, and if the result set
    * contains all columns of the primary key or of a unique index of a table.
-   * 
+   *
    * @return ResultSet.CONCUR_UPDATABLE if the result set is updatable, or
    *         ResultSet.CONCUR_READ_ONLY otherwise
    */
@@ -2414,7 +2414,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Gets the fetch direction.
-   * 
+   *
    * @return the direction: FETCH_FORWARD
    */
   @Override
@@ -2429,7 +2429,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Gets the number of rows suggested to read in one step.
-   * 
+   *
    * @return the current fetch size
    */
   @Override
@@ -2448,7 +2448,7 @@ public class JdbcResultSet implements ResultSet {
    * statement, otherwise an exception is throws. Setting the value to 0 will
    * set the default value. The default value can be changed using the system
    * property h2.serverResultSetFetchSize.
-   * 
+   *
    * @param rows
    *          the number of rows
    */
@@ -2476,10 +2476,10 @@ public class JdbcResultSet implements ResultSet {
    * [Not supported] Sets (changes) the fetch direction for this result set.
    * This method should only be called for scrollable result sets, otherwise it
    * will throw an exception (no matter what direction is used).
-   * 
+   *
    * @param direction
    *          the new fetch direction
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           Unsupported Feature if the method is called for a forward-only
    *           result set
    */
@@ -2490,10 +2490,10 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Get the result set type.
-   * 
+   *
    * @return the result set type (TYPE_FORWARD_ONLY, TYPE_SCROLL_INSENSITIVE or
    *         TYPE_SCROLL_SENSITIVE)
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -2509,10 +2509,10 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Checks if the current position is before the first row, that means next()
    * was not called yet, and there is at least one row.
-   * 
+   *
    * @return if there are results and the current position is before the first
    *         row
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2530,9 +2530,9 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Checks if the current position is after the last row, that means next() was
    * called and returned false, and there was at least one row.
-   * 
+   *
    * @return if there are results and the current position is after the last row
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2550,9 +2550,9 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Checks if the current position is row 1, that means next() was called once
    * and returned true.
-   * 
+   *
    * @return if the current position is the first row
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2569,9 +2569,9 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Checks if the current position is the last row, that means next() was
    * called and did not yet returned false, but will in the next call.
-   * 
+   *
    * @return if the current position is the last row
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2588,8 +2588,8 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Moves the current position to before the first row, that means resets the
    * result set.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2606,8 +2606,8 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Moves the current position to after the last row, that means after the end.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2625,9 +2625,9 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Moves the current position to the first row. This is the same as calling
    * beforeFirst() followed by next().
-   * 
+   *
    * @return true if there is a row available, false if not
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2646,9 +2646,9 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Moves the current position to the last row.
-   * 
+   *
    * @return true if there is a row available, false if not
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2663,14 +2663,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Moves the current position to a specific row.
-   * 
+   *
    * @param rowNumber
    *          the row number. 0 is not allowed, 1 means the first row, 2 the
    *          second. -1 means the last row, -2 the row before the last row. If
    *          the value is too large, the position is moved after the last row,
    *          if if the value is too small it is moved before the first row.
    * @return true if there is a row available, false if not
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2697,13 +2697,13 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Moves the current position to a specific row relative to the current row.
-   * 
+   *
    * @param rowCount
    *          0 means don't do anything, 1 is the next row, -1 the previous. If
    *          the value is too large, the position is moved after the last row,
    *          if if the value is too small it is moved before the first row.
    * @return true if there is a row available, false if not
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2725,9 +2725,9 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Moves the cursor to the last row, or row before first row if the current
    * position is the first row.
-   * 
+   *
    * @return true if there is a row available, false if not
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed
    */
   @Override
@@ -2743,8 +2743,8 @@ public class JdbcResultSet implements ResultSet {
   /**
    * Moves the current position to the insert row. The current row is
    * remembered.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed or is not updatable
    */
   @Override
@@ -2759,8 +2759,8 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Moves the current position to the current row.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed or is not updatable
    */
   @Override
@@ -2775,7 +2775,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Detects if the row was updated (by somebody else or the caller).
-   * 
+   *
    * @return false because this driver does not detect this
    */
   @Override
@@ -2789,7 +2789,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Detects if the row was inserted.
-   * 
+   *
    * @return false because this driver does not detect this
    */
   @Override
@@ -2803,7 +2803,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Detects if the row was deleted (by somebody else or the caller).
-   * 
+   *
    * @return false because this driver does not detect this
    */
   @Override
@@ -2817,8 +2817,8 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Inserts the current row. The current position must be the insert row.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed or if not on the insert row, or if
    *           the result set it not updatable
    */
@@ -2829,8 +2829,8 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates the current row.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed, if the current row is the insert row
    *           or if not on a valid row, or if the result set it not updatable
    */
@@ -2841,8 +2841,8 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Deletes the current row.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed, if the current row is the insert row
    *           or if not on a valid row, or if the result set it not updatable
    */
@@ -2853,8 +2853,8 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Re-reads the current row from the database.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed or if the current row is the insert
    *           row or if the row has been deleted or if not on a valid row
    */
@@ -2865,8 +2865,8 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Cancels updating a row.
-   * 
-   * @throws SQLException
+   *
+   * @throws java.sql.SQLException
    *           if the result set is closed or if the current row is the insert
    *           row
    */
@@ -2958,8 +2958,8 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Check if this result set is closed.
-   * 
-   * @throws JdbcException
+   *
+   * @throws com.alibaba.wasp.jdbc.JdbcException
    *           if it is closed
    */
   void checkClosed() {
@@ -3022,7 +3022,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * [Not supported] Returns the value of the specified column as a row id.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    */
@@ -3033,7 +3033,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * [Not supported] Returns the value of the specified column as a row id.
-   * 
+   *
    * @param columnLabel
    *          the column label
    */
@@ -3044,7 +3044,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * [Not supported] Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
@@ -3057,7 +3057,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * [Not supported] Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
@@ -3070,9 +3070,9 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the current result set holdability.
-   * 
+   *
    * @return the holdability
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the connection is closed
    */
   @Override
@@ -3087,7 +3087,7 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns whether this result set is closed.
-   * 
+   *
    * @return true if the result set is closed
    */
   @Override
@@ -3101,12 +3101,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3121,12 +3121,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3149,12 +3149,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3164,14 +3164,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the length
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3182,12 +3182,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3197,14 +3197,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the length
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3223,11 +3223,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a Clob.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -3239,11 +3239,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a Clob.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -3294,11 +3294,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a String.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -3312,11 +3312,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a String.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -3330,11 +3330,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a reader.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -3344,11 +3344,11 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Returns the value of the specified column as a reader.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @return the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the column is not found or if the result set is closed
    */
   @Override
@@ -3358,12 +3358,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3374,14 +3374,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnIndex
    *          (1,2,...)
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3392,12 +3392,12 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override
@@ -3408,14 +3408,14 @@ public class JdbcResultSet implements ResultSet {
 
   /**
    * Updates a column in the current or insert row.
-   * 
+   *
    * @param columnLabel
    *          the column label
    * @param x
    *          the value
    * @param length
    *          the number of characters
-   * @throws SQLException
+   * @throws java.sql.SQLException
    *           if the result set is closed or not updatable
    */
   @Override

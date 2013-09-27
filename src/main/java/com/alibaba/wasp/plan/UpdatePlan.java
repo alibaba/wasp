@@ -22,14 +22,14 @@ package com.alibaba.wasp.plan;
 
 import java.util.List;
 
-import com.alibaba.wasp.plan.action.UpdateAction;import com.alibaba.wasp.plan.action.UpdateAction;
+import com.alibaba.wasp.plan.action.UpdateAction;
 
 /**
  * Driver parses sql to plan which includes Update normal is
  * "UPDATE users SET age = 24, name = 'Mike' WHERE id = 123;".
  * 
  */
-public class UpdatePlan extends DMLPlan{
+public class UpdatePlan extends DMLPlan {
 
   private List<UpdateAction> actions;
 
@@ -41,6 +41,7 @@ public class UpdatePlan extends DMLPlan{
     this.actions = actions;
   }
 
+  @Override
   public List<UpdateAction> getActions() {
     return actions;
   }
@@ -50,7 +51,7 @@ public class UpdatePlan extends DMLPlan{
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

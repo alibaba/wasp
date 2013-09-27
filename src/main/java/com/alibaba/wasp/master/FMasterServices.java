@@ -17,13 +17,11 @@
  */
 package com.alibaba.wasp.master;
 
-import java.io.IOException;
-
-import com.alibaba.wasp.Server;import com.alibaba.wasp.executor.ExecutorService;import com.alibaba.wasp.meta.FTable;import com.alibaba.wasp.Server;
-import com.alibaba.wasp.TableNotDisabledException;
-import com.alibaba.wasp.TableNotFoundException;
+import com.alibaba.wasp.Server;
 import com.alibaba.wasp.executor.ExecutorService;
 import com.alibaba.wasp.meta.FTable;
+
+import java.io.IOException;
 
 /**
  * Services FMaster supplies
@@ -46,7 +44,7 @@ public interface FMasterServices extends Server {
 
   /**
    * Check table is modifiable; i.e. exists and is offline.
-   * 
+   *
    * @param tableName
    *          Name of table to check.
    * @throws com.alibaba.wasp.TableNotDisabledException

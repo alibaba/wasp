@@ -17,11 +17,6 @@
  */
 package com.alibaba.wasp.master;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.alibaba.wasp.DeserializationException;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.ServerName;
@@ -32,7 +27,12 @@ import com.alibaba.wasp.zookeeper.MasterAddressTracker;
 import com.alibaba.wasp.zookeeper.ZKUtil;
 import com.alibaba.wasp.zookeeper.ZooKeeperListener;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.zookeeper.KeeperException;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Handles everything on master-side related to master election.

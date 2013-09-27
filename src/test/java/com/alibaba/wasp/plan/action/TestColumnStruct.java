@@ -20,7 +20,7 @@
 
 package com.alibaba.wasp.plan.action;
 
-import com.alibaba.wasp.protobuf.generated.MetaProtos;import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
 import org.junit.Assert;
 import org.junit.Test;
 

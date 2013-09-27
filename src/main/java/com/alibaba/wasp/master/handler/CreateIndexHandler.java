@@ -17,9 +17,6 @@
  */
 package com.alibaba.wasp.master.handler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.Server;
 import com.alibaba.wasp.TableLockedException;
@@ -27,6 +24,9 @@ import com.alibaba.wasp.master.FMasterServices;
 import com.alibaba.wasp.master.TableLockManager;
 import com.alibaba.wasp.meta.FMetaEditor;
 import com.alibaba.wasp.meta.Index;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class CreateIndexHandler extends TableEventHandler {
    * @param server
    * @param fMasterServices
    * @param eventType
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public CreateIndexHandler(byte[] tableName, Index index, Server server,
       FMasterServices fMasterServices, EventType eventType) throws IOException {
@@ -74,7 +74,7 @@ public class CreateIndexHandler extends TableEventHandler {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

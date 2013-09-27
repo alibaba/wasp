@@ -17,7 +17,7 @@
  */
 package com.alibaba.wasp.master.balancer;
 
-import com.alibaba.wasp.ServerName;import com.alibaba.wasp.ServerName;
+import com.alibaba.wasp.ServerName;
 
 import java.io.Serializable;
 

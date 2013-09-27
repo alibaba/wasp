@@ -17,13 +17,13 @@
  */
 package com.alibaba.wasp.master;
 
-import java.util.List;
-import java.util.Map;
-
-import com.alibaba.wasp.ServerName;import org.apache.hadoop.conf.Configurable;
 import com.alibaba.wasp.ClusterStatus;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.ServerName;
+import org.apache.hadoop.conf.Configurable;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Makes decisions about the placement and movement of EntityGroups across
@@ -32,7 +32,7 @@ import com.alibaba.wasp.ServerName;
  * <p>
  * Cluster-wide load balancing will occur only when there are no entityGroups in
  * transition and according to a fixed period of a time using
- * {@link #balanceCluster(Map)}.
+ * {@link #balanceCluster(java.util.Map)}.
  * 
  * <p>
  * On cluster startup, bulk assignment can be used to determine locations for
@@ -93,6 +93,6 @@ public interface LoadBalancer extends Configurable {
    * @param servers
    * @return Servername
    */
-  public ServerName randomAssignment(EntityGroupInfo entityGroupInfo, 
-      List<ServerName> servers);
+  public ServerName randomAssignment(EntityGroupInfo entityGroupInfo,
+                                     List<ServerName> servers);
 }

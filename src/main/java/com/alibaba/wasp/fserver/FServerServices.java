@@ -19,11 +19,11 @@
  */
 package com.alibaba.wasp.fserver;
 
+import com.alibaba.wasp.storage.StorageActionManager;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-
-import com.alibaba.wasp.storage.StorageActionManager;
 
 /**
  * Services provided by {@link FServer}
@@ -36,14 +36,14 @@ public interface FServerServices extends OnlineEntityGroups {
 
   /**
    * Get the entityGroups that are currently being opened or closed in the FS
-   * 
+   *
    * @return map of entityGroupns in transition in this FS
    */
   public Map<byte[], Boolean> getEntityGroupsInTransitionInFS();
 
   /**
    * Get the thread pool of wasp server.
-   * 
+   *
    * @return
    */
   public ExecutorService getThreadPool();
@@ -51,10 +51,10 @@ public interface FServerServices extends OnlineEntityGroups {
   /**
    * Tasks to perform after entityGroup open to complete deploy of entityGroup
    * on wasp server
-   * 
+   *
    * @param entityGroup
    * @param daughter
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public void postOpenDeployTasks(EntityGroup entityGroup, boolean daughter)
       throws IOException;

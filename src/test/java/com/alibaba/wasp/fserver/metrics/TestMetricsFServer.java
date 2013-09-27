@@ -18,10 +18,10 @@
  */
 package com.alibaba.wasp.fserver.metrics;
 
-import static org.junit.Assert.*;
-
-import com.alibaba.wasp.fserver.MetricsFServerSourceImpl;import com.alibaba.wasp.fserver.MetricsFServerSourceImpl;
+import com.alibaba.wasp.fserver.MetricsFServerSourceImpl;
 import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
 
 public class TestMetricsFServer {
 

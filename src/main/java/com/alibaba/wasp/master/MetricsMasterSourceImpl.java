@@ -18,12 +18,12 @@
  */
 package com.alibaba.wasp.master;
 
-import org.apache.hadoop.metrics2.MetricsBuilder;
-import org.apache.hadoop.metrics2.MetricsRecordBuilder;
-import org.apache.hadoop.metrics2.lib.MetricMutableGaugeLong;
 import com.alibaba.wasp.master.metrics.MetricsMasterSource;
 import com.alibaba.wasp.master.metrics.MetricsMasterWrapper;
 import com.alibaba.wasp.metrics.BaseSourceImpl;
+import org.apache.hadoop.metrics2.MetricsBuilder;
+import org.apache.hadoop.metrics2.MetricsRecordBuilder;
+import org.apache.hadoop.metrics2.lib.MetricMutableGaugeLong;
 
 /**
  * Implementation of MetricsMasterSource.

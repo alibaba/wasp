@@ -18,17 +18,19 @@
  */
 package com.alibaba.wasp.fserver.metrics;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.alibaba.wasp.metrics.BaseSource;import org.apache.hadoop.metrics2.Metric;
+import com.alibaba.wasp.metrics.BaseSource;
+import org.apache.hadoop.metrics2.Metric;
 import org.apache.hadoop.metrics2.MetricsBuilder;
 import org.apache.hadoop.metrics2.MetricsRecordBuilder;
 import org.apache.hadoop.metrics2.MetricsSource;
 import org.apache.hadoop.metrics2.MetricsTag;
-import com.alibaba.wasp.metrics.BaseSource;
 
-import static org.junit.Assert.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /** Interface of a class to make assertions about metrics values. */
 public class MetricsAssertHelperImpl implements MetricsAssertHelper {

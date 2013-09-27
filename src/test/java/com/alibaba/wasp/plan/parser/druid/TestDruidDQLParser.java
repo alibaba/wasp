@@ -17,12 +17,17 @@
  */
 package com.alibaba.wasp.plan.parser.druid;
 
-import com.alibaba.wasp.ZooKeeperConnectionException;import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.meta.MemFMetaStore;import com.alibaba.wasp.meta.TableSchemaCacheReader;import com.alibaba.wasp.plan.parser.ParseContext;import org.apache.hadoop.conf.Configuration;
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.parser.Lexer;
+import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.sql.parser.Token;
 import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.meta.MemFMetaStore;
 import com.alibaba.wasp.meta.TableSchemaCacheReader;
 import com.alibaba.wasp.plan.parser.ParseContext;
+import com.alibaba.wasp.plan.parser.druid.dialect.WaspSqlParserUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -30,8 +35,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.alibaba.druid.sql.parser.Lexer;
-import com.alibaba.druid.sql.parser.Token;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class TestDruidDQLParser {
   private static ParseContext context = new ParseContext();
@@ -103,12 +110,46 @@ public class TestDruidDQLParser {
     String sql2 = "SELECT user_id,photo_id,full_url,thumbnail_url "
         + "from Photo " + "where user_id=99999999999 and photo_id=0.1;"; //
     String sql3 = "SELECT * from User where user_id=1;";
+    String sql4 = "SELECT * from User where user_id=1 for update ;";
 
-    String[] sqlList = { sql1, sql2, sql3 }; // sql1, sql2, sql3
+    String[] sqlList = { sql1, sql2, sql3, sql4 }; // sql1, sql2, sql3
     for (String sql : sqlList) {
       context.setSql(sql);
       boolean result = DruidParserTestUtil.execute(context, druidDQLParser);
       Assert.assertTrue(result);
     } // for
   }
+
+  private byte testByte;
+  private char testChar;
+
+  @Test
+  public void test(){
+    //String sql4 = "SELECT * from User where user_id=1 for update ;";
+//    String sql4 = "SELECT * from User where user_id=1;";
+    //String sql4 = "ALTER TABLE tw3 rename tw33;";
+   // String sql4 = "ALTER TABLE testRenameTable RENAME testRenameTable1";
+    String sql4 = "CREATE TABLE if not exists tw13 {REQUIRED INT64 user_id ; OPTIONAL STRING name default 3 null; } PRIMARY KEY(user_id), ENTITY GROUP ROOT, ENTITY GROUP KEY(user_id);";
+    //String sql4 = "Insert into user (column1,column2,column3) values (?,?,?);";
+
+
+    String sql5 = "insert into test (datetime) value (now())";
+    SQLStatementParser parser = WaspSqlParserUtils.createSQLStatementParser(
+        sql4, WaspSqlParserUtils.WASP);
+    List<SQLStatement> stmtList = parser.parseStatementList();
+    String sql6 = "";
+
+
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(2013, 00, 99, 99, 99, 99);
+    long time = calendar.getTimeInMillis();
+      //Date date = simpleDateFormat.parse("2013-00-99 99:99:99");
+      //long time = date.getTime();
+      Date date1 = new Date(time);
+      System.out.println(simpleDateFormat.format(date1));
+
+
+  }
+
 }

@@ -19,23 +19,18 @@
 
 package com.alibaba.wasp;
 
+import com.alibaba.wasp.master.EntityGroupState;
+import com.alibaba.wasp.protobuf.ProtobufUtil;
+import com.alibaba.wasp.protobuf.generated.ClusterStatusProtos;
+import com.alibaba.wasp.protobuf.generated.WaspProtos;
+import com.google.protobuf.ByteString;
+import org.apache.hadoop.hbase.util.Bytes;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import com.alibaba.wasp.master.EntityGroupState;import com.alibaba.wasp.protobuf.generated.ClusterStatusProtos;import com.alibaba.wasp.protobuf.generated.WaspProtos;import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.master.EntityGroupState;
-import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.ClusterStatusProtos;
-import com.alibaba.wasp.protobuf.generated.ClusterStatusProtos.EntityGroupInTransitionProtos;
-import com.alibaba.wasp.protobuf.generated.ClusterStatusProtos.LiveServerInfo;
-import com.alibaba.wasp.protobuf.generated.WaspProtos;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupSpecifier.EntityGroupSpecifierType;
-
-import com.google.protobuf.ByteString;
 
 /**
  * Status information on the Wasp cluster.
@@ -145,7 +140,7 @@ public class ClusterStatus {
   }
 
   /**
-   * @see java.lang.Object#equals(java.lang.Object)
+   * @see Object#equals(Object)
    */
   public boolean equals(Object o) {
     if (this == o) {
@@ -161,7 +156,7 @@ public class ClusterStatus {
   }
 
   /**
-   * @see java.lang.Object#hashCode()
+   * @see Object#hashCode()
    */
   public int hashCode() {
     return this.liveServers.hashCode() + this.deadServers.hashCode()
@@ -177,7 +172,7 @@ public class ClusterStatus {
 
   /**
    * Returns detailed information about the current master {@link ServerName}.
-   * 
+   *
    * @return current master information if it exists
    */
   public ServerName getMaster() {
@@ -220,7 +215,7 @@ public class ClusterStatus {
 
   /**
    * Convert a ClutserStatus to a protobuf ClusterStatus
-   * 
+   *
    * @return the protobuf ClusterStatus
    */
   public ClusterStatusProtos.ClusterStatus convert() {
@@ -262,7 +257,7 @@ public class ClusterStatus {
 
   /**
    * Convert a protobuf ClusterStatus to a ClusterStatus
-   * 
+   *
    * @param proto
    *          the protobuf ClusterStatus
    * @return the converted ClusterStatus

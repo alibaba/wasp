@@ -17,13 +17,13 @@
  */
 package com.alibaba.wasp.plan.action;
 
-import com.google.protobuf.ByteString;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.messagequeue.Message;
 import com.alibaba.wasp.messagequeue.MessageID;
 import com.alibaba.wasp.protobuf.ProtobufUtil;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.InsertActionProto;
+import com.google.protobuf.ByteString;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
  * Insert execute action.
  * 
  */
-public class InsertAction extends PrimaryAction implements Message {
+public class InsertAction extends PrimaryAction implements Message, DMLAction {
 
   // ///////////////// used for message //////////////
   private boolean isCommited = false;
@@ -42,6 +42,7 @@ public class InsertAction extends PrimaryAction implements Message {
 
   /** No need to serialize **/
   private byte[] valueOfEntityGroupKey;
+
 
   public InsertAction() {
   }
@@ -148,8 +149,13 @@ public class InsertAction extends PrimaryAction implements Message {
     return action;
   }
 
+  @Override
+  public String getTableName() {
+    return fTableName;
+  }
+
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

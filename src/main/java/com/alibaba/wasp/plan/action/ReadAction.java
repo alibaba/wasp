@@ -17,17 +17,37 @@
  */
 package com.alibaba.wasp.plan.action;
 
-import com.alibaba.wasp.ReadModel;import com.alibaba.wasp.ReadModel;
+import com.alibaba.wasp.ReadModel;
 
-public abstract class ReadAction extends PrimaryAction implements Read{
+public abstract class ReadAction extends PrimaryAction implements Read {
   /** current,snapshot,inconsistent **/
   protected ReadModel readerMode;
+
+  protected boolean forUpdate;
+
+  protected String sessionId;
 
   /**
    * @return the readerMode
    */
   public ReadModel getReaderMode() {
     return readerMode;
+  }
+
+  public boolean isForUpdate() {
+    return forUpdate;
+  }
+
+  public void setForUpdate(boolean forUpdate) {
+    this.forUpdate = forUpdate;
+  }
+
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  public void setSessionId(String sessionId) {
+    this.sessionId = sessionId;
   }
 
   /**

@@ -18,6 +18,15 @@
 
 package com.alibaba.wasp.meta;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.EntityGroupLocation;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.ServerName;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.util.Pair;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,15 +34,6 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupLocation;
-import com.alibaba.wasp.MetaException;
-import com.alibaba.wasp.ServerName;
 
 /**
  * Only for single process test.

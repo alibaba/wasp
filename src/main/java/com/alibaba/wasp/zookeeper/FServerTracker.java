@@ -18,11 +18,11 @@
  */
 package com.alibaba.wasp.zookeeper;
 
-import com.alibaba.wasp.master.FServerManager;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.Abortable;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.master.FServerManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.Abortable;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ import java.util.TreeSet;
  * 
  * <p>
  * If an FS node gets deleted, this automatically handles calling of
- * {@link com.alibaba.wasp.master.FServerManager#expireServer(ServerName)}
+ * {@link com.alibaba.wasp.master.FServerManager#expireServer(com.alibaba.wasp.ServerName)}
  */
 public class FServerTracker extends ZooKeeperListener {
   protected static final Log LOG = LogFactory.getLog(FServerTracker.class);
@@ -58,12 +58,12 @@ public class FServerTracker extends ZooKeeperListener {
 
   /**
    * Starts the tracking of online FServers.
-   * 
+   *
    * <p>
    * All RSs will be tracked after this method is called.
-   * 
-   * @throws KeeperException
-   * @throws IOException
+   *
+   * @throws org.apache.zookeeper.KeeperException
+   * @throws java.io.IOException
    */
   public void start() throws KeeperException, IOException {
     watcher.registerListener(this);

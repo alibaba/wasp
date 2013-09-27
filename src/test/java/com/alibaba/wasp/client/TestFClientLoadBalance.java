@@ -22,11 +22,11 @@ package com.alibaba.wasp.client;
  * client communicates with server by using the connection until session expired.
  */
 
-import com.alibaba.wasp.UnknownSessionException;import com.alibaba.wasp.WaspTestingUtility;import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.UnknownSessionException;
 import com.alibaba.wasp.WaspTestingUtility;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

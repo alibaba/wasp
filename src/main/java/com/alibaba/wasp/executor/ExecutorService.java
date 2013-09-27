@@ -18,13 +18,13 @@
  */
 package com.alibaba.wasp.executor;
 
+import com.alibaba.wasp.executor.EventHandler.EventHandlerListener;
+import com.alibaba.wasp.monitoring.ThreadMonitoring;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.alibaba.wasp.executor.EventHandler.EventHandlerListener;
-import com.alibaba.wasp.monitoring.ThreadMonitoring;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -39,12 +39,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * This is a generic executor service. This component abstracts a threadpool, a
  * queue to which {@link EventHandler.EventType}s can be submitted, and a
  * <code>Runnable</code> that handles the object that is added to the queue.
- * 
+ *
  * <p>
  * In order to create a new service, create an instance of this class and then
  * do: <code>instance.startExecutorService("myService");</code>. When done call
  * {@link #shutdown()}.
- * 
+ *
  * <p>
  * In order to use the service created above, call {@link #submit(EventHandler)}
  * . Register pre- and post- processing listeners by registering your
@@ -96,7 +96,7 @@ public class ExecutorService {
 
   /**
    * Default constructor.
-   * 
+   *
    * @param servername
    *          Name of the hosting server.
    */
@@ -108,7 +108,7 @@ public class ExecutorService {
   /**
    * Start an executor service with a given name. If there was a service already
    * started with the same name, this throws a RuntimeException.
-   * 
+   *
    * @param name
    *          Name of the service to start.
    */
@@ -177,7 +177,7 @@ public class ExecutorService {
   /**
    * Subscribe to updates before and after processing instances of
    * {@link EventHandler.EventType}. Currently only one listener per event type.
-   * 
+   *
    * @param type
    *          Type of event we're registering listener for
    * @param listener
@@ -191,7 +191,7 @@ public class ExecutorService {
   /**
    * Stop receiving updates before and after processing instances of
    * {@link EventHandler.EventType}
-   * 
+   *
    * @param type
    *          Type of event we're registering listener for
    * @return The listener we removed or null if we did not remove it.
@@ -203,7 +203,7 @@ public class ExecutorService {
 
   public Map<String, ExecutorStatus> getAllExecutorStatuses() {
     Map<String, ExecutorStatus> ret = Maps.newHashMap();
-    for (Map.Entry<String, Executor> e : executorMap.entrySet()) {
+    for (Entry<String, Executor> e : executorMap.entrySet()) {
       ret.put(e.getKey(), e.getValue().getStatus());
     }
     return ret;
@@ -242,7 +242,7 @@ public class ExecutorService {
 
     /**
      * Submit the event to the queue for handling.
-     * 
+     *
      * @param event
      */
     void submit(final EventHandler event) {
@@ -271,7 +271,7 @@ public class ExecutorService {
       }
 
       List<RunningEventStatus> running = Lists.newArrayList();
-      for (Map.Entry<Thread, Runnable> e : threadPoolExecutor.getRunningTasks()
+      for (Entry<Thread, Runnable> e : threadPoolExecutor.getRunningTasks()
           .entrySet()) {
         Runnable r = e.getValue();
         if (!(r instanceof EventHandler)) {

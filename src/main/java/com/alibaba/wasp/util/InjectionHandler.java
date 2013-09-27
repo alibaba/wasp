@@ -17,10 +17,10 @@
  */
 package com.alibaba.wasp.util;
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.IOException;
 
 /**
  * The InjectionHandler is an object provided to a class, which can perform

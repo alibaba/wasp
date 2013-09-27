@@ -43,6 +43,7 @@ public class InsertPlan extends DMLPlan {
   /**
    * @return the action
    */
+  @Override
   public List<InsertAction> getActions() {
     return actions;
   }
@@ -56,7 +57,7 @@ public class InsertPlan extends DMLPlan {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {

@@ -17,10 +17,9 @@
  */
 package com.alibaba.wasp.plan.parser.druid.dialect;
 
-import com.alibaba.wasp.FieldKeyWord;
-
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSQLColumnDefinition;
+import com.alibaba.wasp.FieldKeyWord;
 
 
 public class WaspSqlColumnDefinition extends MySqlSQLColumnDefinition {

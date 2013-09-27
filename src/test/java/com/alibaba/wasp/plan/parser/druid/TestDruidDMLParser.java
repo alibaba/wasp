@@ -20,7 +20,6 @@
 
 package com.alibaba.wasp.plan.parser.druid;
 
-import com.alibaba.wasp.conf.WaspConfiguration;import com.alibaba.wasp.meta.FMetaTestUtil;import com.alibaba.wasp.meta.MemFMetaStore;import com.alibaba.wasp.plan.InsertPlan;import com.alibaba.wasp.plan.Plan;import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.ZooKeeperConnectionException;
 import com.alibaba.wasp.conf.WaspConfiguration;
 import com.alibaba.wasp.meta.FMetaTestUtil;
@@ -32,6 +31,7 @@ import com.alibaba.wasp.plan.InsertPlan;
 import com.alibaba.wasp.plan.Plan;
 import com.alibaba.wasp.plan.UpdatePlan;
 import com.alibaba.wasp.plan.parser.ParseContext;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -83,8 +83,11 @@ public class TestDruidDMLParser {
   @Test
   public void getInsertPlan() throws ZooKeeperConnectionException {
     String sql1 = "Insert into User(user_id,name,value) values(1,'binlijin',1.);";
-    String sql2 = "Insert into User(user_id,name) values(1,'binlijin'),(2,'lars');";
-    String sql3 = "Insert into Photo(user_id,photo_id, time, full_url) values(1,1000,10000, 'dads');";
+    // String sql2 = "Insert into User(user_id,name) values(1,'binlijin'),(2,'lars');";
+    String sql2 =
+        "Insert into Photo(user_id,photo_id, time, full_url) values(1,1000,10000, 'dads');";
+    String sql3 =
+        "Insert into Photo(user_id,photo_id,time,full_url,date) values(1,1000,10000,'dads',NOW());";
     String[] sqlList = { sql1, sql2, sql3 };
     for (String sql : sqlList) {
       context.setSql(sql);
@@ -103,7 +106,8 @@ public class TestDruidDMLParser {
     // UPDATE users SET age = 24 WHERE id = 123;
     // UPDATE users SET age = 24, name = 'Mike' WHERE id = 123;
     String sql1 = "UPDATE User SET name = 'Mike' WHERE user_id = 123;";
-    String[] sqlList = { sql1 };
+    String sql2 = "UPDATE Photo SET date = NOW() WHERE user_id = 123 and photo_id=123;";
+    String[] sqlList = { sql1, sql2 };
     for (String sql : sqlList) {
       context.setSql(sql);
       boolean result = DruidParserTestUtil.execute(context, druidDMLParser);

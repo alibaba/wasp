@@ -17,12 +17,12 @@
  */
 package com.alibaba.wasp.client;
 
-import java.io.IOException;
-
+import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.Abortable;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
-import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+
+import java.io.IOException;
 
 public class ZooKeeperKeepAliveConnection extends ZooKeeperWatcher {
 
@@ -31,7 +31,7 @@ public class ZooKeeperKeepAliveConnection extends ZooKeeperWatcher {
    * @param conf
    * @param descriptor
    * @param conn
-   * @throws IOException
+   * @throws java.io.IOException
    */
   public ZooKeeperKeepAliveConnection(Configuration conf, String descriptor,
       FConnectionManager.FConnectionImplementation conn) throws IOException {
@@ -42,8 +42,8 @@ public class ZooKeeperKeepAliveConnection extends ZooKeeperWatcher {
    * @param conf
    * @param descriptor
    * @param abortable
-   * @throws ZooKeeperConnectionException
-   * @throws IOException
+   * @throws org.apache.hadoop.hbase.ZooKeeperConnectionException
+   * @throws java.io.IOException
    */
   public ZooKeeperKeepAliveConnection(Configuration conf, String descriptor,
       Abortable abortable) throws ZooKeeperConnectionException, IOException {
@@ -56,8 +56,8 @@ public class ZooKeeperKeepAliveConnection extends ZooKeeperWatcher {
    * @param descriptor
    * @param abortable
    * @param canCreateBaseZNode
-   * @throws IOException
-   * @throws ZooKeeperConnectionException
+   * @throws java.io.IOException
+   * @throws org.apache.hadoop.hbase.ZooKeeperConnectionException
    */
   public ZooKeeperKeepAliveConnection(Configuration conf, String descriptor,
       Abortable abortable, boolean canCreateBaseZNode) throws IOException,

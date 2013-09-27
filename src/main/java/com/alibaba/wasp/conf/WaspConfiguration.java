@@ -19,11 +19,11 @@
  */
 package com.alibaba.wasp.conf;
 
-import java.util.Map.Entry;
-
 import com.alibaba.wasp.util.VersionInfo;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+
+import java.util.Map.Entry;
 
 /**
  * Adds Wasp configuration files to a Configuration

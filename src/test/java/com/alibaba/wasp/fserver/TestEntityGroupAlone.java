@@ -1,13 +1,5 @@
 package com.alibaba.wasp.fserver;
 
-import java.io.IOException;
-import java.util.List;
-
-import junit.framework.Assert;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.EntityGroupInfo;
 import com.alibaba.wasp.FConstants;
 import com.alibaba.wasp.conf.WaspConfiguration;
@@ -32,11 +24,18 @@ import com.alibaba.wasp.plan.parser.druid.DruidDQLParser;
 import com.alibaba.wasp.plan.parser.druid.DruidParserTestUtil;
 import com.alibaba.wasp.storage.NullStorageServices;
 import com.alibaba.wasp.util.MockFServerServices;
+import junit.framework.Assert;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.List;
 
 public class TestEntityGroupAlone {
   static final Log LOG = LogFactory.getLog(TestEntityGroupAlone.class);

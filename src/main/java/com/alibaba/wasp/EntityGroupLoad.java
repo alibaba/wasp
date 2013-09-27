@@ -20,8 +20,8 @@
 
 package com.alibaba.wasp;
 
-import com.alibaba.wasp.protobuf.generated.WaspProtos;import org.apache.hadoop.hbase.util.Bytes;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupLoadProtos;
+import com.alibaba.wasp.protobuf.generated.WaspProtos;
+import org.apache.hadoop.hbase.util.Bytes;
 
 /**
  * Encapsulates per-entityGroup load metrics.

@@ -18,7 +18,6 @@
  */
 package com.alibaba.wasp.protobuf;
 
-import org.apache.hadoop.hbase.util.Bytes;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.plan.action.DeleteAction;
@@ -29,10 +28,10 @@ import com.alibaba.wasp.plan.action.UpdateAction;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.GetActionProto;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.MessageProto;
 import com.alibaba.wasp.protobuf.generated.MetaProtos.ScanActionProto;
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Class to test ProtobufUtil.

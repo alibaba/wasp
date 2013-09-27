@@ -17,16 +17,14 @@
  */
 package com.alibaba.wasp.master;
 
-import com.alibaba.wasp.protobuf.generated.MasterProtos;import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetClusterStatusRequest;
+import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetClusterStatusRequest;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetClusterStatusResponse;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetSchemaAlterStatusRequest;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetSchemaAlterStatusResponse;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetTableDescriptorsRequest;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.GetTableDescriptorsResponse;
 import com.alibaba.wasp.protobuf.generated.MasterMonitorProtos.MasterMonitorService;
-import com.alibaba.wasp.protobuf.generated.MasterProtos.IsMasterRunningRequest;
-import com.alibaba.wasp.protobuf.generated.MasterProtos.IsMasterRunningResponse;
-
+import com.alibaba.wasp.protobuf.generated.MasterProtos;
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
 
@@ -52,7 +50,7 @@ public interface FMasterMonitorProtocol extends
    *         updated. yetToUpdateEntityGroups is the entityGroups that are yet
    *         to be updated totalEntityGroups is the total number of entityGroups
    *         of the table
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   @Override
   public GetSchemaAlterStatusResponse getSchemaAlterStatus(
@@ -61,14 +59,14 @@ public interface FMasterMonitorProtocol extends
 
   /**
    * Get list of TableDescriptors for requested tables.
-   * 
+   *
    * @param controller
    *          Unused (set to null).
    * @param req
    *          GetTableDescriptorsRequest that contains:<br>
    *          - tableNames: requested tables, or if empty, all are requested
    * @return GetTableDescriptorsResponse
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   @Override
   public GetTableDescriptorsResponse getTableDescriptors(
@@ -77,17 +75,17 @@ public interface FMasterMonitorProtocol extends
 
   /**
    * Return cluster status.
-   * 
+   *
    * @param controller
    *          Unused (set to null).
    * @param req
    *          GetClusterStatusRequest
    * @return status object
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   @Override
   public GetClusterStatusResponse getClusterStatus(RpcController controller,
-      GetClusterStatusRequest req) throws ServiceException;
+                                                   GetClusterStatusRequest req) throws ServiceException;
 
   /**
    * @param c
@@ -96,9 +94,9 @@ public interface FMasterMonitorProtocol extends
    *          IsMasterRunningRequest
    * @return IsMasterRunningRequest that contains:<br>
    *         isMasterRunning: true if master is available
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   @Override
   public MasterProtos.IsMasterRunningResponse isMasterRunning(RpcController c,
-      MasterProtos.IsMasterRunningRequest req) throws ServiceException;
+                                                              MasterProtos.IsMasterRunningRequest req) throws ServiceException;
 }

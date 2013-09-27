@@ -18,9 +18,9 @@
  */
 package com.alibaba.wasp;
 
+import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupLocationProtos;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Addressing;
-import com.alibaba.wasp.protobuf.generated.WaspProtos.EntityGroupLocationProtos;
 
 /**
  * Data structure to hold EntityGroupInfo and the address for the hosting
@@ -62,7 +62,7 @@ public class EntityGroupLocation implements Comparable<EntityGroupLocation> {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public synchronized String toString() {
@@ -75,7 +75,7 @@ public class EntityGroupLocation implements Comparable<EntityGroupLocation> {
   }
 
   /**
-   * @see java.lang.Object#equals(java.lang.Object)
+   * @see Object#equals(Object)
    */
   @Override
   public boolean equals(Object o) {
@@ -92,7 +92,7 @@ public class EntityGroupLocation implements Comparable<EntityGroupLocation> {
   }
 
   /**
-   * @see java.lang.Object#hashCode()
+   * @see Object#hashCode()
    */
   @Override
   public int hashCode() {
@@ -116,7 +116,7 @@ public class EntityGroupLocation implements Comparable<EntityGroupLocation> {
 
   /**
    * @return String made of hostname and port formatted as per
-   *         {@link Addressing#createHostAndPortStr(String, int)}
+   *         {@link org.apache.hadoop.hbase.util.Addressing#createHostAndPortStr(String, int)}
    */
   public synchronized String getHostnamePort() {
     if (this.cachedHostnamePort == null) {

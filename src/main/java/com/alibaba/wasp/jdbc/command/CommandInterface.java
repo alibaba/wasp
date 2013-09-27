@@ -90,6 +90,13 @@ public interface CommandInterface {
     int executeUpdate() throws SQLException;
 
     /**
+     *
+     * @return
+     * @throws java.sql.SQLException
+     */
+    int executeTransaction() throws SQLException;
+
+    /**
      * Close the statement.
      */
     void close();

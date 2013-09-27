@@ -17,8 +17,8 @@
  */
 package com.alibaba.wasp.fserver;
 
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.EntityGroupInfo;
+import org.apache.hadoop.conf.Configuration;
 
 public interface EntityGroupServices {
 
@@ -42,4 +42,5 @@ public interface EntityGroupServices {
    * @return
    */
   public EntityGroupInfo getEntityGroupInfo();
+
 }

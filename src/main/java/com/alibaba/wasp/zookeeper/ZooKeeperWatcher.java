@@ -18,6 +18,19 @@
  */
 package com.alibaba.wasp.zookeeper;
 
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.ZooKeeperConnectionException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Abortable;
+import org.apache.hadoop.hbase.util.Threads;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.data.ACL;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,28 +38,15 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.Abortable;
-import org.apache.hadoop.hbase.util.Threads;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.ZooKeeperConnectionException;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.data.ACL;
-
 /**
  * Acts as the single ZooKeeper Watcher. One instance of this is instantiated
  * for each Master, FServer, and client process.
  * 
  * <p>
- * This is the only class that implements {@link Watcher}. Other internal
+ * This is the only class that implements {@link org.apache.zookeeper.Watcher}. Other internal
  * classes which need to be notified of ZooKeeper events must register with the
  * local instance of this watcher via {@link #registerListener}.
- * 
+ *
  * <p>
  * This class also holds and manages the connection to ZooKeeper. Code to deal
  * with connection related events and exceptions are handled here.
@@ -113,8 +113,8 @@ public class ZooKeeperWatcher implements Watcher, Abortable, Closeable {
    * Instantiate a ZooKeeper connection and watcher.
    * @param descriptor Descriptive string that is added to zookeeper sessionid
    *          and used as identifier for this instance.
-   * @throws IOException
-   * @throws ZooKeeperConnectionException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
    */
   public ZooKeeperWatcher(Configuration conf, String descriptor,
       Abortable abortable) throws ZooKeeperConnectionException, IOException {
@@ -125,8 +125,8 @@ public class ZooKeeperWatcher implements Watcher, Abortable, Closeable {
    * Instantiate a ZooKeeper connection and watcher.
    * @param descriptor Descriptive string that is added to zookeeper sessionid
    *          and used as identifier for this instance.
-   * @throws IOException
-   * @throws ZooKeeperConnectionException
+   * @throws java.io.IOException
+   * @throws com.alibaba.wasp.ZooKeeperConnectionException
    */
   public ZooKeeperWatcher(Configuration conf, String descriptor,
       Abortable abortable, boolean canCreateBaseZNode) throws IOException,
@@ -391,7 +391,7 @@ public class ZooKeeperWatcher implements Watcher, Abortable, Closeable {
    * TODO: Currently this method rethrows the exception to let the caller handle
    * <p>
    * @param ke
-   * @throws KeeperException
+   * @throws org.apache.zookeeper.KeeperException
    */
   public void keeperException(KeeperException ke) throws KeeperException {
     LOG.error(

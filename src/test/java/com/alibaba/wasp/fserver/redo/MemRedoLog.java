@@ -17,16 +17,16 @@
  */
 package com.alibaba.wasp.fserver.redo;
 
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.plan.action.Primary;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import com.alibaba.wasp.EntityGroupInfo;import com.alibaba.wasp.plan.action.Primary;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.plan.action.Primary;
 
 /**
  * Only for test.
@@ -54,7 +54,7 @@ public class MemRedoLog extends Redo {
   }
 
   /**
-   * @see Redo#append( Transaction )
+   * @see Redo#append(Transaction)
    */
   @Override
   public void append(Primary action, Transaction t) throws IOException {
@@ -92,7 +92,7 @@ public class MemRedoLog extends Redo {
   }
 
   /**
-   * @see Redo#commit( Transaction )
+   * @see Redo#commit(Transaction)
    */
   @Override
   public boolean commit(WALEdit edit) throws IOException {

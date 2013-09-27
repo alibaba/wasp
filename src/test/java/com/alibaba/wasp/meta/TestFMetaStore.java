@@ -20,9 +20,24 @@
 
 package com.alibaba.wasp.meta;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import com.alibaba.wasp.DeserializationException;
+import com.alibaba.wasp.EntityGroupInfo;
+import com.alibaba.wasp.EntityGroupLocation;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.MetaException;
+import com.alibaba.wasp.ServerName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HBaseTestingUtility;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.util.Pair;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,24 +52,9 @@ import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.alibaba.wasp.DeserializationException;import com.alibaba.wasp.EntityGroupLocation;import com.alibaba.wasp.MetaException;import com.alibaba.wasp.ServerName;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HBaseTestingUtility;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.hbase.util.Pair;
-import com.alibaba.wasp.DeserializationException;
-import com.alibaba.wasp.EntityGroupInfo;
-import com.alibaba.wasp.EntityGroupLocation;
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.MetaException;
-import com.alibaba.wasp.ServerName;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestFMetaStore {
 
@@ -592,9 +592,9 @@ public class TestFMetaStore {
     }
     if (left != null && right != null) {
       assertTrue(left.size() == right.size());
-      Iterator<Map.Entry<String, String>> iter = left.entrySet().iterator();
+      Iterator<Entry<String, String>> iter = left.entrySet().iterator();
       while (iter.hasNext()) {
-        Map.Entry<String, String> entry = (Map.Entry<String, String>) iter
+        Entry<String, String> entry = (Entry<String, String>) iter
             .next();
         String key = entry.getKey();
         String leftVal = entry.getValue();

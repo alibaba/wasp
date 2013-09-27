@@ -17,29 +17,28 @@
  */
 package com.alibaba.wasp.zookeeper;
 
+import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.Abortable;
-import com.alibaba.wasp.ClusterStatus;
-import com.alibaba.wasp.protobuf.generated.ZooKeeperProtos;
 import org.apache.zookeeper.KeeperException;
 
 /**
  * Tracker on cluster settings up in zookeeper. This is not related to
- * {@link ClusterStatus}. That class is a data structure that holds snapshot of
+ * {@link com.alibaba.wasp.ClusterStatus}. That class is a data structure that holds snapshot of
  * current view on cluster. This class is about tracking cluster attributes up
  * in zookeeper.
- * 
+ *
  */
 public class ClusterStatusTracker extends ZooKeeperNodeTracker {
   private static final Log LOG = LogFactory.getLog(ClusterStatusTracker.class);
 
   /**
    * Creates a cluster status tracker.
-   * 
+   *
    * <p>
    * After construction, use {@link #start} to kick off tracking.
-   * 
+   *
    * @param watcher
    * @param abortable
    */
@@ -49,7 +48,7 @@ public class ClusterStatusTracker extends ZooKeeperNodeTracker {
 
   /**
    * Checks if cluster is up.
-   * 
+   *
    * @return true if the cluster up ('shutdown' is its name up in zk) znode
    *         exists with data, false if not
    */
@@ -59,8 +58,8 @@ public class ClusterStatusTracker extends ZooKeeperNodeTracker {
 
   /**
    * Sets the cluster as up.
-   * 
-   * @throws KeeperException
+   *
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zk exception
    */
   public void setClusterUp() throws KeeperException {
@@ -74,8 +73,8 @@ public class ClusterStatusTracker extends ZooKeeperNodeTracker {
 
   /**
    * Sets the cluster as down by deleting the znode.
-   * 
-   * @throws KeeperException
+   *
+   * @throws org.apache.zookeeper.KeeperException
    *           unexpected zk exception
    */
   public void setClusterDown() throws KeeperException {

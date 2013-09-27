@@ -18,9 +18,9 @@
  */
 package com.alibaba.wasp.util;
 
-import org.apache.hadoop.conf.Configuration;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.conf.WaspConfiguration;
+import org.apache.hadoop.conf.Configuration;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

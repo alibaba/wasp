@@ -18,16 +18,16 @@
  */
 package com.alibaba.wasp.fserver;
 
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import com.alibaba.wasp.metrics.MetricsExecutor;import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.hbase.util.EnvironmentEdgeManager;
 import com.alibaba.wasp.ServerName;
 import com.alibaba.wasp.fserver.metrics.MetricsFServerWrapper;
 import com.alibaba.wasp.metrics.MetricsExecutor;
 import com.alibaba.wasp.zookeeper.ZooKeeperWatcher;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.util.EnvironmentEdgeManager;
+
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Impl for exposing FServer Information through Hadoop's metrics 2 system.

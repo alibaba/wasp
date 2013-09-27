@@ -57,13 +57,7 @@ import com.alibaba.wasp.protobuf.generated.ClientProtos.ExecuteResponse;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.QueryResultProto;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.StringDataTypePair;
 import com.alibaba.wasp.protobuf.generated.ClientProtos.WriteResultProto;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateIndexRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.CreateTableResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.DeleteTableRequest;
 import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.DeleteTableResponse;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.DropIndexRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.ModifyTableRequest;
-import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.TruncateTableRequest;
 import com.alibaba.wasp.protobuf.generated.MasterAdminProtos.TruncateTableResponse;
 import org.cliffc.high_scale_lib.Counter;
 
@@ -141,7 +135,7 @@ public class BaseDriver implements Closeable {
    * @param sql
    * @param readModel
    * @return
-   * @throws ServiceException
+   * @throws com.google.protobuf.ServiceException
    */
   public ClientProtos.ExecuteResponse execute(String sql, String sessionId,
       ReadModel readModel, boolean closeSession, int fetchSize)
@@ -153,9 +147,15 @@ public class BaseDriver implements Closeable {
           .getConfiguration()));
       context.setSql(sql);
       context.setReadModel(readModel);
+      context.setSessionId(sessionId);
       try {
         if (StringUtils.isNotEmpty(sessionId)) {
-          context.setPlan(new DQLPlan());
+          Parser.SQLType sqlType = parser.getSQLType(context);
+          if(sqlType == Parser.SQLType.DQL) {
+            context.setPlan(new DQLPlan());
+          } else {
+            parser.generatePlan(context);
+          }
         } else {
           parser.generatePlan(context);
         }
@@ -177,30 +177,30 @@ public class BaseDriver implements Closeable {
         selectSQLCount.increment();
         DQLPlan dqlPlan = (DQLPlan) executePlan;
         dqlPlan.setFetchRows(fetchSize);
-        Pair<Boolean, Pair<String, Pair<List<ClientProtos.QueryResultProto>, List<ClientProtos.StringDataTypePair>>>> queryResults =
+        Pair<Boolean, Pair<String, Pair<List<QueryResultProto>, List<StringDataTypePair>>>> queryResults =
             executeEngine.execQueryPlan(dqlPlan, sessionId, closeSession);
         addReadMetricsCount(0, null, 1, EnvironmentEdgeManager.currentTimeMillis() - beforeGenPlan);
         return ResponseConverter.buildExecuteResponse(queryResults.getFirst(),
             queryResults.getSecond().getFirst(), queryResults.getSecond()
-                .getSecond());
+            .getSecond());
       } else if (executePlan instanceof DMLPlan) {
         if (executePlan instanceof InsertPlan) {
           insertSQLCount.increment();
-          List<ClientProtos.WriteResultProto> writeResults = executeEngine
+          List<WriteResultProto> writeResults = executeEngine
               .execInsertPlan((InsertPlan) executePlan);
           addWriteMetricsCount(0, null, 1, EnvironmentEdgeManager.currentTimeMillis()
               - beforeGenPlan);
           return ResponseConverter.buildExecuteResponse(writeResults);
         } else if (executePlan instanceof UpdatePlan) {
           updateSQLCount.increment();
-          List<ClientProtos.WriteResultProto> writeResults = executeEngine
+          List<WriteResultProto> writeResults = executeEngine
               .execUpdatePlan((UpdatePlan) executePlan);
           addWriteMetricsCount(0, null, 1, EnvironmentEdgeManager.currentTimeMillis()
               - beforeGenPlan);
           return ResponseConverter.buildExecuteResponse(writeResults);
         } else if (executePlan instanceof DeletePlan) {
           deleteSQLCount.increment();
-          List<ClientProtos.WriteResultProto> writeResults = executeEngine
+          List<WriteResultProto> writeResults = executeEngine
               .execDeletePlan((DeletePlan) executePlan);
           addWriteMetricsCount(0, null, 1, EnvironmentEdgeManager.currentTimeMillis()
               - beforeGenPlan);
@@ -212,7 +212,10 @@ public class BaseDriver implements Closeable {
       } else if (executePlan instanceof DDLPlan) {
         MasterAdminKeepAliveConnection masterAdminKeepAliveConnection = this.connection
             .getKeepAliveMasterAdmin();
-        if (executePlan instanceof AlterTablePlan) {
+
+        if(executePlan instanceof NotingTodoPlan) {
+          return ResponseConverter.buildNotExecuteResponse();
+        } else if (executePlan instanceof AlterTablePlan) {
           FTable hTableDesc = ((AlterTablePlan) executePlan).getNewTable();
           return modifyTable(masterAdminKeepAliveConnection, hTableDesc);
         } else if (executePlan instanceof CreateTablePlan) {
@@ -239,7 +242,7 @@ public class BaseDriver implements Closeable {
               .buildExecuteResponse(masterAdminKeepAliveConnection.deleteIndex(
                   null, request));
         } else if (executePlan instanceof DropTablePlan) {
-          List<MasterAdminProtos.DeleteTableResponse> responses = new ArrayList<MasterAdminProtos.DeleteTableResponse>();
+          List<DeleteTableResponse> responses = new ArrayList<DeleteTableResponse>();
           for (String tableName : ((DropTablePlan) executePlan).getTableNames()) {
             byte[] byteName = Bytes.toBytes(tableName);
             if (this.connection.isTableDisabled(byteName)) {
@@ -253,7 +256,7 @@ public class BaseDriver implements Closeable {
           }
           return ResponseConverter.buildListExecuteResponse(responses);
         } else if (executePlan instanceof TruncateTablePlan) {
-          List<MasterAdminProtos.TruncateTableResponse> responses = new ArrayList<MasterAdminProtos.TruncateTableResponse>();
+          List<TruncateTableResponse> responses = new ArrayList<TruncateTableResponse>();
           for (String tableName : ((TruncateTablePlan) executePlan)
               .getTableNames()) {
             byte[] byteName = Bytes.toBytes(tableName);
@@ -271,6 +274,59 @@ public class BaseDriver implements Closeable {
 
       throw new ServiceException(new DoNotRetryIOException(
           "The instance of Plan is not supported. SQL:" + sql));
+    } catch (ServiceException e) {
+      LOG.error("ServiceException ", e);
+      throw e;
+    } catch (Throwable e) {
+      LOG.error("Unexpected throwable object ", e);
+      throw new ServiceException(e);
+    }
+  }
+
+  public ExecuteResponse execute(List<String> sqls, boolean isTransaction, String sessionId) throws ServiceException {
+    try {
+      long beforeGenPlan = EnvironmentEdgeManager.currentTimeMillis();
+      List<DMLPlan> dmlPlans = new ArrayList<DMLPlan>();
+      for (String sql : sqls) {
+        ParseContext context = new ParseContext();
+        context.setTsr(TableSchemaCacheReader.getInstance(service
+            .getConfiguration()));
+        context.setSql(sql);
+        context.setSessionId(sessionId);
+        try {
+            parser.generatePlan(context);
+        } catch (RuntimeException e) {
+          if (e instanceof ParserException || e instanceof SQLParseException) {
+            throw new DoNotRetryIOException(e.getMessage(), e);
+          } else {
+            throw new ServiceException(new IOException(e));
+          }
+        } catch (UnsupportedException e) {
+          throw e;
+        }
+        Plan executePlan = context.getPlan();
+        if(executePlan instanceof DMLPlan) {
+          dmlPlans.add((DMLPlan) executePlan);
+        } else {
+          //TODO throw exception
+        }
+      }
+
+      ParseContext context = new ParseContext();
+      context.setTsr(TableSchemaCacheReader.getInstance(service
+          .getConfiguration()));
+      context.setSessionId(sessionId);
+
+      DMLTransactionPlan transactionPlan = WaspParser.generateTransactionPlan(context, dmlPlans);
+      final long afterGenPlan = EnvironmentEdgeManager.currentTimeMillis();
+      ((FServer) this.service).getMetrics().updateGenPlan(
+          afterGenPlan - beforeGenPlan);
+      addWriteMetricsCount(0, null, 1, EnvironmentEdgeManager.currentTimeMillis()
+        - beforeGenPlan);
+
+      List<WriteResultProto> writeResults = executeEngine
+            .execDMLTransactionPlans(transactionPlan);
+      return ResponseConverter.buildExecuteResponse(writeResults);
     } catch (ServiceException e) {
       LOG.error("ServiceException ", e);
       throw e;
@@ -336,4 +392,5 @@ public class BaseDriver implements Closeable {
       executeEngine.close();
     }
   }
+
 }

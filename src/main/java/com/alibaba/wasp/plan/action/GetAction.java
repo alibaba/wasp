@@ -17,13 +17,11 @@
  */
 package com.alibaba.wasp.plan.action;
 
-import com.alibaba.wasp.DataType;import com.alibaba.wasp.ReadModel;import com.alibaba.wasp.protobuf.generated.MetaProtos;import com.google.protobuf.ByteString;
 import com.alibaba.wasp.DataType;
 import com.alibaba.wasp.ReadModel;
 import com.alibaba.wasp.protobuf.ProtobufUtil;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ColumnStructProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.GetActionProto;
-import com.alibaba.wasp.protobuf.generated.MetaProtos.ReadModelProto;
+import com.alibaba.wasp.protobuf.generated.MetaProtos;
+import com.google.protobuf.ByteString;
 
 import java.util.Arrays;
 import java.util.List;
@@ -73,6 +71,8 @@ public class GetAction extends ReadAction {
     GetAction action = new GetAction(ReadModel.valueOf(getAction.getReadMode()
         .name()), getAction.getEntityTableName(), getAction.getRow()
         .toByteArray());
+    action.setForUpdate(getAction.getForUpdate());
+    action.setSessionId(getAction.getSessionId());
     for (MetaProtos.ColumnStructProto col : getAction.getColsList()) {
       action.addEntityColumn(col.getTableName(), col.getFamilyName(),
           col.getColumnName(), DataType.convertDataTypeProtosToDataType(col
@@ -82,8 +82,8 @@ public class GetAction extends ReadAction {
   }
 
   /**
-   * 
-   * 
+   *
+   *
    * @param getAction
    * @return
    */
@@ -93,6 +93,8 @@ public class GetAction extends ReadAction {
     builder.setReadMode(MetaProtos.ReadModelProto
         .valueOf(getAction.getReaderMode().name()));
     builder.setRow(ByteString.copyFrom(getAction.getCombinedPrimaryKey()));
+    builder.setForUpdate(getAction.isForUpdate());
+    builder.setSessionId(getAction.getSessionId());
     for (ColumnStruct col : getAction.getColumns()) {
       builder.addCols(ProtobufUtil.toColumnStructProto(col));
     }
@@ -100,7 +102,7 @@ public class GetAction extends ReadAction {
   }
 
   /**
-   * @see java.lang.Object#toString()
+   * @see Object#toString()
    */
   @Override
   public String toString() {
