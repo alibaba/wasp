@@ -190,7 +190,7 @@ public class EntityGroupScanner implements InternalScanner {
           NavigableSet<byte[]> qualifierSet = get.getFamilyMap().get(
               Bytes.toBytes(columnStruct.getFamilyName()));
           if(qualifierSet !=null &&
-              (!qualifierSet.contains(columnStruct.getColumnName())) ){
+              (!qualifierSet.contains(Bytes.toBytes(columnStruct.getColumnName()))) ){
             get.addColumn(Bytes.toBytes(columnStruct.getFamilyName()),
                 Bytes.toBytes(columnStruct.getColumnName()));
           }
