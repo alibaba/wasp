@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      var lang = (navigator.language||navigator.userLanguage).slice(0, 2);
+      var index = {
+          en:'index_en.html'
+        , zh:'index_zh.html'
+      };
+      window.location.replace(index[lang] || 'index_en.html' );
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
