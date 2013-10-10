@@ -1,0 +1,344 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This file contains protocol buffers that are used for MasterAdminProtocol.
+
+option java_package = "com.alibaba.wasp.protobuf.generated";
+option java_outer_classname = "MasterAdminProtos";
+option java_generic_services = true;
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+import "Wasp.proto";
+import "Meta.proto";
+
+/* EntityGroup-level Protos */
+
+message MoveEntityGroupRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+  optional ServerName destServerName = 2;
+}
+
+message MoveEntityGroupResponse {
+}
+
+message AssignEntityGroupRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+}
+
+message AssignEntityGroupResponse {
+}
+
+message UnassignEntityGroupRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+  optional bool force = 2 [default = false];
+}
+
+message UnassignEntityGroupResponse {
+}
+
+message OfflineEntityGroupRequest {
+  required EntityGroupSpecifier entityGroup = 1;
+}
+
+message OfflineEntityGroupResponse {
+}
+
+/* Table-level protobufs */
+
+message CreateTableRequest {
+  required TableSchema tableSchema = 1;
+  repeated bytes splitKeys = 2;
+}
+
+message CreateTableResponse {
+}
+
+message CreateIndexRequest {
+  required IndexSchema indexSchema = 1;
+}
+
+message CreateIndexResponse {
+}
+
+message DropIndexRequest {
+  required string indexName = 1;
+  required string tableName = 2;
+}
+
+message DropIndexResponse {
+}
+
+message DeleteTableRequest {
+  required bytes tableName = 1;
+}
+
+message DeleteTableResponse {
+}
+
+message EnableTableRequest {
+  required bytes tableName = 1;
+}
+
+message EnableTableResponse {
+}
+
+message DisableTableRequest {
+  required bytes tableName = 1;
+}
+
+message DisableTableResponse {
+}
+
+message ModifyTableRequest {
+  required bytes tableName = 1;
+  required TableSchema tableSchema = 2;
+}
+
+message ModifyTableResponse {
+}
+
+message TruncateTableRequest {
+  required bytes tableName = 1;
+}
+
+message TruncateTableResponse {
+}
+
+/* Cluster-level protobufs */
+
+
+message ShutdownRequest {
+}
+
+message ShutdownResponse {
+}
+
+message StopMasterRequest {
+}
+
+message StopMasterResponse {
+}
+
+message BalanceRequest {
+}
+
+message BalanceResponse {
+  required bool balancerRan = 1;
+}
+
+message SetBalancerRunningRequest {
+  required bool on = 1;
+  optional bool synchronous = 2;
+}
+
+message SetBalancerRunningResponse {
+  optional bool prevBalanceValue = 1;
+}
+
+message FetchEntityGroupSizeRequest {
+  required bytes tableName = 1;
+}
+
+message FetchEntityGroupSizeResponse {
+  required int32 egSize = 1;
+}
+
+message GetEntityGroupRequest {
+  required bytes entityGroupName = 1;
+}
+
+message GetEntityGroupResponse {
+  optional EntityGroupInfoProtos egInfo = 1;
+  optional ServerName serverName = 2;
+}
+
+message GetEntityGroupWithScanRequest {
+  required bytes tableNameOrEntityGroupName = 1;
+}
+
+message GetEntityGroupWithScanResponse {
+  optional EntityGroupInfoProtos egInfo = 1;
+  optional ServerName serverName = 2;
+}
+
+message GetEntityGroupsRequest {
+  required bytes tableName = 1;
+}
+
+message GetEntityGroupsResponse {
+  repeated GetEntityGroupResponse entityGroup = 1;
+}
+
+message GetTableEntityGroupsRequest {
+  required bytes tableName = 1;
+}
+
+message GetTableEntityGroupsResponse {
+  repeated GetEntityGroupResponse entityGroup = 1;
+}
+
+message TableExistsRequest {
+   required bytes tableName = 1;
+}
+
+message TableExistsResponse {
+   required bool exist = 1;
+}
+
+message IsTableAvailableRequest {
+   required bytes tableName = 1;
+}
+
+message IsTableAvailableResponse {
+   required bool available = 1;
+}
+
+message IsTableLockedRequest {
+   required bytes tableName = 1;
+}
+
+message IsTableLockedResponse {
+   required bool locked = 1;
+}
+
+message UnlockTableRequest {
+   required bytes tableName = 1;
+}
+
+message UnlockTableResponse {
+}
+
+message SetTableStateRequest {
+   required bytes tableName = 1;
+   required bytes state = 2;
+}
+
+message SetTableStateResponse {
+}
+
+service MasterAdminService {
+  /** Move the entityGroup to the destination server. */
+  rpc moveEntityGroup(MoveEntityGroupRequest)
+    returns(MoveEntityGroupResponse);
+
+  /** Assign a entityGroup to a server chosen at random. */
+  rpc assignEntityGroup(AssignEntityGroupRequest)
+    returns(AssignEntityGroupResponse);
+
+  /**
+   * Unassign a entityGroup from current hosting fserver.  EntityGroup will then be
+   * assigned to a fserver chosen at random.EntityGroup could be reassigned
+   * back to the same server.  Use moveEntityGroup if you want
+   * to control the EntityGroup movement.
+   */
+  rpc unassignEntityGroup(UnassignEntityGroupRequest)
+    returns(UnassignEntityGroupResponse);
+
+  /**
+   * Offline a EntityGroup from the assignment manager's in-memory state.  The
+   * EntityGroup should be in a closed state and there will be no attempt to
+   * automatically reassign the EntityGroup as in unassign.   This is a special
+   * method, and should only be used by experts or hbck.
+   */
+  rpc offlineEntityGroup(OfflineEntityGroupRequest)
+    returns(OfflineEntityGroupResponse);
+
+  /** Deletes a table */
+  rpc deleteTable(DeleteTableRequest)
+    returns(DeleteTableResponse);
+
+  /** Puts the table on-line (only needed if table has been previously taken offline) */
+  rpc enableTable(EnableTableRequest)
+    returns(EnableTableResponse);
+
+  /** Take table offline */
+  rpc disableTable(DisableTableRequest)
+    returns(DisableTableResponse);
+
+  /** Modify a table's metadata */
+  rpc modifyTable(ModifyTableRequest)
+    returns(ModifyTableResponse);
+    
+  /** Truncate a table */
+  rpc truncateTable(TruncateTableRequest)
+    returns(TruncateTableResponse);
+
+  /** Creates a new table asynchronously */
+  rpc createTable(CreateTableRequest)
+    returns(CreateTableResponse);
+    
+  rpc createIndex(CreateIndexRequest)
+    returns(CreateIndexResponse);
+  
+  rpc deleteIndex(DropIndexRequest)
+    returns(DropIndexResponse);
+
+    /** Shutdown an HBase cluster. */
+  rpc shutdown(ShutdownRequest)
+    returns(ShutdownResponse);
+
+  /** Stop HBase Master only.  Does not shutdown the cluster. */
+  rpc stopMaster(StopMasterRequest)
+    returns(StopMasterResponse);
+
+  /**
+   * Run the balancer.  Will run the balancer and if regions to move, it will
+   * go ahead and do the reassignments.  Can NOT run for various reasons.
+   * Check logs.
+   */
+  rpc balance(BalanceRequest)
+    returns(BalanceResponse);
+
+  /**
+   * Turn the load balancer on or off.
+   * If synchronous is true, it waits until current balance() call, if outstanding, to return.
+   */
+  rpc setBalancerRunning(SetBalancerRunningRequest)
+    returns(SetBalancerRunningResponse);
+    
+  rpc fetchEntityGroupSize(FetchEntityGroupSizeRequest)
+    returns(FetchEntityGroupSizeResponse);
+    
+  rpc getEntityGroup(GetEntityGroupRequest)
+    returns(GetEntityGroupResponse);
+    
+  rpc getEntityGroupWithScan(GetEntityGroupWithScanRequest)
+    returns(GetEntityGroupWithScanResponse);
+    
+  rpc getEntityGroups(GetEntityGroupsRequest) 
+    returns(GetEntityGroupsResponse);
+  
+  rpc getTableEntityGroups(GetTableEntityGroupsRequest)
+    returns(GetTableEntityGroupsResponse);
+  
+  rpc tableExists(TableExistsRequest)
+    returns(TableExistsResponse);
+    
+  rpc isTableAvailable(IsTableAvailableRequest)
+    returns(IsTableAvailableResponse);
+    
+  rpc isTableLocked(IsTableLockedRequest)
+    returns(IsTableLockedResponse);
+    
+  rpc unlockTable(UnlockTableRequest)
+    returns(UnlockTableResponse);
+    
+  rpc setTableState(SetTableStateRequest)
+    returns(SetTableStateResponse);
+}

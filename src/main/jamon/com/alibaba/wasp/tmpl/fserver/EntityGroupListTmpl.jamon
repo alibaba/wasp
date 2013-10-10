@@ -1,0 +1,118 @@
+<%doc>
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+</%doc>
+<%args>
+        FServer fserver;
+        List<EntityGroupInfo> onlineEntityGroups;
+</%args>
+<%import>
+        java.util.*;
+        com.alibaba.wasp.fserver.FServer;
+        org.apache.hadoop.hbase.util.Bytes;
+        com.alibaba.wasp.EntityGroupInfo;
+        org.apache.hadoop.hbase.ServerName;
+        org.apache.hadoop.hbase.HBaseConfiguration;
+        com.alibaba.wasp.EntityGroupLoad;
+</%import>
+<%if (onlineEntityGroups != null && onlineEntityGroups.size() > 0) %>
+
+    <%java>
+        Collections.sort(onlineEntityGroups);
+    </%java>
+
+    <div class="tabbable">
+        <ul class="nav nav-pills">
+            <li class="active"><a href="#tab_regionBaseInfo" data-toggle="tab">Base Info</a> </li>
+            <li><a href="#tab_entityGroupRequestStats" data-toggle="tab">Request metrics</a></li>
+        </ul>
+        <div class="tab-content" style="padding-bottom: 9px; border-bottom: 1px solid #ddd;">
+            <div class="tab-pane active" id="tab_regionBaseInfo">
+                <& baseInfo; onlineEntityGroups = onlineEntityGroups; &>
+            </div>
+            <div class="tab-pane" id="tab_entityGroupRequestStats">
+                <& requestStats; onlineEntityGroups = onlineEntityGroups; &>
+            </div>
+        </div>
+    </div>
+<%else>
+    <p>Not serving entityGroups</p>
+</%if>
+
+<%def baseInfo>
+<%args>
+    List<EntityGroupInfo> onlineEntityGroups;
+</%args>
+    <table class="table table-striped">
+        <tr>
+            <th>EntityGroup Name</th>
+            <th>Start Key</th>
+            <th>End Key</th>
+        </tr>
+
+        <%for EntityGroupInfo egi: onlineEntityGroups %>
+        <tr>
+            <td><% egi.getEntityGroupNameAsString() %></td>
+            <td><% Bytes.toStringBinary(egi.getStartKey()) %></td>
+            <td><% Bytes.toStringBinary(egi.getEndKey()) %></td>
+        </tr>
+        </%for>
+    </table>
+</%def>
+
+<%def requestStats>
+<%args>
+    List<EntityGroupInfo> onlineEntityGroups;
+</%args>
+    <table class="table table-striped">
+        <tr>
+            <th>EntityGroup Name</th>
+            <th>Read Request Count</th>
+            <th>Write Request Count</th>
+        </tr>
+
+        <%for EntityGroupInfo egi: onlineEntityGroups %>
+
+        <tr>
+        <%java>
+            EntityGroupLoad load = fserver.createEntityGroupLoad(egi);
+        </%java>
+            <td><% egi.getEntityGroupNameAsString() %></td>
+            <%if load != null %>
+            <td><% load.getReadRequestsCount() %></td>
+            <td><% load.getWriteRequestsCount() %></td>
+            </%if>
+        </tr>
+        </%for>
+    </table>
+</%def>
+
+
+<%def storeStats>
+<%args>
+    List<EntityGroupInfo> onlineEntityGroups;
+</%args>
+
+</%def>
+
+
+<%def compactStats>
+<%args>
+    List<EntityGroupInfo> onlineEntityGroups;
+</%args>
+
+</%def>

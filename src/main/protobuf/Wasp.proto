@@ -1,0 +1,219 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This file contains protocol buffers that are shared throughout wasp
+
+option java_package = "com.alibaba.wasp.protobuf.generated";
+option java_outer_classname = "WaspProtos";
+option java_generate_equals_and_hash = true;
+option optimize_for = SPEED;
+
+/**
+ * Protocol buffer version of EntityGroupInfo.
+ */
+message EntityGroupInfoProtos {
+  required uint64 entityGroupId = 1;
+  required bytes tableName = 2;
+  optional bytes startKey = 3;
+  optional bytes endKey = 4;
+  optional bool offline = 5;
+  optional bool split = 6;
+}
+
+/**
+ * Protocol buffer version of EntityGroupLocation.
+ */
+message EntityGroupLocationProtos {
+  required string hostname = 1;
+  required uint32 port = 2;
+}
+
+/**
+ * Container protocol buffer to specify a entityGroup.
+ * You can specify entityGroup by entityGroup name, or the hash
+ * of the entityGroup name, which is known as encoded
+ * entityGroup name.
+ */
+message EntityGroupSpecifier {
+  required EntityGroupSpecifierType type = 1;
+  required bytes value = 2;
+
+  enum EntityGroupSpecifierType {
+    // <tablename>,<startkey>,<entityGroupId>.<encodedName>
+    ENTITYGROUP_NAME = 1;
+
+    // hash of <tablename>,<startkey>,<entityGroupId>
+    ENCODED_ENTITYGROUP_NAME = 2;
+  }
+}
+
+message EntityGroupLoadProtos {
+  /** the entityGroup specifier */
+  required EntityGroupSpecifier entityGroupSpecifier = 1;
+
+  /** the current total read requests made to entityGroup */
+  optional uint64 readRequestsCount = 2;
+
+  /** the current total write requests made to entityGroup */
+  optional uint64 writeRequestsCount = 3;
+
+  /** the current total redolog made to entityGroup */
+  optional uint64 transactionLogSize = 4;
+}
+
+/* Server-level protobufs */
+
+message ServerLoadProtos {
+  /** Number of requests since last report. */
+  optional uint32 numberOfRequests = 1;
+
+  /** Total Number of requests from the start of the entityGroup server. */
+  optional uint32 totalNumberOfRequests = 2;
+
+  /** Information on the load of individual entityGroups. */
+  repeated EntityGroupLoadProtos entityGroupsLoads = 3;
+
+  /**
+   * Time when incremental (non-total) counts began being calculated (e.g. numberOfRequests)
+   * time is measured as the difference, measured in milliseconds, between the current time
+   * and midnight, January 1, 1970 UTC.
+   */
+  optional uint64 reportStartTime = 4;
+
+  /**
+   * Time when report was generated.
+   * time is measured as the difference, measured in milliseconds, between the current time
+   * and midnight, January 1, 1970 UTC.
+   */
+  optional uint64 reportEndTime = 5;
+
+  /**
+   * The port number that this region server is hosing an info server on.
+   */
+  optional uint32 infoServerPort = 6;
+  
+  /**
+   * Total number of clients connect to this server.
+   */
+  optional uint32 numberOfConnections = 7;
+  
+  /**
+   * Average response time for write. 
+   */
+  optional float avgWriteTime = 8;
+  
+  /**
+   * Average response time for read.
+   */
+  optional float avgReadTime = 9;
+}
+
+/**
+ * A range of time. Both from and to are Java time
+ * stamp in milliseconds. If you don't specify a time
+ * range, it means all time.  By default, if not 
+ * specified, from = 0, and to = Long.MAX_VALUE
+ */
+message TimeRange {
+  optional uint64 from = 1;
+  optional uint64 to = 2;
+}
+
+/* Comparison operators */
+enum CompareType {
+  LESS = 0;
+  LESS_OR_EQUAL = 1;
+  EQUAL = 2;
+  NOT_EQUAL = 3;
+  GREATER_OR_EQUAL = 4;
+  GREATER = 5;
+  NO_OP = 6;
+}
+
+enum EntityGroupOpeningState {
+  OPENED = 0;
+  ALREADY_OPENED = 1;
+  FAILED_OPENING = 2;
+}
+
+/**
+ * Protocol buffer version of ServerName
+ */
+message ServerName {
+  required string hostName = 1;
+  optional uint32 port = 2;
+  optional uint64 startCode = 3;
+}
+
+message StringStringPair {
+  required string name = 1;
+  required string value = 2;
+}
+
+message StringBytesPair {
+  required string name = 1;
+  optional bytes value = 2;
+}
+
+message BytesBytesPair {
+  required bytes first = 1;
+  required bytes second = 2;
+}
+
+/**
+ * A specific mutate inside a mutate request.
+ * It can be an put or delete based
+ * on the mutate type.
+ */
+message Mutate {
+  required bytes row = 1;
+  required MutateType mutateType = 2;
+  repeated ColumnValue columnValue = 3;
+  repeated StringBytesPair attribute = 4;
+  optional uint64 timestamp = 5;
+  optional uint64 lockId = 6;
+  optional bool writeToWAL = 7 [default = true];
+  required string tableName = 8;
+
+  // For some mutate, result may be returned, in which case,
+  // time range can be specified for potential performance gain
+  optional TimeRange timeRange = 10;
+
+  enum MutateType {
+    PUT = 0;
+    DELETE = 1;
+  }
+
+  enum DeleteType {
+    DELETE_ONE_VERSION = 0;
+    DELETE_MULTIPLE_VERSIONS = 1;
+    DELETE_FAMILY = 2;
+  }
+
+  message ColumnValue {
+    required bytes family = 1;
+    repeated QualifierValue qualifierValue = 2;
+
+    message QualifierValue {
+      optional bytes qualifier = 1;
+      optional bytes value = 2;
+      optional uint64 timestamp = 3;
+      optional DeleteType deleteType = 4;
+    }
+  }
+}
