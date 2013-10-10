@@ -17,26 +17,23 @@
  */
 package com.alibaba.wasp.jdbcx;
 
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
+import com.alibaba.wasp.FConstants;
+import com.alibaba.wasp.jdbc.JdbcException;
+import com.alibaba.wasp.util.New;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.hadoop.conf.Configuration;
 
 import javax.sql.ConnectionEvent;
 import javax.sql.ConnectionEventListener;
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 import javax.sql.PooledConnection;
-
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.hadoop.conf.Configuration;
-
-import com.alibaba.wasp.FConstants;
-import com.alibaba.wasp.jdbc.JdbcException;
-import com.alibaba.wasp.util.New;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 /**
  * A simple standalone JDBC connection pool.
@@ -329,6 +326,6 @@ public class JdbcConnectionPool implements DataSource, ConnectionEventListener {
   // ## Java 1.7 ##
   public Logger getParentLogger() {
     throw new NotImplementedException();
-  }  
+  }
 
 }
