@@ -20,7 +20,6 @@ package com.alibaba.wasp.jdbcx;
 import com.alibaba.wasp.jdbc.Driver;
 import com.alibaba.wasp.jdbc.JdbcConnection;
 import com.alibaba.wasp.jdbc.JdbcException;
-import com.alibaba.wasp.jdbc.Logger;
 import com.alibaba.wasp.util.StringUtils;
 import com.alibaba.wasp.util.Utils;
 import org.apache.commons.lang.NotImplementedException;
@@ -43,6 +42,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /*## Java 1.7 ##
  import java.util.logging.Logger;
