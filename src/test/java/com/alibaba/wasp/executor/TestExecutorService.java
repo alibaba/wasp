@@ -48,7 +48,7 @@ public class TestExecutorService {
   public void testExecutorService() throws Exception {
     int maxThreads = 5;
     int maxTries = 10;
-    int sleepInterval = 10;
+    int sleepInterval = 20;
 
     Server mockedServer = mock(Server.class);
     when(mockedServer.getConfiguration()).thenReturn(conf);
