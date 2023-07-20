@@ -79,6 +79,9 @@ public class TestExecutorService {
     int tries = 0;
     while (counter.get() < maxThreads && tries < maxTries) {
       LOG.info("Waiting for all event handlers to start...");
+      while (!EventHandler.getExecutedStatus()) { 
+        Thread.yield(); 
+      }
       Thread.sleep(sleepInterval);
       tries++;
     }

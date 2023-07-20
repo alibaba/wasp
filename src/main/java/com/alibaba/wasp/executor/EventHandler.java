@@ -56,6 +56,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class EventHandler implements Runnable, Comparable<Runnable> {
   private static final Log LOG = LogFactory.getLog(EventHandler.class);
 
+  private static volatile boolean hasExecuted;
   // type of event this object represents
   protected EventType eventType;
 
@@ -192,6 +193,7 @@ public abstract class EventHandler implements Runnable, Comparable<Runnable> {
   public void run() {
     Span chunk = Trace.startSpan(Thread.currentThread().getName(), parent,
         Sampler.ALWAYS);
+    hasExecuted = true;
     try {
       if (getListener() != null)
         getListener().beforeProcess(this);
@@ -203,6 +205,10 @@ public abstract class EventHandler implements Runnable, Comparable<Runnable> {
     } finally {
       chunk.stop();
     }
+  }
+
+  public static boolean getExecutedStatus() {
+    return hasExecuted;
   }
 
   /**
